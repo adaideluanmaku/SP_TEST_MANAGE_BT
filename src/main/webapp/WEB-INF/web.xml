@@ -1,0 +1,40 @@
+<web-app >  
+  <display-name>Archetype Created Web Application</display-name>
+  
+	<!-- Spring会自动寻找filter类,处理过滤器 -->
+	 <filter>  
+        <filter-name>sysfilter</filter-name>  
+        <filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>  
+    </filter>  
+    <filter-mapping>  
+        <!-- 过滤器Class名字，首字母换小写 -->
+        <filter-name>sysfilter</filter-name>  
+        <url-pattern>/*</url-pattern>  
+    </filter-mapping>  
+	
+	<!--Sprig MVC分发URL配置-->
+	<servlet>
+	    <!-- 寻找servlet-mapping变量名称，进行拦截分发 -->
+	    <servlet-name>SP_TEST_MANAGE_BT</servlet-name>
+	    <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+   		 
+	    <!-- 加载Spring配置上下文根 -->
+   		<init-param>
+	          <param-name>contextConfigLocation</param-name>
+	           <param-value>classpath:Spring-mvc-servlet.xml</param-value>
+     	</init-param>
+		<!-- 加载优先级 -->
+		<load-on-startup>1</load-on-startup>
+	   <!--<async-supported>true</async-supported> -->
+	</servlet>
+	<servlet-mapping>
+	    <servlet-name>SP_TEST_MANAGE_BT</servlet-name>
+	    <url-pattern>/</url-pattern>
+	</servlet-mapping>
+		
+	<!-- 默认首页 -->
+	<welcome-file-list>
+    	<welcome-file>login.jsp</welcome-file>
+  	</welcome-file-list>
+  	
+</web-app>
