@@ -48,51 +48,8 @@ public class Sysfilter implements Filter {
 		
 		//过滤session
 		HttpSession session=req.getSession();
-		if(req.getRequestURI().contains("ws") || req.getRequestURI().contains("/websocket")){
-			chain.doFilter(req, res);
-			return;
-		}
-		if(req.getRequestURI().contains(".js") || req.getRequestURI().contains(".css")){
-			chain.doFilter(req, res);
-			return;
-		}
-		if(req.getRequestURI().contains("login.jsp") || req.getRequestURI().contains("login/zhuce")){
-			chain.doFilter(req, res);
-			return;
-		}
 		
-//		if(session.getAttribute("loginname")!=null){
-//			if(sys_url.user_url(req)){
-//				chain.doFilter(req, res);
-//			}
-//			return;
-//		}else if(req.getRequestURI().contains("login/denglu")){
-//			chain.doFilter(req, res);
-//			return;
-//		}else if(req.getRequestURI().contains("login/checkloginname")){
-//			chain.doFilter(req, res);
-//			return;
-//		}
-		if(req.getRequestURI().contains("/login/logout")){
-			chain.doFilter(req, res);
-			return;
-		}else if(req.getRequestURI().contains("login/denglu")){
-			chain.doFilter(req, res);
-			return;
-		}else if(req.getRequestURI().contains("login/checkloginname")){
-			chain.doFilter(req, res);
-			return;
-		}else if(session.getAttribute("loginname")!=null){
-			if(sys_url.user_url(req)){
-				chain.doFilter(req, res);
-			}
-			return;
-		}
-		
-		request.getRequestDispatcher("/login.jsp").forward(request, response);
-//		res.sendRedirect("/SP_TEST_MANAGE_BT/login.jsp");
-		
-//		chain.doFilter(req, res);
+		chain.doFilter(req, res);
 	}
 
 	/**

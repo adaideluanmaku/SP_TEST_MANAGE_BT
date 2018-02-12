@@ -16,25 +16,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.ch.service.Loginbean;
-import com.ch.service.SocketBean;
 import com.ch.sysuntils.User;
 
 @Controller
 @RequestMapping("/login")
 public class LoginAction {
-	@Autowired
-	private Loginbean loginbean;
-	
-	@Autowired
-//	SocketBean socketBean;
-//	Map<Long, User> sessionuser = new HashMap<Long, User>();
-	
 	private static Logger log = Logger.getLogger(LoginAction.class);
 	private ModelAndView mverr;
-//	Map<Long, User> users = new HashMap<Long, User>();//将登录的用户对象User放入到Users-Map中，后台推送使用
 	
-	@RequestMapping("/denglu")
+	@RequestMapping("/login")
 	public ModelAndView Denglu(User user,HttpServletRequest req,HttpServletResponse res){
 		HttpSession session=req.getSession();
 		
@@ -44,44 +34,20 @@ public class LoginAction {
 		res.setHeader("Pragma","no-cache");//HTTP 1.0 向后兼容
 		res.setDateHeader("Expires", 0);//使缓存过期
 		
-		//重新登录验证
-		if(StringUtils.isNotBlank(req.getParameter("loginname")) && StringUtils.isNotBlank(req.getParameter("password"))){
-			//登录操作
-			if(loginbean.Denglu(user,req.getParameter("loginname"),req.getParameter("password"))){
-				session.setAttribute("userid", user.getUserid());
-				session.setAttribute("loginname", user.getLoginname());
-				
-				//保存用户到MAP中，websocket推送使用
-//				sessionuser.put(user.getUserid(), user);
-				
-				return new ModelAndView("test_manage");
-			}else{
-				mverr= new ModelAndView("forward:/login.jsp");//转发forward,重定向redirect
-				mverr.addObject("err", req.getParameter("loginname")+"账户或密码错误");
-				return mverr;
-			}
+		if("ch".equals(user.getLoginname())){
+			mverr= new ModelAndView("homepage");
+		}else{
+			mverr= new ModelAndView("forward:/login.jsp");
+			mverr.addObject("loginerr", "请输入账户登录");
 		}
 		
-		//用户已经登录，直接可进入系统
-		if(session.getAttribute("loginname")!=null){
-			mverr= new ModelAndView("test_manage");
-			return mverr;
-		}
-		mverr= new ModelAndView("forward:/login.jsp");
-		mverr.addObject("err", "请输入账户登录");
 		return mverr;
 	}
 	
-	@RequestMapping(value="/zhuce", produces = "text/html;charset=UTF-8")
+	@RequestMapping(value="/register", produces = "text/html;charset=UTF-8")
 	@ResponseBody//返回客户端json数据，如果不设置就是返回整个页面
 	public String Zhuce(HttpServletRequest req) {
 		String rsmessage=null;
-		if("".equals(req.getParameter("loginname").toString()) || "".equals(req.getParameter("username").toString()) || "".equals(req.getParameter("password").toString())){
-			System.err.println("信息填写不完整"+req.getParameter("loginname").toString());
-			log.debug("信息填写不完整:"+req.getParameter("loginname").toString());
-			return rsmessage="信息填写不完整";
-		}
-		rsmessage=loginbean.Zhuce(req.getParameter("loginname").toString(),req.getParameter("username").toString(),req.getParameter("password").toString());
         return rsmessage;
 	}
 	
@@ -94,11 +60,4 @@ public class LoginAction {
 		return mv;
 	}
 	
-	@RequestMapping("/checkloginname")
-	@ResponseBody
-	public boolean checkloginname(HttpServletRequest req){
-		boolean check=false;
-		check=loginbean.checkloginname(req);
-		return check;
-	}
 }

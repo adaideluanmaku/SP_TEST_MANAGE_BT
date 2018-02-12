@@ -7,245 +7,178 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
 
-<title>CH_TMANAGE | Dashboard</title>
-
-<link href="${pageContext.request.contextPath}/css/bootstrap.min.css"
-	rel="stylesheet">
-<link
-	href="${pageContext.request.contextPath}/font-awesome/css/font-awesome.css"
-	rel="stylesheet">
-
+<title>CH+ | MANAGE</title>
+<!-- SYS CSS -->
+<link href="${pageContext.request.contextPath}/bootstrap_home/css/bootstrap.min.css" rel="stylesheet">
+<link href="${pageContext.request.contextPath}/bootstrap_home/font-awesome/css/font-awesome.css" rel="stylesheet">
 <!-- Toastr style -->
-<link
-	href="${pageContext.request.contextPath}/css/plugins/toastr/toastr.min.css"
-	rel="stylesheet">
-
+<link href="${pageContext.request.contextPath}/bootstrap_home/css/plugins/toastr/toastr.min.css" rel="stylesheet">
 <!-- Gritter -->
-<link
-	href="${pageContext.request.contextPath}/js/plugins/gritter/jquery.gritter.css"
-	rel="stylesheet">
+<link href="${pageContext.request.contextPath}/bootstrap_home/js/plugins/gritter/jquery.gritter.css" rel="stylesheet">
+<link href="${pageContext.request.contextPath}/bootstrap_home/css/animate.css" rel="stylesheet">
+<link href="${pageContext.request.contextPath}/bootstrap_home/css/style.css" rel="stylesheet">
 
-<link href="${pageContext.request.contextPath}/css/animate.css"
-	rel="stylesheet">
-<link href="${pageContext.request.contextPath}/css/style.css"
-	rel="stylesheet">
-
-<!-- Mainly scripts -->
-<script src="${pageContext.request.contextPath}/js/jquery-2.1.1.js"></script>
-<script src="${pageContext.request.contextPath}/js/bootstrap.min.js"></script>
-<script
-	src="${pageContext.request.contextPath}/js/plugins/metisMenu/jquery.metisMenu.js"></script>
-<script
-	src="${pageContext.request.contextPath}/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
-
-<!-- Flot -->
-<script
-	src="${pageContext.request.contextPath}/js/plugins/flot/jquery.flot.js"></script>
-<script
-	src="${pageContext.request.contextPath}/js/plugins/flot/jquery.flot.tooltip.min.js"></script>
-<script
-	src="${pageContext.request.contextPath}/js/plugins/flot/jquery.flot.spline.js"></script>
-<script
-	src="${pageContext.request.contextPath}/js/plugins/flot/jquery.flot.resize.js"></script>
-<script
-	src="${pageContext.request.contextPath}/js/plugins/flot/jquery.flot.pie.js"></script>
-
-<!-- Peity -->
-<script
-	src="${pageContext.request.contextPath}/js/plugins/peity/jquery.peity.min.js"></script>
-<script src="${pageContext.request.contextPath}/js/demo/peity-demo.js"></script>
-
-<!-- Custom and plugin javascript -->
-<script src="${pageContext.request.contextPath}/js/inspinia.js"></script>
-<script
-	src="${pageContext.request.contextPath}/js/plugins/pace/pace.min.js"></script>
-
+<!-- SYS JS -->
 <!-- jQuery UI -->
-<script
-	src="${pageContext.request.contextPath}/js/plugins/jquery-ui/jquery-ui.min.js"></script>
-
+<%-- <script src="${pageContext.request.contextPath}/bootstrap_home/js/plugins/jquery-ui/jquery-ui.min.js"></script> --%>
+<!-- Mainly scripts -->
+<script src="${pageContext.request.contextPath}/bootstrap_home/js/jquery-2.1.1.js"></script>
+<script src="${pageContext.request.contextPath}/bootstrap_home/js/bootstrap.min.js"></script>
+<script src="${pageContext.request.contextPath}/bootstrap_home/js/plugins/metisMenu/jquery.metisMenu.js"></script>
+<script src="${pageContext.request.contextPath}/bootstrap_home/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+<!-- Flot -->
+<script src="${pageContext.request.contextPath}/bootstrap_home/js/plugins/flot/jquery.flot.js"></script>
+<script src="${pageContext.request.contextPath}/bootstrap_home/js/plugins/flot/jquery.flot.tooltip.min.js"></script>
+<script src="${pageContext.request.contextPath}/bootstrap_home/js/plugins/flot/jquery.flot.spline.js"></script>
+<script src="${pageContext.request.contextPath}/bootstrap_home/js/plugins/flot/jquery.flot.resize.js"></script>
+<script src="${pageContext.request.contextPath}/bootstrap_home/js/plugins/flot/jquery.flot.pie.js"></script>
+<!-- Peity -->
+<script src="${pageContext.request.contextPath}/bootstrap_home/js/plugins/peity/jquery.peity.min.js"></script>
+<script src="${pageContext.request.contextPath}/bootstrap_home/js/demo/peity-demo.js"></script>
+<!-- Custom and plugin javascript -->
+<script src="${pageContext.request.contextPath}/bootstrap_home/js/inspinia.js"></script>
+<script src="${pageContext.request.contextPath}/bootstrap_home/js/plugins/pace/pace.min.js"></script>
 <!-- GITTER -->
-<script
-	src="${pageContext.request.contextPath}/js/plugins/gritter/jquery.gritter.min.js"></script>
-
+<script src="${pageContext.request.contextPath}/bootstrap_home/js/plugins/gritter/jquery.gritter.min.js"></script>
 <!-- Sparkline -->
-<script
-	src="${pageContext.request.contextPath}/js/plugins/sparkline/jquery.sparkline.min.js"></script>
-
+<script src="${pageContext.request.contextPath}/bootstrap_home/js/plugins/sparkline/jquery.sparkline.min.js"></script>
 <!-- Sparkline demo data  -->
-<script
-	src="${pageContext.request.contextPath}/js/demo/sparkline-demo.js"></script>
-
+<script src="${pageContext.request.contextPath}/bootstrap_home/js/demo/sparkline-demo.js"></script>
 <!-- ChartJS-->
-<script
-	src="${pageContext.request.contextPath}/js/plugins/chartJs/Chart.min.js"></script>
-
+<script src="${pageContext.request.contextPath}/bootstrap_home/js/plugins/chartJs/Chart.min.js"></script>
 <!-- Toastr -->
-<script
-	src="${pageContext.request.contextPath}/js/plugins/toastr/toastr.min.js"></script>
+<script src="${pageContext.request.contextPath}/bootstrap_home/js/plugins/toastr/toastr.min.js"></script>
 
-<!-- CH JS -->
-<script type="text/javascript"
-	src="${pageContext.request.contextPath}/chjs/test_manage.js"></script>
-<script type="text/javascript"
-	src="${pageContext.request.contextPath}/chjs/websocket/websocket-connect.js"></script>
-<%-- <script type="text/javascript"
-	src="${pageContext.request.contextPath}/js/jquery-2.1.1.js"></script>
-<link rel="stylesheet" type="text/css"
-	href="${pageContext.request.contextPath}/easyui/themes/default/easyui.css">
-<link rel="stylesheet" type="text/css"
-	href="${pageContext.request.contextPath}/easyui/themes/icon.css">
-<script type="text/javascript"
-	src="${pageContext.request.contextPath}/easyui/jquery.easyui.min.js"></script>
-<script type="text/javascript"
-	src="${pageContext.request.contextPath}/easyui/themes/locale/easyui-lang-zh_CN.js"></script>
-
-<link rel="stylesheet" type="text/css"
-	href="${pageContext.request.contextPath}/chcss/test_manage.css" />
-<script type="text/javascript"
-	src="${pageContext.request.contextPath}/chjs/test_manage.js"></script>
-<link rel="stylesheet" type="text/css"
-	href="${pageContext.request.contextPath}/chcss/websocket/websocket-connect.css" />
-<script type="text/javascript"
-	src="${pageContext.request.contextPath}/chjs/websocket/websocket-connect.js"></script>
-<link rel="stylesheet" type="text/css"
-	href="${pageContext.request.contextPath}/chcss/userorders/userorders.css" />
-<script type="text/javascript"
-	src="${pageContext.request.contextPath}/chjs/userorders/userorders.js"></script>
-<script type="text/javascript"
-	src="${pageContext.request.contextPath}/chjs/loading/loading.js"></script> --%>
+<!-- MY JS -->
+<script type="text/javascript" src="${pageContext.request.contextPath}/chjs/homepage.js"></script>
 
 <script>
-	$(document).ready(
-			function() {
-				setTimeout(function() {
-					toastr.options = {
-						closeButton : true,
-						progressBar : true,
-						showMethod : 'slideDown',
-						timeOut : 4000
-					};
-					toastr.success('Responsive Admin Theme',
-							'Welcome to INSPINIA');
 
-				}, 1300);
+$(document).ready(
+function() {
+	setTimeout(function() {
+		toastr.options = {
+			closeButton : true,
+			progressBar : true,
+			showMethod : 'slideDown',
+			timeOut : 4000
+		};
+		toastr.success('Responsive Admin Theme',
+				'Welcome to INSPINIA');
 
-				var data1 = [ [ 0, 4 ], [ 1, 8 ], [ 2, 5 ], [ 3, 10 ],
-						[ 4, 4 ], [ 5, 16 ], [ 6, 5 ], [ 7, 11 ], [ 8, 6 ],
-						[ 9, 11 ], [ 10, 30 ], [ 11, 10 ], [ 12, 13 ],
-						[ 13, 4 ], [ 14, 3 ], [ 15, 3 ], [ 16, 6 ] ];
-				var data2 = [ [ 0, 1 ], [ 1, 0 ], [ 2, 2 ], [ 3, 0 ], [ 4, 1 ],
-						[ 5, 3 ], [ 6, 1 ], [ 7, 5 ], [ 8, 2 ], [ 9, 3 ],
-						[ 10, 2 ], [ 11, 1 ], [ 12, 0 ], [ 13, 2 ], [ 14, 8 ],
-						[ 15, 0 ], [ 16, 0 ] ];
-				$("#flot-dashboard-chart").length
-						&& $.plot($("#flot-dashboard-chart"), [ data1, data2 ],
-								{
-									series : {
-										lines : {
-											show : false,
-											fill : true
-										},
-										splines : {
-											show : true,
-											tension : 0.4,
-											lineWidth : 1,
-											fill : 0.4
-										},
-										points : {
-											radius : 0,
-											show : true
-										},
-										shadowSize : 2
-									},
-									grid : {
-										hoverable : true,
-										clickable : true,
-										tickColor : "#d5d5d5",
-										borderWidth : 1,
-										color : '#d5d5d5'
-									},
-									colors : [ "#1ab394", "#1C84C6" ],
-									xaxis : {},
-									yaxis : {
-										ticks : 4
-									},
-									tooltip : false
-								});
+	}, 1300);
 
-				var doughnutData = [ {
-					value : 300,
-					color : "#a3e1d4",
-					highlight : "#1ab394",
-					label : "App"
-				}, {
-					value : 50,
-					color : "#dedede",
-					highlight : "#1ab394",
-					label : "Software"
-				}, {
-					value : 100,
-					color : "#A4CEE8",
-					highlight : "#1ab394",
-					label : "Laptop"
-				} ];
+	var data1 = [ [ 0, 4 ], [ 1, 8 ], [ 2, 5 ], [ 3, 10 ],
+			[ 4, 4 ], [ 5, 16 ], [ 6, 5 ], [ 7, 11 ], [ 8, 6 ],
+			[ 9, 11 ], [ 10, 30 ], [ 11, 10 ], [ 12, 13 ],
+			[ 13, 4 ], [ 14, 3 ], [ 15, 3 ], [ 16, 6 ] ];
+	var data2 = [ [ 0, 1 ], [ 1, 0 ], [ 2, 2 ], [ 3, 0 ], [ 4, 1 ],
+			[ 5, 3 ], [ 6, 1 ], [ 7, 5 ], [ 8, 2 ], [ 9, 3 ],
+			[ 10, 2 ], [ 11, 1 ], [ 12, 0 ], [ 13, 2 ], [ 14, 8 ],
+			[ 15, 0 ], [ 16, 0 ] ];
+	$("#flot-dashboard-chart").length
+			&& $.plot($("#flot-dashboard-chart"), [ data1, data2 ],
+					{
+						series : {
+							lines : {
+								show : false,
+								fill : true
+							},
+							splines : {
+								show : true,
+								tension : 0.4,
+								lineWidth : 1,
+								fill : 0.4
+							},
+							points : {
+								radius : 0,
+								show : true
+							},
+							shadowSize : 2
+						},
+						grid : {
+							hoverable : true,
+							clickable : true,
+							tickColor : "#d5d5d5",
+							borderWidth : 1,
+							color : '#d5d5d5'
+						},
+						colors : [ "#1ab394", "#1C84C6" ],
+						xaxis : {},
+						yaxis : {
+							ticks : 4
+						},
+						tooltip : false
+					});
 
-				var doughnutOptions = {
-					segmentShowStroke : true,
-					segmentStrokeColor : "#fff",
-					segmentStrokeWidth : 2,
-					percentageInnerCutout : 45, // This is 0 for Pie charts
-					animationSteps : 100,
-					animationEasing : "easeOutBounce",
-					animateRotate : true,
-					animateScale : false
-				};
+	var doughnutData = [ {
+		value : 300,
+		color : "#a3e1d4",
+		highlight : "#1ab394",
+		label : "App"
+	}, {
+		value : 50,
+		color : "#dedede",
+		highlight : "#1ab394",
+		label : "Software"
+	}, {
+		value : 100,
+		color : "#A4CEE8",
+		highlight : "#1ab394",
+		label : "Laptop"
+	} ];
 
-				/* var ctx = document.getElementById("doughnutChart").getContext(
-						"2d");
-				var DoughnutChart = new Chart(ctx).Doughnut(doughnutData,
-						doughnutOptions); */
+	var doughnutOptions = {
+		segmentShowStroke : true,
+		segmentStrokeColor : "#fff",
+		segmentStrokeWidth : 2,
+		percentageInnerCutout : 45, // This is 0 for Pie charts
+		animationSteps : 100,
+		animationEasing : "easeOutBounce",
+		animateRotate : true,
+		animateScale : false
+	};
 
-				var polarData = [ {
-					value : 300,
-					color : "#a3e1d4",
-					highlight : "#1ab394",
-					label : "App"
-				}, {
-					value : 140,
-					color : "#dedede",
-					highlight : "#1ab394",
-					label : "Software"
-				}, {
-					value : 200,
-					color : "#A4CEE8",
-					highlight : "#1ab394",
-					label : "Laptop"
-				} ];
+	/* var ctx = document.getElementById("doughnutChart").getContext(
+			"2d");
+	var DoughnutChart = new Chart(ctx).Doughnut(doughnutData,
+			doughnutOptions); */
 
-				var polarOptions = {
-					scaleShowLabelBackdrop : true,
-					scaleBackdropColor : "rgba(255,255,255,0.75)",
-					scaleBeginAtZero : true,
-					scaleBackdropPaddingY : 1,
-					scaleBackdropPaddingX : 1,
-					scaleShowLine : true,
-					segmentShowStroke : true,
-					segmentStrokeColor : "#fff",
-					segmentStrokeWidth : 2,
-					animationSteps : 100,
-					animationEasing : "easeOutBounce",
-					animateRotate : true,
-					animateScale : false
-				};
-				/* var ctx = document.getElementById("polarChart")
-						.getContext("2d");
-				var Polarchart = new Chart(ctx).PolarArea(polarData,
-						polarOptions); */
+	var polarData = [ {
+		value : 300,
+		color : "#a3e1d4",
+		highlight : "#1ab394",
+		label : "App"
+	}, {
+		value : 140,
+		color : "#dedede",
+		highlight : "#1ab394",
+		label : "Software"
+	}, {
+		value : 200,
+		color : "#A4CEE8",
+		highlight : "#1ab394",
+		label : "Laptop"
+	} ];
 
-			});
+	var polarOptions = {
+		scaleShowLabelBackdrop : true,
+		scaleBackdropColor : "rgba(255,255,255,0.75)",
+		scaleBeginAtZero : true,
+		scaleBackdropPaddingY : 1,
+		scaleBackdropPaddingX : 1,
+		scaleShowLine : true,
+		segmentShowStroke : true,
+		segmentStrokeColor : "#fff",
+		segmentStrokeWidth : 2,
+		animationSteps : 100,
+		animationEasing : "easeOutBounce",
+		animateRotate : true,
+		animateScale : false
+	};
+
+});
 </script>
 <script>
 	(function(i, s, o, g, r, a, m) {
@@ -302,16 +235,29 @@
 				</li>
 				<li class="active">
 					<a href="">
-						<i class="fa fa-th-large"></i><span class="nav-label">信息采集</span>
-						<span class="fa arrow"></span></a>
+						<i class="fa fa-th-large"></i>
+						<span class="nav-label">统计管理</span>
+						<span class="fa arrow"></span>
+					</a>
 					<ul class="nav nav-second-level">
-						<li class="active"><a href="javascript:void(0);" onclick="testmess()">案例信息</a></li>
-						<li><a href="javascript:void(0);" onclick="learnmess()">学习笔记</a></li>
-						<li><a href="${pageContext.request.contextPath}/login/denglu">NEWS</a></li>
+						<li class="active"><a href="javascript:void(0);" onclick="javascript:graph()">总览</a></li>
+						<li><a href="javascript:void(0);" onclick="">PA统计</a></li>
+						<li><a href="javascript:void(0);" onclick="">PASS统计</a></li>
+						<li><a href="javascript:void(0);" onclick="">hi</a></li>
 					</ul></li>
 				<li>
                      <a href="index.html#">
-                     <i class="fa fa-bar-chart-o"></i><span class="nav-label">项目管理</span>
+                     <i class="fa fa-bar-chart-o"></i><span class="nav-label">PASS测试管理</span>
+                     <span class="fa arrow"></span></a>
+                     <ul class="nav nav-second-level collapse">
+                         <li><a href="graph_flot.html">团队维护</a></li>
+                         <li><a href="graph_morris.html">项目维护</a></li>
+                         <li><a href="graph_rickshaw.html">案例维护</a></li>
+                     </ul>
+                </li>
+                <li>
+                     <a href="index.html#">
+                     <i class="fa fa-bar-chart-o"></i><span class="nav-label">PA测试管理</span>
                      <span class="fa arrow"></span></a>
                      <ul class="nav nav-second-level collapse">
                          <li><a href="graph_flot.html">团队维护</a></li>
@@ -382,7 +328,7 @@
 								<div class="dropdown-messages-box">
 									<a href="profile.html" class="pull-left"> <img alt="image"
 										class="img-circle"
-										src="${pageContext.request.contextPath}/img/a7.jpg">
+										src="${pageContext.request.contextPath}/bootstrap_home/img/a7.jpg">
 									</a>
 									<div class="media-body">
 										<small class="pull-right">46h ago</small> <strong>Mike
@@ -397,7 +343,7 @@
 								<div class="dropdown-messages-box">
 									<a href="profile.html" class="pull-left"> <img alt="image"
 										class="img-circle"
-										src="${pageContext.request.contextPath}/img/a4.jpg">
+										src="${pageContext.request.contextPath}/bootstrap_home/img/a4.jpg">
 									</a>
 									<div class="media-body ">
 										<small class="pull-right text-navy">5h ago</small> <strong>Chris
@@ -412,7 +358,7 @@
 								<div class="dropdown-messages-box">
 									<a href="profile.html" class="pull-left"> <img alt="image"
 										class="img-circle"
-										src="${pageContext.request.contextPath}/img/profile.jpg">
+										src="${pageContext.request.contextPath}/bootstrap_home/img/profile.jpg">
 									</a>
 									<div class="media-body ">
 										<small class="pull-right">23h ago</small> <strong>Monica
@@ -478,12 +424,19 @@
 			</div>
 
 			<div class="row  border-bottom white-bg dashboard-header">
-                 <div class="col-sm-12">
-                 	<iframe id="iframe_box"
-					src="${pageContext.request.contextPath}/log/log" frameborder="0"
-					scrolling="no" class="iframe_box" style="width:100%" ></iframe>
-                 </div>
-            </div>
+				<iframe id="iframe_box"
+					src="${pageContext.request.contextPath}/homepage/graph"
+					frameborder="0" scrolling="yes"
+					style="width: 100%; min-height: 690px"></iframe>
+			</div>
+			<div class="footer navbar-fixed-bottom">
+				<div class="pull-right">
+					10GB of <strong>250GB</strong> Free.
+				</div>
+				<div>
+					<strong>Copyright</strong> Example Company &copy; 2014-2015
+				</div>
+			</div>
 		</div>
 		
 		<div class="small-chat-box fadeInRight animated">
@@ -560,7 +513,7 @@
 								<a href="index.html#">
 									<div class="pull-left text-center">
 										<img alt="image" class="img-circle message-avatar"
-											src="${pageContext.request.contextPath}/img/a1.jpg">
+											src="${pageContext.request.contextPath}/bootstrap_home/img/a1.jpg">
 
 										<div class="m-t-xs">
 											<i class="fa fa-star text-warning"></i> <i
@@ -579,7 +532,7 @@
 								<a href="index.html#">
 									<div class="pull-left text-center">
 										<img alt="image" class="img-circle message-avatar"
-											src="${pageContext.request.contextPath}/img/a2.jpg">
+											src="${pageContext.request.contextPath}/bootstrap_home/img/a2.jpg">
 									</div>
 									<div class="media-body">
 										The point of using Lorem Ipsum is that it has a more-or-less
@@ -592,7 +545,7 @@
 								<a href="index.html#">
 									<div class="pull-left text-center">
 										<img alt="image" class="img-circle message-avatar"
-											src="${pageContext.request.contextPath}/img/a3.jpg">
+											src="${pageContext.request.contextPath}/bootstrap_home/img/a3.jpg">
 
 										<div class="m-t-xs">
 											<i class="fa fa-star text-warning"></i> <i
@@ -611,7 +564,7 @@
 								<a href="index.html#">
 									<div class="pull-left text-center">
 										<img alt="image" class="img-circle message-avatar"
-											src="${pageContext.request.contextPath}/img/a4.jpg">
+											src="${pageContext.request.contextPath}/bootstrap_home/img/a4.jpg">
 									</div>
 
 									<div class="media-body">
@@ -625,7 +578,7 @@
 								<a href="index.html#">
 									<div class="pull-left text-center">
 										<img alt="image" class="img-circle message-avatar"
-											src="${pageContext.request.contextPath}/img/a8.jpg">
+											src="${pageContext.request.contextPath}/bootstrap_home/img/a8.jpg">
 									</div>
 									<div class="media-body">
 
@@ -638,7 +591,7 @@
 								<a href="index.html#">
 									<div class="pull-left text-center">
 										<img alt="image" class="img-circle message-avatar"
-											src="${pageContext.request.contextPath}/img/a7.jpg">
+											src="${pageContext.request.contextPath}/bootstrap_home/img/a7.jpg">
 									</div>
 									<div class="media-body">
 										Renaissance. The first line of Lorem Ipsum, "Lorem ipsum dolor
@@ -651,7 +604,7 @@
 								<a href="index.html#">
 									<div class="pull-left text-center">
 										<img alt="image" class="img-circle message-avatar"
-											src="${pageContext.request.contextPath}/img/a3.jpg">
+											src="${pageContext.request.contextPath}/bootstrap_home/img/a3.jpg">
 
 										<div class="m-t-xs">
 											<i class="fa fa-star text-warning"></i> <i
@@ -670,7 +623,7 @@
 								<a href="index.html#">
 									<div class="pull-left text-center">
 										<img alt="image" class="img-circle message-avatar"
-											src="${pageContext.request.contextPath}/img/a4.jpg">
+											src="${pageContext.request.contextPath}/bootstrap_home/img/a4.jpg">
 									</div>
 									<div class="media-body">
 										Uncover many web sites still in their infancy. Various

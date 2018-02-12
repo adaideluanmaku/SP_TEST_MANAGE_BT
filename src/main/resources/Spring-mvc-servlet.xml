@@ -42,7 +42,7 @@
      -->
     
     <!-- HTML方式读取资源文件，数据源配置, 改为druid数据库连接池 mysql-->
-	<!-- <bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+	<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
 		<property name="url" value="${jdbc.url}" />
 		<property name="username" value="${jdbc.username}" />
 		<property name="password" value="${jdbc.password}" />
@@ -66,12 +66,12 @@
 		<property name="logAbandoned" value="true" />
 
 		<property name="filters" value="stat" />
-	</bean> -->
+	</bean>
 	
 	<!-- jdbc template for import -->
-	<!-- <bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
 		<property name="dataSource" ref="dataSource" />
-	</bean> -->
+	</bean>
 	
 	 <!-- HTML方式读取资源文件，数据源配置, 改为druid数据库连接池 mysql-passpa2db-->
 	<!-- <bean id="dataSource_passpa2db" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
@@ -178,14 +178,14 @@
     maxUploadSize：设置允许上传的最大文件大小，以字节为单位计算。当设为-1时表示无限制，默认是-1。
     maxInMemorySize：设置在文件上传时允许写到内存中的最大值，以字节为单位计算，默认是10240。
      -->
-    <bean id="multipartResolver" class="com.ch.progress.CustomMultipartResolver">
+    <!-- <bean id="multipartResolver" class="com.ch.progress.CustomMultipartResolver">
     	<property name="defaultEncoding" value="utf-8"></property>
     	<property name="maxUploadSize" value="10485760000"></property>
     	<property name="maxInMemorySize" value="1073741824"></property>
-    </bean>
+    </bean> -->
     
     <!-- 服务启动后，初始化加载这个指定文件-->
-    <bean class="com.ch.filter.Utillistenner"/>
+   <!--  <bean class="com.ch.filter.Utillistenner"/> -->
     
     <!-- Sring配置页面跳转路径 -->
     <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver"
