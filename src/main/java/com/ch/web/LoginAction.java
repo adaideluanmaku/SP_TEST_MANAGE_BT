@@ -36,6 +36,8 @@ public class LoginAction {
 		
 		if("ch".equals(user.getLoginname())){
 			mverr= new ModelAndView("homepage");
+			mverr.addObject("loginname", user.getLoginname());
+			
 		}else{
 			mverr= new ModelAndView("forward:/login.jsp");
 			mverr.addObject("loginerr", "请输入账户登录");
