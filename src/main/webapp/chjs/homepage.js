@@ -1,41 +1,70 @@
-var addurl=null;
+var addurl = null;
 
 $(document).ready(function() {
-	addurl=$("#addurl").val();
-	
+	addurl = $("#addurl").val();
+
 });
 
-//首页目录页面跳转
-function home_graph(){
-	$("#iframe_box").attr("src",addurl+"/homepage/home_graph");
+function updateiframe(){
+	var height=$("#side-menu").height()-100;
+	if(height>790){
+		$("#iframe_box").attr("style","width:100%; height:"+height+"px");
+	}
+}
+// 首页目录页面跳转
+function home_graph() {
+	$("#iframe_box").attr("src", addurl + "/homepage/home_graph");
 }
 
-//PASS目录页面跳转
-function pass_graph(){
-	$("#iframe_box").attr("src",addurl+"/homepage/pass_graph");
+// PASS目录页面跳转
+function pass_graph() {
+	$("#iframe_box").attr("src", addurl + "/homepage/pass_graph");
 }
 
-function pass_team(){
-	$("#iframe_box").attr("src",addurl+"/homepage/pass_team");
+function pass_team() {
+	$("#iframe_box").attr("src", addurl + "/homepage/pass_team");
 }
 
-//PA目录页面跳转
-function pa_graph(){
-	$("#iframe_box").attr("src",addurl+"/homepage/pa_graph");
+function pass_project() {
+	$("#iframe_box").attr("src", addurl + "/homepage/pass_project");
 }
 
-//政府项目目录页面跳转
-function zfxm_graph(){
-	$("#iframe_box").attr("src",addurl+"/homepage/zfxm_graph");
+function pass_testmng() {
+	$("#iframe_box").attr("src", addurl + "/homepage/pass_testmng");
 }
 
-//学习目录页面跳转
-function learn_graph(){
-	$("#iframe_box").attr("src",addurl+"/homepage/learn_graph");
+function pass_prescription() {
+	$("#iframe_box").attr("src", addurl + "/homepage/pass_prescription");
 }
 
-//工作目录页面跳转
-function works_graph(){
-	$("#iframe_box").attr("src",addurl+"/homepage/works_graph");
+// PA目录页面跳转
+function pa_graph() {
+	$("#iframe_box").attr("src", addurl + "/homepage/pa_graph");
 }
 
+function pa_team() {
+	$("#iframe_box").attr("src", addurl + "/homepage/pa_team");
+}
+
+function pa_project() {
+	$("#iframe_box").attr("src", addurl + "/homepage/pa_project");
+}
+
+function pa_testmng() {
+	$("#iframe_box").attr("src", addurl + "/homepage/pa_testmng");
+}
+
+// 政府项目目录页面跳转
+function zfxm_graph() {
+	$("#iframe_box").attr("src", addurl + "/homepage/zfxm_graph");
+}
+
+// 学习目录页面跳转
+function learn_graph() {
+	$("#iframe_box").attr("src", addurl + "/homepage/learn_graph");
+}
+
+// 工作目录页面跳转
+function works_graph() {
+	$("#iframe_box").attr("src", addurl + "/homepage/works_graph");
+}
