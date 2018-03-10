@@ -1,0 +1,9 @@
+.nav-tabs.nav-justified>li>a{
+	height:70px;
+}
+
+.table tbody tr td{
+	overflow: hidden;
+	text-overflow: ellipsis;
+ }
+

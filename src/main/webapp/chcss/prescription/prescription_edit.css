@@ -1,0 +1,9 @@
+table tbody tr td{
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space:nowrap;
+}
+
+#dict_drug_modal .pagination-info{
+	display:none;
+}
