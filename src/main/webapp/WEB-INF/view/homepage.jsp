@@ -73,7 +73,6 @@
 					<li><a href="javascript:void(0);" onclick="pass_team()">团队管理</a></li>
 					<li><a href="javascript:void(0);" onclick="pass_project()">项目管理</a></li>
 					<li><a href="javascript:void(0);" onclick="pass_testmng()">案例管理</a></li>
-					<li><a href="javascript:void(0);" onclick="pass_prescription()">用药研究</a></li>
 				</ul></li>
 			<li><a href="index.html#">
 					<i class="fa fa-bar-chart-o"></i>
@@ -84,7 +83,13 @@
 					<li><a href="javascript:void(0);" onclick="pa_team()">团队管理</a></li>
 					<li><a href="javascript:void(0);" onclick="pa_project()">项目管理</a></li>
 					<li><a href="javascript:void(0);" onclick="pa_testmng()">案例管理</a></li>
-					<li><a href="javascript:alert(1)">用药研究</a></li>
+				</ul></li>
+			<li><a href="index.html#">
+					<i class="fa fa-bar-chart-o"></i>
+					<span class="nav-label">用药研究</span> <span class="fa arrow"></span>
+				</a>
+				<ul class="nav nav-second-level collapse">
+					<li><a href="javascript:void(0);" onclick="prescription()">处方管理</a></li>
 				</ul></li>
 			<li><a href="index.html#"> <i class="fa fa-bar-chart-o"></i><span
 					class="nav-label">政府项目测试管理</span> <span class="fa arrow"></span></a>

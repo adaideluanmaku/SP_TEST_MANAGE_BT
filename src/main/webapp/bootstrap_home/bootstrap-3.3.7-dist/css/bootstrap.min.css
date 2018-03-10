@@ -4516,7 +4516,7 @@ select[multiple].input-group-sm>.form-control, select[multiple].input-group-sm>.
 }
 
 .tab-content>.active {
-	display: block
+	display: block 
 }
 
 .nav-tabs .dropdown-menu {

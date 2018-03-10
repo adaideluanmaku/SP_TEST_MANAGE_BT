@@ -33,10 +33,6 @@ function pass_testmng() {
 	$("#iframe_box").attr("src", addurl + "/homepage/pass_testmng");
 }
 
-function pass_prescription() {
-	$("#iframe_box").attr("src", addurl + "/homepage/pass_prescription");
-}
-
 // PA目录页面跳转
 function pa_graph() {
 	$("#iframe_box").attr("src", addurl + "/homepage/pa_graph");
@@ -52,6 +48,11 @@ function pa_project() {
 
 function pa_testmng() {
 	$("#iframe_box").attr("src", addurl + "/homepage/pa_testmng");
+}
+
+//工作目录页面跳转
+function prescription() {
+	$("#iframe_box").attr("src", addurl + "/homepage/prescription");
 }
 
 // 政府项目目录页面跳转

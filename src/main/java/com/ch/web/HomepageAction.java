@@ -34,11 +34,6 @@ public class HomepageAction {
 		return new ModelAndView("pass/pass_testmng");
 	}
 	
-	@RequestMapping("/pass_prescription")
-	public ModelAndView pass_prescription(){
-		return new ModelAndView("pass/pass_prescription");
-	}
-	
 	//PA目录
 	@RequestMapping("/pa_graph")
 	public ModelAndView graph_pa(){
@@ -58,6 +53,12 @@ public class HomepageAction {
 	@RequestMapping("/pa_testmng")
 	public ModelAndView pa_testmng(){
 		return new ModelAndView("pa/pa_testmng");
+	}
+
+	//用药研究
+	@RequestMapping("/prescription")
+	public ModelAndView prescription(){
+		return new ModelAndView("prescription/prescription");
 	}
 	
 	//政府项目目录
