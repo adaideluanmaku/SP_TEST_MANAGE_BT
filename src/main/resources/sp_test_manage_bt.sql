@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50718
 File Encoding         : 65001
 
-Date: 2018-02-14 09:11:04
+Date: 2018-03-10 17:04:21
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -62,6 +62,188 @@ PRIMARY KEY (`learngroupid`)
 ENGINE=InnoDB
 DEFAULT CHARACTER SET=utf8 COLLATE=utf8_general_ci
 AUTO_INCREMENT=12
+
+;
+
+-- ----------------------------
+-- Table structure for mc_dict_drug
+-- ----------------------------
+DROP TABLE IF EXISTS `mc_dict_drug`;
+CREATE TABLE `mc_dict_drug` (
+`match_scheme`  int(11) NOT NULL DEFAULT 0 ,
+`drugcode`  varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' ,
+`drugname`  varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' ,
+`drugform`  varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' ,
+`searchcode`  varchar(256) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
+`druggroupcode`  int(11) NULL DEFAULT NULL ,
+`druggroupname`  varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' ,
+`drggrp_searchcode`  varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' ,
+`is_basedrug`  int(11) NULL DEFAULT '-1' ,
+`is_basedrug_p`  int(11) NULL DEFAULT '-1' ,
+`is_anti`  int(11) NULL DEFAULT '-1' ,
+`antitype`  int(11) NULL DEFAULT '-1' ,
+`antilevel`  int(11) NULL DEFAULT '-1' ,
+`drugtype`  int(11) NULL DEFAULT '-1' ,
+`drugformtype`  int(11) NULL DEFAULT '-1' ,
+`socialsecurity_ratio`  varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' ,
+`is_socialsecurity`  int(11) NULL DEFAULT '-1' ,
+`socialsecurity_desc`  varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' ,
+`jdmtype`  int(11) NULL DEFAULT '-1' ,
+`is_stimulant`  int(11) NULL DEFAULT '-1' ,
+`stimulantingred`  varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' ,
+`is_solvent`  int(11) NULL DEFAULT '-1' ,
+`is_srpreparations`  int(11) NULL DEFAULT '-1' ,
+`is_needskintest`  int(11) NULL DEFAULT '-1' ,
+`is_dearmed`  int(11) NULL DEFAULT '-1' ,
+`is_poison`  int(11) NULL DEFAULT '-1' ,
+`is_bloodmed`  int(11) NULL DEFAULT '-1' ,
+`is_sugarmed`  int(11) NULL DEFAULT '-1' ,
+`otctype`  int(11) NULL DEFAULT '-1' ,
+`high_alert_level`  int(11) NULL DEFAULT '-1' ,
+`is_bisection_use`  int(11) NULL DEFAULT '-1' ,
+`classid`  int(11) NULL DEFAULT '-1' ,
+`classtitle`  varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' ,
+`is_save`  int(11) NOT NULL DEFAULT 0 ,
+`operuser`  varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' ,
+`opertime`  varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' ,
+`typename`  varchar(256) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' ,
+`state`  int(11) NULL DEFAULT 1 ,
+`updatedate`  timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP ,
+PRIMARY KEY (`match_scheme`, `drugcode`),
+INDEX `PK_mc_dict_drug_drugcode` (`drugcode`) USING BTREE ,
+INDEX `index_match_drugcode` (`match_scheme`, `drugcode`) USING BTREE 
+)
+ENGINE=InnoDB
+DEFAULT CHARACTER SET=utf8 COLLATE=utf8_general_ci
+
+;
+
+-- ----------------------------
+-- Table structure for mc_dict_drug_pass
+-- ----------------------------
+DROP TABLE IF EXISTS `mc_dict_drug_pass`;
+CREATE TABLE `mc_dict_drug_pass` (
+`proid`  int(11) NOT NULL AUTO_INCREMENT ,
+`drug_unique_code`  varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
+`drugcode`  varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
+`drugname`  varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' ,
+`drugform`  varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' ,
+`drugspec`  varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' ,
+`comp_name`  varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' ,
+`approvalcode`  varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' ,
+`searchcode`  varchar(256) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
+`doseunit`  varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' ,
+`match_scheme`  int(11) NOT NULL ,
+`pass_drugcode`  int(11) NULL DEFAULT 0 ,
+`pass_approvalcode`  varchar(500) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' ,
+`pass_nametype`  int(11) NULL DEFAULT 0 ,
+`pass_doseunit`  varchar(256) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' ,
+`pass_drugname`  varchar(500) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' ,
+`pass_form_name`  varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' ,
+`pass_st_strength`  varchar(1000) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' ,
+`pass_st_comp_name`  varchar(500) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' ,
+`pass_dividend`  double NULL DEFAULT 0 ,
+`pass_divisor`  double NULL DEFAULT 0 ,
+`menulabel`  varchar(256) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' ,
+`match_user`  varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' ,
+`match_time`  varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' ,
+`unable_match`  int(11) NULL DEFAULT 0 ,
+`unable_match_desc`  varchar(70) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' ,
+`oprpi_user`  varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' ,
+`oprpi_time`  varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' ,
+`pass_upstate`  int(11) NULL DEFAULT 0 ,
+`updatedate`  timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP ,
+PRIMARY KEY (`proid`, `drug_unique_code`, `doseunit`, `match_scheme`),
+INDEX `PK_mc_dict_drugPass_uniqueCode` (`drug_unique_code`) USING BTREE ,
+INDEX `PK_mc_dict_drugPass_doseunit` (`doseunit`) USING BTREE 
+)
+ENGINE=InnoDB
+DEFAULT CHARACTER SET=utf8 COLLATE=utf8_general_ci
+AUTO_INCREMENT=65625
+
+;
+
+-- ----------------------------
+-- Table structure for mc_dict_drug_sub
+-- ----------------------------
+DROP TABLE IF EXISTS `mc_dict_drug_sub`;
+CREATE TABLE `mc_dict_drug_sub` (
+`match_scheme`  int(11) NOT NULL DEFAULT 0 ,
+`drugcode`  varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
+`drugname`  varchar(256) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' ,
+`searchcode`  varchar(256) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
+`drugform`  varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' ,
+`drugspec`  varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' ,
+`costunit`  varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' ,
+`ddd`  decimal(18,3) NULL DEFAULT NULL ,
+`dddunit`  varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' ,
+`ddd_costunit`  decimal(18,3) NULL DEFAULT NULL ,
+`adddate`  varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' ,
+`is_use`  int(11) NOT NULL DEFAULT 1 ,
+`is_save`  int(11) NOT NULL DEFAULT 0 ,
+`state`  int(11) NULL DEFAULT 1 ,
+`updatedate`  timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP ,
+PRIMARY KEY (`match_scheme`, `drugcode`, `drugspec`, `costunit`)
+)
+ENGINE=InnoDB
+DEFAULT CHARACTER SET=utf8 COLLATE=utf8_general_ci
+
+;
+
+-- ----------------------------
+-- Table structure for mc_hospital_match_relation
+-- ----------------------------
+DROP TABLE IF EXISTS `mc_hospital_match_relation`;
+CREATE TABLE `mc_hospital_match_relation` (
+`mhiscode`  bigint(20) NOT NULL AUTO_INCREMENT ,
+`doctorgroupmatch_scheme`  int(11) NULL DEFAULT NULL ,
+`wardmatch_scheme`  int(11) NULL DEFAULT NULL ,
+`hiscode`  varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
+`hisname`  varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
+`searchcode`  varchar(256) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
+`drugmatch_scheme`  int(11) NULL DEFAULT NULL ,
+`allermatch_scheme`  int(11) NULL DEFAULT NULL ,
+`dismatch_scheme`  int(11) NULL DEFAULT NULL ,
+`freqmatch_scheme`  int(11) NULL DEFAULT NULL ,
+`routematch_scheme`  int(11) NULL DEFAULT NULL ,
+`doctormatch_scheme`  int(11) NULL DEFAULT NULL ,
+`oprmatch_scheme`  int(11) NULL DEFAULT NULL ,
+`costitemmatch_scheme`  int(11) NULL DEFAULT NULL ,
+`deptmatch_scheme`  int(11) NULL DEFAULT NULL ,
+`exammatch_scheme`  int(11) NULL DEFAULT NULL ,
+`labmatch_scheme`  int(11) NULL DEFAULT NULL ,
+`labsubmatch_scheme`  int(11) NULL DEFAULT NULL ,
+`hiscode_user`  varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
+PRIMARY KEY (`mhiscode`, `hiscode`),
+INDEX `hiscode_user` (`hiscode_user`) USING BTREE ,
+INDEX `mhiscode` (`mhiscode`) USING BTREE ,
+INDEX `drug_key` (`mhiscode`, `drugmatch_scheme`) USING BTREE ,
+INDEX `route_key` (`mhiscode`, `routematch_scheme`) USING BTREE ,
+INDEX `dis_key` (`mhiscode`, `dismatch_scheme`) USING BTREE ,
+INDEX `doct_key` (`mhiscode`, `doctormatch_scheme`) USING BTREE ,
+INDEX `dept_key` (`mhiscode`, `deptmatch_scheme`) USING BTREE ,
+INDEX `drug_hiscode_key` (`hiscode`, `drugmatch_scheme`) USING BTREE ,
+INDEX `route_hiscode_key` (`hiscode`, `routematch_scheme`) USING BTREE 
+)
+ENGINE=InnoDB
+DEFAULT CHARACTER SET=utf8 COLLATE=utf8_general_ci
+AUTO_INCREMENT=199008002
+
+;
+
+-- ----------------------------
+-- Table structure for prescription
+-- ----------------------------
+DROP TABLE IF EXISTS `prescription`;
+CREATE TABLE `prescription` (
+`pre_id`  int(10) NOT NULL AUTO_INCREMENT ,
+`patientname`  varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
+`prescription_json`  mediumtext CHARACTER SET utf8 COLLATE utf8_general_ci NULL ,
+PRIMARY KEY (`pre_id`)
+)
+ENGINE=InnoDB
+DEFAULT CHARACTER SET=utf8 COLLATE=utf8_general_ci
+AUTO_INCREMENT=43
 
 ;
 
@@ -278,6 +460,21 @@ ALTER TABLE `learn` AUTO_INCREMENT=40;
 -- Auto increment value for learn_type
 -- ----------------------------
 ALTER TABLE `learn_type` AUTO_INCREMENT=12;
+
+-- ----------------------------
+-- Auto increment value for mc_dict_drug_pass
+-- ----------------------------
+ALTER TABLE `mc_dict_drug_pass` AUTO_INCREMENT=65625;
+
+-- ----------------------------
+-- Auto increment value for mc_hospital_match_relation
+-- ----------------------------
+ALTER TABLE `mc_hospital_match_relation` AUTO_INCREMENT=199008002;
+
+-- ----------------------------
+-- Auto increment value for prescription
+-- ----------------------------
+ALTER TABLE `prescription` AUTO_INCREMENT=43;
 
 -- ----------------------------
 -- Auto increment value for project
