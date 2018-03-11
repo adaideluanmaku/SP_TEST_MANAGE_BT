@@ -30,8 +30,8 @@ public class DictAciton {
 	@ResponseBody
 	@RequestMapping("/drug")
 	public DataGrid dict_drug(HttpServletRequest req) {
-//		dataGrid=dict.dict_drug(req);
-		return new DataGrid();
+		dataGrid=dict.dict_drug(req);
+		return dataGrid;
 	}
 	
 	

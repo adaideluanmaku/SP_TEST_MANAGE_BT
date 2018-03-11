@@ -11,6 +11,7 @@ var TableInit_fujiaotherrecip_table = null;
 var TableInit_fujiaexaminfo_table = null;
 var TableInit_fujialabinfo_table = null;
 var TableInit_dictdrug_table = null;
+
 //PASS-JSON解析
 var PassClient= null;
 var Patient= null;
@@ -22,8 +23,6 @@ var InputJsonInfoList= null;
 
 $(document).ready(function() {
 	addurl=$("#addurl").val();
-	
-	//
 	
 	//生成表格
 	TableInit_drugs_table = new TableInit_drugs();
@@ -53,6 +52,9 @@ $(document).ready(function() {
 	TableInit_fujialabinfo_table = new TableInit_fujialabinfo();
 	TableInit_fujialabinfo_table.Init();
 	
+	//字典表
+	TableInit_dictdrug_table = new TableInit_dict_drug();
+	TableInit_dictdrug_table.Init();
 	
 	//初始化时间插件
 	init_time();
@@ -68,12 +70,6 @@ $(document).ready(function() {
 //	});
 });
 
-function openaa(){
-//	TableInit_drugs_table = new TableInit_drugs();
-//	TableInit_drugs_table.Init();
-//	var ScreenDrugs = ScreenDrugList.ScreenDrugs;
-	$('#drugsmessage #json_table').bootstrapTable('resetSearch','');
-}
 
 //医嘱表格对象
 var TableInit_drugs =function () {
@@ -96,6 +92,7 @@ var TableInit_drugs =function () {
 			sortable: false,                    // 是否启用排序
 			sortOrder: "asc",                   // 排序方式
 			sidePagination: "client",           // 分页方式：client客户端分页，server服务端分页（*），两种分页JSON结构不同
+			sumMoney: 'total',
 			pageNumber:1,                       // 初始化加载第一页，默认第一页
 			pageSize: 10,                       // 每页的记录行数（*）
 			pageList: [10, 25, 50, 100],        // 可供选择的每页的行数（*）
@@ -108,7 +105,9 @@ var TableInit_drugs =function () {
 			detailView: false, 					//是否显示父子表
 			minimumCountColumns: 2,             // 最少允许的列数
 			clickToSelect: false,               // 是否启用点击选中行
-			height: 400,                        //450, 行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
+//			height: 400,                        //1.450, 行高
+												//2.如果没有设置height属性，表格自动根据记录条数觉得表格高度
+												//3.在tab标签样式里面会导致高度出错，自己CSS写固定高度
 			uniqueId: "ID",                     // 每一行的唯一标识，一般为主键列
 //			fixedColumns: true,					//固定列,引入bootstrap-table-fixed-columns.js
 //	        fixedNumber:2,						//固定前两列,引入bootstrap-table-fixed-columns.js
@@ -586,7 +585,7 @@ var TableInit_allergen =function () {
 			pagination: true,                   // 是否显示分页（*）
 			sortable: false,                    // 是否启用排序
 			sortOrder: "asc",                   // 排序方式
-			sidePagination: "server",           // 分页方式：client客户端分页，server服务端分页（*），两种分页JSON结构不同
+			sidePagination: "client",           // 分页方式：client客户端分页，server服务端分页（*），两种分页JSON结构不同
 			pageNumber:1,                       // 初始化加载第一页，默认第一页
 			pageSize: 10,                       // 每页的记录行数（*）
 			pageList: [10, 25, 150, 150],        // 可供选择的每页的行数（*）
@@ -699,7 +698,7 @@ var TableInit_disease =function () {
 			pagination: true,                   // 是否显示分页（*）
 			sortable: false,                    // 是否启用排序
 			sortOrder: "asc",                   // 排序方式
-			sidePagination: "server",           // 分页方式：client客户端分页，server服务端分页（*），两种分页JSON结构不同
+			sidePagination: "client",           // 分页方式：client客户端分页，server服务端分页（*），两种分页JSON结构不同
 			pageNumber:1,                       // 初始化加载第一页，默认第一页
 			pageSize: 10,                       // 每页的记录行数（*）
 			pageList: [10, 25, 150, 150],        // 可供选择的每页的行数（*）
@@ -847,7 +846,7 @@ var TableInit_operation =function () {
 			detailView: false, 					//是否显示父子表
 			minimumCountColumns: 2,             // 最少允许的列数
 			clickToSelect: false,               // 是否启用点击选中行
-			height: 400,                        //450, 行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
+//			height: 400,                        //450, 行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
 			uniqueId: "ID",                     // 每一行的唯一标识，一般为主键列
 //			fixedColumns: true,					//固定列,引入bootstrap-table-fixed-columns.js
 //	        fixedNumber:2,						//固定前两列,引入bootstrap-table-fixed-columns.js
@@ -980,7 +979,7 @@ var TableInit_fujiadrug =function () {
 			pagination: true,                   // 是否显示分页（*）
 			sortable: false,                    // 是否启用排序
 			sortOrder: "asc",                   // 排序方式
-			sidePagination: "server",           // 分页方式：client客户端分页，server服务端分页（*），两种分页JSON结构不同
+			sidePagination: "client",           // 分页方式：client客户端分页，server服务端分页（*），两种分页JSON结构不同
 			pageNumber:1,                       // 初始化加载第一页，默认第一页
 			pageSize: 10,                       // 每页的记录行数（*）
 			pageList: [10, 25, 150, 150],        // 可供选择的每页的行数（*）
@@ -993,7 +992,7 @@ var TableInit_fujiadrug =function () {
 			detailView: false, 					//是否显示父子表
 			minimumCountColumns: 2,             // 最少允许的列数
 			clickToSelect: false,               // 是否启用点击选中行
-			height: 400,                        //450, 行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
+//			height: 400,                        //450, 行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
 			uniqueId: "ID",                     // 每一行的唯一标识，一般为主键列
 //			fixedColumns: true,					//固定列,引入bootstrap-table-fixed-columns.js
 //	        fixedNumber:2,						//固定前两列,引入bootstrap-table-fixed-columns.js
@@ -1090,7 +1089,7 @@ var TableInit_fujiadisease =function () {
 			pagination: true,                   // 是否显示分页（*）
 			sortable: false,                    // 是否启用排序
 			sortOrder: "asc",                   // 排序方式
-			sidePagination: "server",           // 分页方式：client客户端分页，server服务端分页（*），两种分页JSON结构不同
+			sidePagination: "client",           // 分页方式：client客户端分页，server服务端分页（*），两种分页JSON结构不同
 			pageNumber:1,                       // 初始化加载第一页，默认第一页
 			pageSize: 10,                       // 每页的记录行数（*）
 			pageList: [10, 25, 150, 150],        // 可供选择的每页的行数（*）
@@ -1103,7 +1102,7 @@ var TableInit_fujiadisease =function () {
 			detailView: false, 					//是否显示父子表
 			minimumCountColumns: 2,             // 最少允许的列数
 			clickToSelect: false,               // 是否启用点击选中行
-			height: 400,                        //450, 行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
+//			height: 400,                        //450, 行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
 			uniqueId: "ID",                     // 每一行的唯一标识，一般为主键列
 //			fixedColumns: true,					//固定列,引入bootstrap-table-fixed-columns.js
 //	        fixedNumber:2,						//固定前两列,引入bootstrap-table-fixed-columns.js
@@ -1196,7 +1195,7 @@ var TableInit_fujiaotherrecip =function () {
 			pagination: true,                   // 是否显示分页（*）
 			sortable: false,                    // 是否启用排序
 			sortOrder: "asc",                   // 排序方式
-			sidePagination: "server",           // 分页方式：client客户端分页，server服务端分页（*），两种分页JSON结构不同
+			sidePagination: "client",           // 分页方式：client客户端分页，server服务端分页（*），两种分页JSON结构不同
 			pageNumber:1,                       // 初始化加载第一页，默认第一页
 			pageSize: 10,                       // 每页的记录行数（*）
 			pageList: [10, 25, 150, 150],        // 可供选择的每页的行数（*）
@@ -1209,7 +1208,7 @@ var TableInit_fujiaotherrecip =function () {
 			detailView: false, 					//是否显示父子表
 			minimumCountColumns: 2,             // 最少允许的列数
 			clickToSelect: false,               // 是否启用点击选中行
-			height: 400,                        //450, 行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
+//			height: 400,                        //450, 行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
 			uniqueId: "ID",                     // 每一行的唯一标识，一般为主键列
 //			fixedColumns: true,					//固定列,引入bootstrap-table-fixed-columns.js
 //	        fixedNumber:2,						//固定前两列,引入bootstrap-table-fixed-columns.js
@@ -1354,7 +1353,7 @@ var TableInit_fujiaexaminfo =function () {
 			pagination: true,                   // 是否显示分页（*）
 			sortable: false,                    // 是否启用排序
 			sortOrder: "asc",                   // 排序方式
-			sidePagination: "server",           // 分页方式：client客户端分页，server服务端分页（*），两种分页JSON结构不同
+			sidePagination: "client",           // 分页方式：client客户端分页，server服务端分页（*），两种分页JSON结构不同
 			pageNumber:1,                       // 初始化加载第一页，默认第一页
 			pageSize: 10,                       // 每页的记录行数（*）
 			pageList: [10, 25, 150, 150],        // 可供选择的每页的行数（*）
@@ -1367,7 +1366,7 @@ var TableInit_fujiaexaminfo =function () {
 			detailView: false, 					//是否显示父子表
 			minimumCountColumns: 2,             // 最少允许的列数
 			clickToSelect: false,               // 是否启用点击选中行
-			height: 400,                        //450, 行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
+//			height: 400,                        //450, 行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
 			uniqueId: "ID",                     // 每一行的唯一标识，一般为主键列
 //			fixedColumns: true,					//固定列,引入bootstrap-table-fixed-columns.js
 //	        fixedNumber:2,						//固定前两列,引入bootstrap-table-fixed-columns.js
@@ -1498,7 +1497,7 @@ var TableInit_fujialabinfo =function () {
 			pagination: true,                   // 是否显示分页（*）
 			sortable: false,                    // 是否启用排序
 			sortOrder: "asc",                   // 排序方式
-			sidePagination: "server",           // 分页方式：client客户端分页，server服务端分页（*），两种分页JSON结构不同
+			sidePagination: "client",           // 分页方式：client客户端分页，server服务端分页（*），两种分页JSON结构不同
 			pageNumber:1,                       // 初始化加载第一页，默认第一页
 			pageSize: 10,                       // 每页的记录行数（*）
 			pageList: [10, 25, 150, 150],        // 可供选择的每页的行数（*）
@@ -1511,7 +1510,7 @@ var TableInit_fujialabinfo =function () {
 			detailView: false, 					//是否显示父子表
 			minimumCountColumns: 2,             // 最少允许的列数
 			clickToSelect: false,               // 是否启用点击选中行
-			height: 400,                        //450, 行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
+//			height: 400,                        //450, 行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
 			uniqueId: "ID",                     // 每一行的唯一标识，一般为主键列
 //			fixedColumns: true,					//固定列,引入bootstrap-table-fixed-columns.js
 //	        fixedNumber:2,						//固定前两列,引入bootstrap-table-fixed-columns.js
@@ -1659,6 +1658,7 @@ var TableInit_fujialabinfo =function () {
 	return oTableInit;
 };
 
+//初始化时间插件
 function init_time(){
 	$('#patientmessage #PregStartDate').datetimepicker({  
         format: 'YYYY-MM-DD HH:mm:ss',  //YYYY-MM-DD HH:mm:ss
@@ -1687,7 +1687,7 @@ function init_time(){
     });
 }
 
-//药品字典表
+//药品字典表表格
 var TableInit_dict_drug =function () {
 	var oTableInit=new Object();
 	var address=addurl+"/dict/drug";
@@ -1700,7 +1700,6 @@ var TableInit_dict_drug =function () {
 			method: 'post',                     // 请求方式（*）
 //			dataType: "json",					//数据类型
 //			data:[{dbColName1:"aa"}],			//JSON数据
-//			data:prescription_json,
 			contentType:"application/x-www-form-urlencoded; charset=UTF-8", //get请求时可不设置，POST请求时需要HTTP内容类型
 //			toolbar: '#drug_mess #toolbar',                // 工具按钮用哪个容器
 			striped: true,                      // 是否显示行间隔色
@@ -1711,7 +1710,7 @@ var TableInit_dict_drug =function () {
 			sidePagination: "server",           // 分页方式：client客户端分页，server服务端分页（*），两种分页JSON结构不同
 			pageNumber:1,                       // 初始化加载第一页，默认第一页
 			pageSize: 10,                       // 每页的记录行数（*）
-			pageList: [10, 25, 50, 100],        // 可供选择的每页的行数（*）
+			pageList: [10,25,50,100],        				// 可供选择的每页的行数（*）
 			search: true,                       // 是否显示表格搜索，此搜索是客户端搜索，不会进服务端，所以，个人感觉意义不大(陈辉-验证可以提交查询数据到服务端)
 			strictSearch: true,				
 			showColumns: false,                  // 是否显示所有的列按钮
@@ -1721,7 +1720,9 @@ var TableInit_dict_drug =function () {
 			detailView: false, 					//是否显示父子表
 			minimumCountColumns: 2,             // 最少允许的列数
 			clickToSelect: false,               // 是否启用点击选中行
-			height: 400,                        //450, 行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
+//			height: 400,                        //1.450, 行高
+												//2.如果没有设置height属性，表格自动根据记录条数觉得表格高度
+												//3.在tab标签样式里面会导致高度出错，自己CSS写固定高度
 			uniqueId: "ID",                     // 每一行的唯一标识，一般为主键列
 //			fixedColumns: true,					//固定列,引入bootstrap-table-fixed-columns.js
 //	        fixedNumber:2,						//固定前两列,引入bootstrap-table-fixed-columns.js
@@ -1777,7 +1778,23 @@ var TableInit_dict_drug =function () {
 	return oTableInit;
 };
 
+function dict_drug_modal_yes(){
+	$("#dict_drug_modal #dict_table").bootstrapTable('destroy');
+}
 
+//给药途径字典表
+
+//频次字典表
+
+//科室字典表
+
+//医生字典表
+
+//疾病字典表
+
+//手术字典表
+
+//分解JSON
 function json_fenjie(json){
 	PassClient= json.PassClient;
 	Patient= json.Patient;
@@ -1865,31 +1882,33 @@ function json_fenjie(json){
 	
 	//过敏原信息赋值
 	var ScreenAllergens = ScreenAllergenList.ScreenAllergens;
-	for(var i=0; i<ScreenAllergens.length;i++){
-		var ScreenAllergen = ScreenAllergens[i];
-		$('#allergenmessage #json_table').bootstrapTable('append',{
-			Index: ScreenAllergen.Index,
-			AllerSource: ScreenAllergen.AllerSource,
-			AllerCode: ScreenAllergen.AllerCode,
-			AllerName:ScreenAllergen.AllerName,
-			AllerSymptom:ScreenAllergen.AllerSymptom
-		});
-	}
+	$('#allergenmessage #json_table').bootstrapTable('load',ScreenAllergens); 
+//	for(var i=0; i<ScreenAllergens.length;i++){
+//		var ScreenAllergen = ScreenAllergens[i];
+//		$('#allergenmessage #json_table').bootstrapTable('append',{
+//			Index: ScreenAllergen.Index,
+//			AllerSource: ScreenAllergen.AllerSource,
+//			AllerCode: ScreenAllergen.AllerCode,
+//			AllerName:ScreenAllergen.AllerName,
+//			AllerSymptom:ScreenAllergen.AllerSymptom
+//		});
+//	}
 	
 	//疾病信息赋值
 	var ScreenMedConds = ScreenMedCondList.ScreenMedConds;
-	for(var i=0; i<ScreenMedConds.length;i++){
-		var ScreenMedCond = ScreenMedConds[i];
-		$('#diseasemessage #json_table').bootstrapTable('append',{
-			RecipNo: ScreenMedCond.RecipNo,
-			Index: ScreenMedCond.Index,
-			DisSource: ScreenMedCond.DisSource,
-			DiseaseCode:ScreenMedCond.DiseaseCode,
-			DiseaseName:ScreenMedCond.DiseaseName,
-			DisTimeType:parseInt(ScreenMedCond.DisTimeType),
-			Ishospinfection:parseInt(ScreenMedCond.Ishospinfection)
-		});
-	}
+	$('#diseasemessage #json_table').bootstrapTable('load',ScreenMedConds); 
+//	for(var i=0; i<ScreenMedConds.length;i++){
+//		var ScreenMedCond = ScreenMedConds[i];
+//		$('#diseasemessage #json_table').bootstrapTable('append',{
+//			RecipNo: ScreenMedCond.RecipNo,
+//			Index: ScreenMedCond.Index,
+//			DisSource: ScreenMedCond.DisSource,
+//			DiseaseCode:ScreenMedCond.DiseaseCode,
+//			DiseaseName:ScreenMedCond.DiseaseName,
+//			DisTimeType:parseInt(ScreenMedCond.DisTimeType),
+//			Ishospinfection:parseInt(ScreenMedCond.Ishospinfection)
+//		});
+//	}
 	
 	//手术信息赋值
 	var ScreenOperations = ScreenOperationList.ScreenOperations;
@@ -1916,74 +1935,129 @@ function json_fenjie(json){
 			$('#fujiamessage #jsontype').val(InputJsonInfo.screentype);
 		}
 		if(InputJsonInfo.type=="prtasktype"){
-			$('#fujiamessage #prtasktype').val(InputJsonInfo.urgent);
+			$('#fujiatask #prtasktype').val(InputJsonInfo.urgent);
 		}
 		if(InputJsonInfo.type=="druginfo"){
-			$('#fujiadrug #json_table').bootstrapTable('append',{
-				type:"druginfo",
-				index: InputJsonInfo.index,
-				driprate: InputJsonInfo.driprate,
-				driptime: InputJsonInfo.driptime,
-				duration:InputJsonInfo.duration
-			});
+			$('#fujiadrug #json_table').bootstrapTable('load',InputJsonInfo); 
+//			$('#fujiadrug #json_table').bootstrapTable('append',{
+//				type:"druginfo",
+//				index: InputJsonInfo.index,
+//				driprate: InputJsonInfo.driprate,
+//				driptime: InputJsonInfo.driptime,
+//				duration:InputJsonInfo.duration
+//			});
 		}
 		if(InputJsonInfo.type=="diseaseinfo"){
-			$('#fujiadisease #json_table').bootstrapTable('append',{
-				type:"diseaseinfo",
-				index: InputJsonInfo.index,
-				starttime: InputJsonInfo.starttime,
-				endtime: InputJsonInfo.endtime
-			});
+			var aaa = new Array();
+			aaa.push(InputJsonInfo);
+			$('#fujiadisease #json_table').bootstrapTable('load',aaa); 
+//			$('#fujiadisease #json_table').bootstrapTable('append',{
+//				type:"diseaseinfo",
+//				index: InputJsonInfo.index,
+//				starttime: InputJsonInfo.starttime,
+//				endtime: InputJsonInfo.endtime
+//			});
 		}
 		if(InputJsonInfo.type=="otherrecipinfo"){
-			$('#fujiaotherrecip #json_table').bootstrapTable('append',{
-				type:"otherrecipinfo",
-				hiscode: InputJsonInfo.hiscode,
-				index: InputJsonInfo.index,
-				recipno: InputJsonInfo.recipno,
-				drugsource: InputJsonInfo.drugsource,
-				druguniquecode: InputJsonInfo.druguniquecode,
-				drugname: InputJsonInfo.drugname,
-				doseunit: InputJsonInfo.doseunit,
-				routesource: InputJsonInfo.routesource,
-				routecode: InputJsonInfo.routecode,
-				routename: InputJsonInfo.routename
-			});
+			var aaa = new Array();
+			aaa.push(InputJsonInfo);
+			$('#fujiaotherrecip #json_table').bootstrapTable('load',aaa); 
+//			$('#fujiaotherrecip #json_table').bootstrapTable('append',{
+//				type:"otherrecipinfo",
+//				hiscode: InputJsonInfo.hiscode,
+//				index: InputJsonInfo.index,
+//				recipno: InputJsonInfo.recipno,
+//				drugsource: InputJsonInfo.drugsource,
+//				druguniquecode: InputJsonInfo.druguniquecode,
+//				drugname: InputJsonInfo.drugname,
+//				doseunit: InputJsonInfo.doseunit,
+//				routesource: InputJsonInfo.routesource,
+//				routecode: InputJsonInfo.routecode,
+//				routename: InputJsonInfo.routename
+//			});
 		}
 		if(InputJsonInfo.type=="examinfo"){
-			$('#fujiaexaminfo #json_table').bootstrapTable('append',{
-				type:"examinfo",
-				requestno:InputJsonInfo.requestno,
-				labexamcode: InputJsonInfo.labexamcode,
-				labexamname: InputJsonInfo.labexamname,
-				startdatetime: InputJsonInfo.startdatetime,
-				deptcode: InputJsonInfo.deptcode,
-				deptname: InputJsonInfo.deptname,
-				doctorcode: InputJsonInfo.doctorcode,
-				doctorname: InputJsonInfo.doctorname
-			});
+			var aaa = new Array();
+			aaa.push(InputJsonInfo);
+			$('#fujiaexaminfo #json_table').bootstrapTable('load',aaa); 
+//			$('#fujiaexaminfo #json_table').bootstrapTable('append',{
+//				type:"examinfo",
+//				requestno:InputJsonInfo.requestno,
+//				labexamcode: InputJsonInfo.labexamcode,
+//				labexamname: InputJsonInfo.labexamname,
+//				startdatetime: InputJsonInfo.startdatetime,
+//				deptcode: InputJsonInfo.deptcode,
+//				deptname: InputJsonInfo.deptname,
+//				doctorcode: InputJsonInfo.doctorcode,
+//				doctorname: InputJsonInfo.doctorname
+//			});
 		}
 		if(InputJsonInfo.type=="labinfo"){
-			$('#fujialabinfo #json_table').bootstrapTable('append',{
-				type:"labinfo",
-				requestno: InputJsonInfo.requestno,
-				labexamcode: InputJsonInfo.labexamcode,
-				labexamname: InputJsonInfo.labexamname,
-				ch_reporttime: InputJsonInfo.ch_reporttime,
-				deptcode: InputJsonInfo.deptcode,
-				deptname: InputJsonInfo.deptname,
-				doctorcode: InputJsonInfo.doctorcode,
-				doctorname: InputJsonInfo.doctorname,
-				ch_resultflag:InputJsonInfo.ch_resultflag,
-				ch_labeltypedesc:InputJsonInfo.ch_labeltypedesc,
-				ch_labresult:InputJsonInfo.ch_labresult,
-				ch_range:InputJsonInfo.ch_range,
-				ch_unit:InputJsonInfo.ch_unit
-			});
+			var aaa = new Array();
+			aaa.push(InputJsonInfo);
+			$('#fujialabinfo #json_table').bootstrapTable('load',aaa);
+//			$('#fujialabinfo #json_table').bootstrapTable('append',{
+//				type:"labinfo",
+//				requestno: InputJsonInfo.requestno,
+//				labexamcode: InputJsonInfo.labexamcode,
+//				labexamname: InputJsonInfo.labexamname,
+//				ch_reporttime: InputJsonInfo.ch_reporttime,
+//				deptcode: InputJsonInfo.deptcode,
+//				deptname: InputJsonInfo.deptname,
+//				doctorcode: InputJsonInfo.doctorcode,
+//				doctorname: InputJsonInfo.doctorname,
+//				ch_resultflag:InputJsonInfo.ch_resultflag,
+//				ch_labeltypedesc:InputJsonInfo.ch_labeltypedesc,
+//				ch_labresult:InputJsonInfo.ch_labresult,
+//				ch_range:InputJsonInfo.ch_range,
+//				ch_unit:InputJsonInfo.ch_unit
+//			});
 		}
 	}
 }
 
+//合并JSON
 function json_hebing(){
 	
+}
+
+
+//药品信息操作
+function drug_append(){
+	var IdSelections = $('#drugsmessage .fixed-table-pagination .pagination-info').text();
+	var sum=IdSelections.split('总共 ');
+	sum=sum[1].split(' 条');
+	parseInt(sum[0]);
+	$('#drugsmessage #json_table').bootstrapTable('append',{
+		Index: parseInt(sum[0])+1
+	})
+}
+function drug_del(){
+	swal({
+        title: "Are you sure?",
+        text: "You will not be able to recover this imaginary file!",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#DD6B55",
+        confirmButtonText: "Yes, delete it!",
+        closeOnConfirm: false
+    }, function () {
+    	
+    	var IdSelections = $('#drugsmessage #json_table').bootstrapTable('getSelections');
+    	if(IdSelections.length==0){
+    		return;
+    	}
+    	var pre_ids='';
+    	for(var i=0;i<IdSelections.length;i++){
+    		if(i==0){
+    			pre_ids=pre_ids+IdSelections[i].pre_id;
+    		}else{
+    			pre_ids=pre_ids+','+ IdSelections[i].pre_id;
+    		}
+    	}
+    	
+    	$('#drugsmessage #json_table').bootstrapTable('removeByUniqueId',pre_ids);
+    	
+        swal("Deleted!", "Your imaginary file has been deleted.", "success");
+    });
 }

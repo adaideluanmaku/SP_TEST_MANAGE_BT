@@ -37,6 +37,10 @@
 <script src="${pageContext.request.contextPath}/bootstrap_home/moment/min/moment-with-locales.min.js"></script>  
 <script src="${pageContext.request.contextPath}/bootstrap_home/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js"></script>  
 
+<!-- Sweet alert -->
+<link href="${pageContext.request.contextPath}/bootstrap_home/css/sweetalert.css" rel="stylesheet">
+<script src="${pageContext.request.contextPath}/bootstrap_home/js/plugins/sweetalert/sweetalert.min.js"></script>
+
 <!-- MY JS -->
 <link href="${pageContext.request.contextPath}/chcss/prescription/prescription_edit.css" rel="stylesheet">
 <script type="text/javascript" src="${pageContext.request.contextPath}/chjs/prescription/prescription_edit.js"></script>
@@ -338,55 +342,64 @@
 		<div class="container-fluid" id="drugsmessage" style="background-color: #f3f3f4 ">
 			<div class="panel-body" style="padding-bottom:0px;">
 				<div id="toolbar" class="btn-group">
-				<div class="col-sm-12">
-					<button id="btn_add" type="button" class="btn btn-default" data-toggle="modal" data-target="#drug_mess">
-			        	<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增
-				    </button>
-				    <button id="btn_delete" type="button" class="btn btn-default" onclick="fnClickDelRow();">
-				        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>删除
-				    </button>
-				    <button id="btn_dict_drug" type="button" class="btn btn-default" data-toggle="modal" data-target="#dict_drug_modal">
-				        <span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span>药品字典表
-				    </button>
-				    <button id="btn_dict_drug" type="button" class="btn btn-default" data-toggle="modal" data-target="" onclick="openaa()">
-				        <span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span>药品字典表
-				    </button>
+					<div class="col-sm-12">
+						<button id="btn_add" type="button" class="btn btn-default" onclick="drug_append()">
+				        	<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增
+					    </button>
+					    <button id="btn_delete" type="button" class="btn btn-default" onclick="drug_del();">
+					        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>删除
+					    </button>
+					    <button id="btn_dict_drug" type="button" class="btn btn-default" data-toggle="modal" data-target="#dict_drug_modal">
+					        <span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span>药品字典表
+					    </button>
+					    <button id="btn_dict_route" type="button" class="btn btn-default" data-toggle="modal" data-target="#dict_route_modal">
+					        <span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span>给药途径字典表
+					    </button>
+					     <button id="btn_dict_fre" type="button" class="btn btn-default" data-toggle="modal" data-target="#dict_fre_modal">
+					        <span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span>频次字典表
+					    </button>
+					    <button id="btn_dict_dept" type="button" class="btn btn-default" data-toggle="modal" data-target="#dict_dept_modal">
+					        <span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span>科室字典表
+					    </button>
+					    <button id="btn_dict_doctor" type="button" class="btn btn-default" data-toggle="modal" data-target="#dict_doctor_modal">
+					        <span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span>医生字典表
+					    </button>
+					</div>
 				</div>
-			</div>
-			<!-- 信息表格 -->
-	        <table id="json_table" style="table-layout:fixed; "></table>
+				<!-- 信息表格 -->
+		        <table id="json_table" style="table-layout:fixed; "></table>
 			</div>
 		</div>
 		
-		<!-- 模态框（Modal） -->
-		<div class="modal fade" id="drug_mess" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-			<div class="modal-dialog">
-				<div class="modal-content">
-					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-						<h4 class="modal-title">xxxx</h4>
-					</div>
-					<div class="modal-body">
-						<table id="dict_table" style="table-layout:fixed; "></table>
-					</div>
-					<div class="modal-footer">
-						<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-						<button type="button" class="btn btn-primary">确认</button>
-					</div>
-				</div><!-- /.modal-content -->
-			</div><!-- /.modal -->
-		</div>
-		
-		<!-- 模态框（Modal）药品字典表 -->
+		<!-- 模态框（Modal）字典表 -->
 		<div class="modal fade" id="dict_drug_modal" tabindex="-1" role="dialog"  aria-hidden="true">
 			<div class="modal-dialog">
 				<div class="modal-content">
 					<div class="modal-header">
 						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-						<h4 class="modal-title">字典表药品</h4>
+						<h4 class="modal-title">药品字典表</h4>
 					</div>
 					<div class="modal-body">
-						<table id="dict_table" style="table-layout:fixed; " style="height:400px"></table>
+						<table id="dict_table" style="table-layout:fixed;"></table>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+						<button type="button" class="btn btn-primary" onclick="dict_drug_modal_yes()">确认</button>
+					</div>
+				</div><!-- /.modal-content -->
+			</div><!-- /.modal -->
+		</div>
+		
+		<!-- 模态框（Modal）字典表 -->
+		<div class="modal fade" id="dict_route_modal" tabindex="-1" role="dialog"  aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title">给药途径字典表</h4>
+					</div>
+					<div class="modal-body">
+						<table id="dict_table" style="table-layout:fixed;"></table>
 					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
@@ -395,6 +408,64 @@
 				</div><!-- /.modal-content -->
 			</div><!-- /.modal -->
 		</div>
+		
+		<!-- 模态框（Modal）字典表 -->
+		<div class="modal fade" id="dict_fre_modal" tabindex="-1" role="dialog"  aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title">频次字典表</h4>
+					</div>
+					<div class="modal-body">
+						<table id="dict_table" style="table-layout:fixed;"></table>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+						<button type="button" class="btn btn-primary">确认</button>
+					</div>
+				</div><!-- /.modal-content -->
+			</div><!-- /.modal -->
+		</div>
+		
+		<!-- 模态框（Modal）字典表 -->
+		<div class="modal fade" id="dict_dept_modal" tabindex="-1" role="dialog"  aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title">科室字典表</h4>
+					</div>
+					<div class="modal-body">
+						<table id="dict_table" style="table-layout:fixed;"></table>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+						<button type="button" class="btn btn-primary">确认</button>
+					</div>
+				</div><!-- /.modal-content -->
+			</div><!-- /.modal -->
+		</div>
+		
+		<!-- 模态框（Modal）字典表 -->
+		<div class="modal fade" id="dict_doctor_modal" tabindex="-1" role="dialog"  aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title">医生字典表</h4>
+					</div>
+					<div class="modal-body">
+						<table id="dict_table" style="table-layout:fixed;"></table>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+						<button type="button" class="btn btn-primary">确认</button>
+					</div>
+				</div><!-- /.modal-content -->
+			</div><!-- /.modal -->
+		</div>
+		
 	</div>
 	
 	<div class="tab-pane fade" id="cc">

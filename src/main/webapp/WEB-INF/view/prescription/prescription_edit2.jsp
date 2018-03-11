@@ -61,20 +61,20 @@
     	<div  class="gray-bg" style="background-color: #ffffff">
 			<div class="nav nav-tabs" style="overflow-x:auto" id="tags">
 				<ul class="nav nav-tabs nav-justified">
-			      <li role="presentation" class="active"><a href="#aa" data-toggle="tab">病人基本信息</a></li>
+			      <li role="presentation" class="active"><a href="#aa" data-toggle="tab"  style="height:58px">病人基本信息</a></li>
 			      <li role="presentation"><a href="#bb" data-toggle="tab" style="height:58px">药品信息</a></li>
 			      <li role="presentation"><a href="#cc" data-toggle="tab" style="height:58px">过敏原</a></li>
 			      <li role="presentation"><a href="#dd" data-toggle="tab" style="height:58px">疾病</a></li>
 			      <li role="presentation"><a href="#ee" data-toggle="tab" style="height:58px">手术</a></li>
 			      <li role="presentation"><a href="#ff" data-toggle="tab" style="height:58px">检验</a></li>
 			      <li role="presentation"><a href="#gg" data-toggle="tab" style="height:58px">检查</a></li>
-			      <li role="presentation"><a href="#hh" data-toggle="tab">附加-信息类型</a></li>
-			      <li role="presentation"><a href="#ii" data-toggle="tab">附加-任务类型</a></li>
-			      <li role="presentation"><a href="#jj" data-toggle="tab">附加-补充药品</a></li>
-			      <li role="presentation"><a href="#kk" data-toggle="tab">附加-补充诊断</a></li>
-			      <li role="presentation"><a href="#ll" data-toggle="tab">附加-补充历史医嘱</a></li>
-			      <li role="presentation"><a href="#mm" data-toggle="tab">附加-补充检查</a></li>
-			      <li role="presentation"><a href="#nn" data-toggle="tab">附加-补充检验</a></li>
+			      <li role="presentation"><a href="#hh" data-toggle="tab"  style="height:58px">附加-信息类型</a></li>
+			      <li role="presentation"><a href="#ii" data-toggle="tab" style="height:58px">附加-任务类型</a></li>
+			      <li role="presentation"><a href="#jj" data-toggle="tab" style="height:58px">附加-补充药品</a></li>
+			      <li role="presentation"><a href="#kk" data-toggle="tab" style="height:58px">附加-补充诊断</a></li>
+			      <li role="presentation"><a href="#ll" data-toggle="tab" style="height:58px">附加-补充历史医嘱</a></li>
+			      <li role="presentation"><a href="#mm" data-toggle="tab" style="height:58px">附加-补充检查</a></li>
+			      <li role="presentation"><a href="#nn" data-toggle="tab" style="height:58px">附加-补充检验</a></li>
 			    </ul>
 			</div>
     	</div>

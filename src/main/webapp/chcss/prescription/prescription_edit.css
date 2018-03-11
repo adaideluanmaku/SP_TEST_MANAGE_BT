@@ -7,3 +7,11 @@ table tbody tr td{
 #dict_drug_modal .pagination-info{
 	display:none;
 }
+
+.modal .bootstrap-table .fixed-table-container{
+	height : 350px
+}
+
+.tab-pane .panel-body .bootstrap-table .fixed-table-container{
+	height : 520px
+}

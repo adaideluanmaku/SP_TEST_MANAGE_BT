@@ -232,11 +232,11 @@
 		    <version>1.0.6</version>
 		</dependency>
 		
-		<dependency>
+		<!-- <dependency>
 		    <groupId>commons-lang</groupId>
 		    <artifactId>commons-lang</artifactId>
 		    <version>2.6</version>
-		</dependency>
+		</dependency> -->
 		
 		<!-- spring-json -->
 		<dependency>
@@ -303,11 +303,11 @@
 		</dependency> -->
 		
 		<!-- 11g -->
-		<dependency>
+		<!-- <dependency>
 		    <groupId>com.oracle</groupId>
 		    <artifactId>ojdbc6</artifactId>
    			<version>11.2.0.1.0</version>
-		</dependency>
+		</dependency> -->
 		
 		
 		<!-- Base64加解编码 -->
@@ -384,11 +384,11 @@
 			<artifactId>commons-vfs2</artifactId>
 			<version>2.1</version>
 		</dependency>
-		<dependency>
+		<!-- <dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-lang</artifactId>
 			<version>2.6</version>
-		</dependency>
+		</dependency> -->
 		<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
