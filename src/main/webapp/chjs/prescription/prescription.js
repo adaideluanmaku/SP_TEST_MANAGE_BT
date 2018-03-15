@@ -120,7 +120,7 @@ var TableInit =function () {
 						return '--'
 					}
 					
-                    return '<a href="'+addurl+'/prescription/prescription_edit?pre_id='+row.pre_id+'" target="_blank">打开</a>';
+                    return '<a href="'+addurl+'/prescription/prescription_edit?pre_id='+row.pre_id+'&patientname='+row.patientname+'" target="_blank">打开</a>';
 				}
 			}],
 			

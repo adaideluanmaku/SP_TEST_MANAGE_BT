@@ -2507,6 +2507,33 @@
         this.initPagination();
         this.initBody(true);
     };
+    
+    //CH CHENHUI CODE selected remove
+    BootstrapTable.prototype.removeSelectionId_CH = function () {
+    	var that = this;
+        var objs=that.$body[0].childNodes;
+        for(var i=0;i<objs.length;i++){
+        	if(objs[i].className=='selected'){
+        		var len = this.options.data.length,
+                row = this.options.data[i];
+
+	            if (row) {
+	                this.options.data.splice(this.options.data.indexOf(row), 1);
+	            }
+	
+	            if (len === this.options.data.length) {
+	                return;
+	            }
+	
+	            this.initSearch();
+	            this.initPagination();
+	            this.initBody(true);
+	            
+	            i=i-1;
+        	}
+        }
+        
+    };
 
     BootstrapTable.prototype.updateByUniqueId = function (params) {
         var that = this;
@@ -2659,13 +2686,36 @@
 
     BootstrapTable.prototype.getSelections = function () {
         var that = this;
-
         return $.grep(this.options.data, function (row) {
             // fix #2424: from html with checkbox
             return row[that.header.stateField] === true;
         });
     };
 
+    //CH CODE CHENHUI selected id
+    BootstrapTable.prototype.getSelectionId_CH = function () {
+        var that = this;
+        var objs=that.$body[0].childNodes;
+        for(var i=0;i<objs.length;i++){
+        	if(objs[i].className=='selected'){
+        		return i;
+        	}
+        }
+    };
+  //CH CODE CHENHUI selected ids
+    BootstrapTable.prototype.getSelectionIds_CH = function () {
+        var that = this;
+        var objs=that.$body[0].childNodes;
+        var ids = new Array();
+        for(var i=0;i<objs.length;i++){
+        	if(objs[i].className=='selected'){
+        		ids.push(i);
+        	}
+        }
+        
+        return ids;
+    };
+    
     BootstrapTable.prototype.getAllSelections = function () {
         var that = this;
 
@@ -3033,7 +3083,8 @@
         'refreshOptions',
         'resetSearch',
         'expandRow', 'collapseRow', 'expandAllRows', 'collapseAllRows',
-        'updateFormatText'
+        'updateFormatText',
+        'getSelectionId_CH','getSelectionIds_CH','removeSelectionId_CH',
     ];
 
     $.fn.bootstrapTable = function (option) {

@@ -34,5 +34,52 @@ public class DictAciton {
 		return dataGrid;
 	}
 	
+	@ResponseBody
+	@RequestMapping("/route")
+	public DataGrid dict_route(HttpServletRequest req) {
+		dataGrid=dict.dict_route(req);
+		return dataGrid;
+	}
 	
+	@ResponseBody
+	@RequestMapping("/fre")
+	public DataGrid dict_fre(HttpServletRequest req) {
+		dataGrid=dict.dict_fre(req);
+		return dataGrid;
+	}
+	
+	@ResponseBody
+	@RequestMapping("/dept")
+	public DataGrid dict_dept(HttpServletRequest req) {
+		dataGrid=dict.dict_dept(req);
+		return dataGrid;
+	}
+	
+	@ResponseBody
+	@RequestMapping("/doctor")
+	public DataGrid dict_doctor(HttpServletRequest req) {
+		dataGrid=dict.dict_doctor(req);
+		return dataGrid;
+	}
+	
+	@ResponseBody
+	@RequestMapping("/allergen")
+	public DataGrid dict_allergen(HttpServletRequest req) {
+		dataGrid=dict.dict_allergen(req);
+		return dataGrid;
+	}
+	
+	@ResponseBody
+	@RequestMapping("/disease")
+	public DataGrid dict_disease(HttpServletRequest req) {
+		dataGrid=dict.dict_disease(req);
+		return dataGrid;
+	}
+	
+	@ResponseBody
+	@RequestMapping("/operation")
+	public DataGrid dict_operation(HttpServletRequest req) {
+		dataGrid=dict.dict_operation(req);
+		return dataGrid;
+	}
 }

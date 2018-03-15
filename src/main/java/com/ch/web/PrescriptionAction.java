@@ -57,11 +57,13 @@ public class PrescriptionAction {
 	@RequestMapping("/prescription_edit")
 	public ModelAndView prescription_edit(HttpServletRequest req) {
 		ModelAndView mav=new ModelAndView("prescription/prescription_edit");
-		System.out.println(req.getParameter("pre_id"));
+//		System.out.println(req.getParameter("pre_id"));
+		
 		String sql="select prescription_json from  prescription where pre_id=? ";
 		String prescription_json=jdbcTemplate.queryForObject(sql,String.class,new Object[]{req.getParameter("pre_id")});
 		mav.addObject("prescription_json",prescription_json);
 		mav.addObject("pre_id",req.getParameter("pre_id"));
+		mav.addObject("patientname",req.getParameter("patientname"));
 		return mav;
 	}
 	

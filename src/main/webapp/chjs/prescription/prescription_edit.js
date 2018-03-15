@@ -10,7 +10,15 @@ var TableInit_fujiadisease_table = null;
 var TableInit_fujiaotherrecip_table = null;
 var TableInit_fujiaexaminfo_table = null;
 var TableInit_fujialabinfo_table = null;
+
 var TableInit_dictdrug_table = null;
+var TableInit_dictroute_table  = null;
+var TableInit_dictfre_table = null;
+var TableInit_dictdept_table = null;
+var TableInit_dictdoctor_table = null;
+var TableInit_dictallergen_table = null;
+var TableInit_dictdisease_table = null;
+var TableInit_dictoperation_table  = null;
 
 //PASS-JSON解析
 var PassClient= null;
@@ -55,6 +63,27 @@ $(document).ready(function() {
 	//字典表
 	TableInit_dictdrug_table = new TableInit_dict_drug();
 	TableInit_dictdrug_table.Init();
+	
+	TableInit_dictroute_table = new TableInit_dict_route();
+	TableInit_dictroute_table.Init();
+	
+	TableInit_dictfre_table = new TableInit_dict_fre();
+	TableInit_dictfre_table.Init();
+	
+	TableInit_dictdept_table = new TableInit_dict_dept();
+	TableInit_dictdept_table.Init();
+	
+	TableInit_dictdoctor_table = new TableInit_dict_doctor();
+	TableInit_dictdoctor_table.Init();
+	
+	TableInit_dictallergen_table = new TableInit_dict_allergen();
+	TableInit_dictallergen_table.Init();
+	
+	TableInit_dictdisease_table = new TableInit_dict_disease();
+	TableInit_dictdisease_table.Init();
+	
+	TableInit_dictoperation_table = new TableInit_dict_operation();
+	TableInit_dictoperation_table.Init();
 	
 	//初始化时间插件
 	init_time();
@@ -108,7 +137,8 @@ var TableInit_drugs =function () {
 //			height: 400,                        //1.450, 行高
 												//2.如果没有设置height属性，表格自动根据记录条数觉得表格高度
 												//3.在tab标签样式里面会导致高度出错，自己CSS写固定高度
-			uniqueId: "ID",                     // 每一行的唯一标识，一般为主键列
+//			uniqueId: "ID",                     // 每一行的唯一标识，一般为主键列
+//			idField: "RoleId",
 //			fixedColumns: true,					//固定列,引入bootstrap-table-fixed-columns.js
 //	        fixedNumber:2,						//固定前两列,引入bootstrap-table-fixed-columns.js
 			// 传递参数（*）,组织表格参数和页面查询参数
@@ -120,16 +150,16 @@ var TableInit_drugs =function () {
 			// 是否显示父子表
 			columns : [{
 				checkbox : true,width:30
-			} , {
+			} ,	{
 				width:70,
 				field : 'RecipNo',
 				title : '处方号',
 				editable: {
-                    type: 'text',
-                    title: 'RecipNo',
-                    validate: function (v) {
-                    }
-                }
+	                type: 'text',
+	                title: 'RecipNo',
+	                validate: function (v) {
+	                }
+				}
 			}, {
 				width:50,
 				field : 'Index',
@@ -510,54 +540,6 @@ var TableInit_drugs =function () {
                 }
 			} ],
 			
-			// 1.点击每行进行函数的触发
-			onClickRow : function(row, tr,flied){
-//				alert(row.DrugCode)
-//				alert(1);
-//				alert(row);
-//				alert(tr);
-//				alert(flied)         
-			},
-
-			// 2. 点击前面的复选框进行对应的操作
-			// 点击全选框时触发的操作
-			onCheckAll:function(rows){
-//				alert(2);
-//				alert(rows);      
-			},
-			// 点击每一个单选框时触发的操作
-			onCheck:function(row){
-//				alert(3);
-//				alert(row);      
-			},
-			// 取消每一个单选框时对应的操作；
-			onUncheck:function(row){
-//				alert(4);
-//				alert(row);      
-			},
-			
-			//行内编辑保存
-			onEditableSave: function (field, row, oldValue, $el) {
-				alert(1)
-//                $.ajax({
-//                    type: "post",
-//                    url: "/Editable/Edit",
-//                    data: row,
-//                    dataType: 'JSON',
-//                    success: function (data, status) {
-//                        if (status == "success") {
-//                            alert('提交数据成功');
-//                        }
-//                    },
-//                    error: function () {
-//                        alert('编辑失败');
-//                    },
-//                    complete: function () {
-//
-//                    }
-//
-//                });
-            }
 		});
 	}
 	
@@ -652,25 +634,6 @@ var TableInit_allergen =function () {
                 }
 	        }],
 			
-			// 1.点击每行进行函数的触发
-			onClickRow : function(row, tr,flied){
-			},
-
-			// 2. 点击前面的复选框进行对应的操作
-			// 点击全选框时触发的操作
-			onCheckAll:function(rows){
-			},
-			// 点击每一个单选框时触发的操作
-			onCheck:function(row){
-			},
-			// 取消每一个单选框时对应的操作；
-			onUncheck:function(row){
-			},
-			
-			//行内编辑保存
-			onEditableSave: function (field, row, oldValue, $el) {
-				alert(1)
-            }
 		});
 	}
 	
@@ -711,7 +674,7 @@ var TableInit_disease =function () {
 			detailView: false, 					//是否显示父子表
 			minimumCountColumns: 2,             // 最少允许的列数
 			clickToSelect: false,               // 是否启用点击选中行
-			height: 400,                        //450, 行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
+//			height: 400,                        //450, 行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
 			uniqueId: "ID",                     // 每一行的唯一标识，一般为主键列
 //			fixedColumns: true,					//固定列,引入bootstrap-table-fixed-columns.js
 //	        fixedNumber:2,						//固定前两列,引入bootstrap-table-fixed-columns.js
@@ -787,25 +750,6 @@ var TableInit_disease =function () {
 	            }
 	        }],
 			
-			// 1.点击每行进行函数的触发
-			onClickRow : function(row, tr,flied){
-			},
-
-			// 2. 点击前面的复选框进行对应的操作
-			// 点击全选框时触发的操作
-			onCheckAll:function(rows){
-			},
-			// 点击每一个单选框时触发的操作
-			onCheck:function(row){
-			},
-			// 取消每一个单选框时对应的操作；
-			onUncheck:function(row){
-			},
-			
-			//行内编辑保存
-			onEditableSave: function (field, row, oldValue, $el) {
-				alert(1)
-            }
 		});
 	}
 	
@@ -933,25 +877,6 @@ var TableInit_operation =function () {
                 }
 	        }],
 			
-			// 1.点击每行进行函数的触发
-			onClickRow : function(row, tr,flied){
-			},
-
-			// 2. 点击前面的复选框进行对应的操作
-			// 点击全选框时触发的操作
-			onCheckAll:function(rows){
-			},
-			// 点击每一个单选框时触发的操作
-			onCheck:function(row){
-			},
-			// 取消每一个单选框时对应的操作；
-			onUncheck:function(row){
-			},
-			
-			//行内编辑保存
-			onEditableSave: function (field, row, oldValue, $el) {
-				alert(1)
-            }
 		});
 	}
 	
@@ -1043,25 +968,6 @@ var TableInit_fujiadrug =function () {
                 }
 	        }],
 			
-			// 1.点击每行进行函数的触发
-			onClickRow : function(row, tr,flied){
-			},
-
-			// 2. 点击前面的复选框进行对应的操作
-			// 点击全选框时触发的操作
-			onCheckAll:function(rows){
-			},
-			// 点击每一个单选框时触发的操作
-			onCheck:function(row){
-			},
-			// 取消每一个单选框时对应的操作；
-			onUncheck:function(row){
-			},
-			
-			//行内编辑保存
-			onEditableSave: function (field, row, oldValue, $el) {
-				alert(1)
-            }
 		});
 	}
 	
@@ -1149,25 +1055,6 @@ var TableInit_fujiadisease =function () {
                 },
 	        }],
 			
-			// 1.点击每行进行函数的触发
-			onClickRow : function(row, tr,flied){
-			},
-
-			// 2. 点击前面的复选框进行对应的操作
-			// 点击全选框时触发的操作
-			onCheckAll:function(rows){
-			},
-			// 点击每一个单选框时触发的操作
-			onCheck:function(row){
-			},
-			// 取消每一个单选框时对应的操作；
-			onUncheck:function(row){
-			},
-			
-			//行内编辑保存
-			onEditableSave: function (field, row, oldValue, $el) {
-				alert(1)
-            }
 		});
 	}
 	
@@ -1307,25 +1194,6 @@ var TableInit_fujiaotherrecip =function () {
                 }
 	        }],
 			
-			// 1.点击每行进行函数的触发
-			onClickRow : function(row, tr,flied){
-			},
-
-			// 2. 点击前面的复选框进行对应的操作
-			// 点击全选框时触发的操作
-			onCheckAll:function(rows){
-			},
-			// 点击每一个单选框时触发的操作
-			onCheck:function(row){
-			},
-			// 取消每一个单选框时对应的操作；
-			onUncheck:function(row){
-			},
-			
-			//行内编辑保存
-			onEditableSave: function (field, row, oldValue, $el) {
-				alert(1)
-            }
 		});
 	}
 	
@@ -1451,25 +1319,6 @@ var TableInit_fujiaexaminfo =function () {
                 }
 	        }],
 			
-			// 1.点击每行进行函数的触发
-			onClickRow : function(row, tr,flied){
-			},
-
-			// 2. 点击前面的复选框进行对应的操作
-			// 点击全选框时触发的操作
-			onCheckAll:function(rows){
-			},
-			// 点击每一个单选框时触发的操作
-			onCheck:function(row){
-			},
-			// 取消每一个单选框时对应的操作；
-			onUncheck:function(row){
-			},
-			
-			//行内编辑保存
-			onEditableSave: function (field, row, oldValue, $el) {
-				alert(1)
-            }
 		});
 	}
 	
@@ -1633,25 +1482,6 @@ var TableInit_fujialabinfo =function () {
                 }
 	        }],
 			
-			// 1.点击每行进行函数的触发
-			onClickRow : function(row, tr,flied){
-			},
-
-			// 2. 点击前面的复选框进行对应的操作
-			// 点击全选框时触发的操作
-			onCheckAll:function(rows){
-			},
-			// 点击每一个单选框时触发的操作
-			onCheck:function(row){
-			},
-			// 取消每一个单选框时对应的操作；
-			onUncheck:function(row){
-			},
-			
-			//行内编辑保存
-			onEditableSave: function (field, row, oldValue, $el) {
-				alert(1)
-            }
 		});
 	}
 	
@@ -1723,7 +1553,7 @@ var TableInit_dict_drug =function () {
 //			height: 400,                        //1.450, 行高
 												//2.如果没有设置height属性，表格自动根据记录条数觉得表格高度
 												//3.在tab标签样式里面会导致高度出错，自己CSS写固定高度
-			uniqueId: "ID",                     // 每一行的唯一标识，一般为主键列
+			uniqueId: "id",                  	// 每一行的唯一标识，一般为主键列
 //			fixedColumns: true,					//固定列,引入bootstrap-table-fixed-columns.js
 //	        fixedNumber:2,						//固定前两列,引入bootstrap-table-fixed-columns.js
 			// 传递参数（*）,组织表格参数和页面查询参数
@@ -1736,8 +1566,13 @@ var TableInit_dict_drug =function () {
 			    return temp;
 			},
 			// 是否显示父子表
-			columns : [{checkbox : true,width:30
+			columns : [{radio : true,width:30
 			},
+//			{field:'ID',title:'ID',width:50,
+//				formatter: function (value, row, index) {
+//					return index+1;
+//				}
+//			},
 			{field:'hisname',title:'机构',width:100,align:'center',
 	        },    
 	        {field:'drug_unique_code',title:'药品编号',width:100,align:'center',
@@ -1753,47 +1588,796 @@ var TableInit_dict_drug =function () {
 	        {field:'doseunit',title:'给药单位',width:100,align:'center',
 	        }],
 			
-			// 1.点击每行进行函数的触发
-			onClickRow : function(row, tr,flied){
-			},
-
-			// 2. 点击前面的复选框进行对应的操作
-			// 点击全选框时触发的操作
-			onCheckAll:function(rows){
-			},
-			// 点击每一个单选框时触发的操作
-			onCheck:function(row){
-			},
-			// 取消每一个单选框时对应的操作；
-			onUncheck:function(row){
-			},
-			
-			//行内编辑保存
-			onEditableSave: function (field, row, oldValue, $el) {
-				alert(1)
-            }
 		});
 	}
 	
 	return oTableInit;
 };
 
+function dict_drug_modal_open(){
+	var IdSelections=$("#drugsmessage #json_table").bootstrapTable('getSelections');
+	if(IdSelections.length!=1){
+		swal({
+            title: "提示",
+            text: "请选择一条数据进行操作"
+        });
+		return
+	}
+	$("#dict_drug_modal #dict_table").bootstrapTable('refresh',{silent:true});
+	$('#bb #dict_drug_modal').modal('show');
+}
 function dict_drug_modal_yes(){
-	$("#dict_drug_modal #dict_table").bootstrapTable('destroy');
+	var IdSelections=$("#dict_drug_modal #dict_table").bootstrapTable('getSelections');
+	if(IdSelections.length!=1){
+		swal({
+            title: "提示",
+            text: "请选择一条数据进行操作"
+        });
+		return
+	}
+	
+	var getSelectionId=$("#drugsmessage #json_table").bootstrapTable('getSelectionId_CH');
+	$("#drugsmessage #json_table").bootstrapTable('updateRow',{
+		index:getSelectionId,
+		row:{
+			DrugSource: "USER",
+            DrugUniqueCode: IdSelections[0].drug_unique_code,
+            DrugCode: "",
+            DrugName: IdSelections[0].drugname,
+            DoseUnit: IdSelections[0].doseunit,
+            Form: IdSelections[0].drugform,
+            Strength: IdSelections[0].drugspec,
+            CompName: IdSelections[0].comp_name,
+		}
+	});
+	
+	$('#bb #dict_drug_modal').modal('hide');
 }
 
 //给药途径字典表
+var TableInit_dict_route =function () {
+	var oTableInit=new Object();
+	var address=addurl+"/dict/route";
+	
+	//初始化表格
+	oTableInit.Init = function(){
+		$("#dict_route_modal #dict_table").bootstrapTable('destroy'); // 销毁数据表格,不销毁可能有数据缓存问题
+		$('#dict_route_modal #dict_table').bootstrapTable({
+			url: address,         				// 请求后台的URL（*）
+			method: 'post',                     // 请求方式（*）
+//			dataType: "json",					//数据类型
+//			data:[{dbColName1:"aa"}],			//JSON数据
+			contentType:"application/x-www-form-urlencoded; charset=UTF-8", //get请求时可不设置，POST请求时需要HTTP内容类型
+//			toolbar: '#drug_mess #toolbar',                // 工具按钮用哪个容器
+			striped: true,                      // 是否显示行间隔色
+			cache: false,                       // 是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+			pagination: true,                   // 是否显示分页（*）
+			sortable: false,                    // 是否启用排序
+			sortOrder: "asc",                   // 排序方式
+			sidePagination: "server",           // 分页方式：client客户端分页，server服务端分页（*），两种分页JSON结构不同
+			pageNumber:1,                       // 初始化加载第一页，默认第一页
+			pageSize: 10,                       // 每页的记录行数（*）
+			pageList: [10,25,50,100],        				// 可供选择的每页的行数（*）
+			search: true,                       // 是否显示表格搜索，此搜索是客户端搜索，不会进服务端，所以，个人感觉意义不大(陈辉-验证可以提交查询数据到服务端)
+			strictSearch: true,				
+			showColumns: false,                  // 是否显示所有的列按钮
+			showRefresh: true,                  // 是否显示刷新按钮
+			showToggle:false,                    // 是否显示详细视图和列表视图的切换按钮
+			cardView: false,                    // 是否显示详细视图
+			detailView: false, 					//是否显示父子表
+			minimumCountColumns: 2,             // 最少允许的列数
+			clickToSelect: false,               // 是否启用点击选中行
+//			height: 400,                        //1.450, 行高
+												//2.如果没有设置height属性，表格自动根据记录条数觉得表格高度
+												//3.在tab标签样式里面会导致高度出错，自己CSS写固定高度
+			uniqueId: "id",                  	// 每一行的唯一标识，一般为主键列
+//			fixedColumns: true,					//固定列,引入bootstrap-table-fixed-columns.js
+//	        fixedNumber:2,						//固定前两列,引入bootstrap-table-fixed-columns.js
+			// 传递参数（*）,组织表格参数和页面查询参数
+			queryParams : function (params) {
+			    var temp = {   // 这里的键的名字和控制器的变量名必须一致，这边改动，控制器也需要改成一样的
+			    		limit: params.limit,   // 页面数量大小
+						offset: params.offset, // 当前页码
+						search: params.search, // 工具栏查询内容,search:true才有
+			    };
+			    return temp;
+			},
+			// 是否显示父子表
+			columns : [{radio : true,width:30
+			},
+			{field:'hisname',title:'机构',width:100,align:'center',
+	        },    
+	        {field:'routecode',title:'给药途径编号',width:100,align:'center',
+	        },    
+	        {field:'routename',title:'给药途径名称',width:100,align:'center',
+	        } ],
+			
+		});
+	}
+	
+	return oTableInit;
+};
+
+function dict_route_modal_open(){
+	var IdSelections=$("#drugsmessage #json_table").bootstrapTable('getSelections');
+	if(IdSelections.length!=1){
+		swal({
+            title: "提示",
+            text: "请选择一条数据进行操作"
+        });
+		return
+	}
+	$("#dict_route_modal #dict_table").bootstrapTable('refresh',{silent:true});
+	$('#bb #dict_route_modal').modal('show');
+}
+function dict_route_modal_yes(){
+	var IdSelections=$("#dict_route_modal #dict_table").bootstrapTable('getSelections');
+	if(IdSelections.length!=1){
+		swal({
+            title: "提示",
+            text: "请选择一条数据进行操作"
+        });
+		return
+	}
+	
+	var SelectionId=$("#drugsmessage #json_table").bootstrapTable('getSelectionId_CH');
+	$("#drugsmessage #json_table").bootstrapTable('updateRow',{
+		index:SelectionId,
+		row:{
+			RouteSource: "USER",
+            RouteCode: IdSelections[0].routecode,
+            RouteName: IdSelections[0].routename,
+		}
+	});
+	
+	$('#bb #dict_route_modal').modal('hide');
+}
 
 //频次字典表
+var TableInit_dict_fre =function () {
+	var oTableInit=new Object();
+	var address=addurl+"/dict/fre";
+	
+	//初始化表格
+	oTableInit.Init = function(){
+		$("#dict_fre_modal #dict_table").bootstrapTable('destroy'); // 销毁数据表格,不销毁可能有数据缓存问题
+		$('#dict_fre_modal #dict_table').bootstrapTable({
+			url: address,         				// 请求后台的URL（*）
+			method: 'post',                     // 请求方式（*）
+//			dataType: "json",					//数据类型
+//			data:[{dbColName1:"aa"}],			//JSON数据
+			contentType:"application/x-www-form-urlencoded; charset=UTF-8", //get请求时可不设置，POST请求时需要HTTP内容类型
+//			toolbar: '#drug_mess #toolbar',                // 工具按钮用哪个容器
+			striped: true,                      // 是否显示行间隔色
+			cache: false,                       // 是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+			pagination: true,                   // 是否显示分页（*）
+			sortable: false,                    // 是否启用排序
+			sortOrder: "asc",                   // 排序方式
+			sidePagination: "server",           // 分页方式：client客户端分页，server服务端分页（*），两种分页JSON结构不同
+			pageNumber:1,                       // 初始化加载第一页，默认第一页
+			pageSize: 10,                       // 每页的记录行数（*）
+			pageList: [10,25,50,100],        				// 可供选择的每页的行数（*）
+			search: true,                       // 是否显示表格搜索，此搜索是客户端搜索，不会进服务端，所以，个人感觉意义不大(陈辉-验证可以提交查询数据到服务端)
+			strictSearch: true,				
+			showColumns: false,                  // 是否显示所有的列按钮
+			showRefresh: true,                  // 是否显示刷新按钮
+			showToggle:false,                    // 是否显示详细视图和列表视图的切换按钮
+			cardView: false,                    // 是否显示详细视图
+			detailView: false, 					//是否显示父子表
+			minimumCountColumns: 2,             // 最少允许的列数
+			clickToSelect: false,               // 是否启用点击选中行
+//			height: 400,                        //1.450, 行高
+												//2.如果没有设置height属性，表格自动根据记录条数觉得表格高度
+												//3.在tab标签样式里面会导致高度出错，自己CSS写固定高度
+			uniqueId: "id",                  	// 每一行的唯一标识，一般为主键列
+//			fixedColumns: true,					//固定列,引入bootstrap-table-fixed-columns.js
+//	        fixedNumber:2,						//固定前两列,引入bootstrap-table-fixed-columns.js
+			// 传递参数（*）,组织表格参数和页面查询参数
+			queryParams : function (params) {
+			    var temp = {   // 这里的键的名字和控制器的变量名必须一致，这边改动，控制器也需要改成一样的
+			    		limit: params.limit,   // 页面数量大小
+						offset: params.offset, // 当前页码
+						search: params.search, // 工具栏查询内容,search:true才有
+			    };
+			    return temp;
+			},
+			// 是否显示父子表
+			columns : [{radio : true,width:30
+			},
+			{field:'hisname',title:'机构',width:100,align:'center',
+	        	editor:{
+					type:'textbox',
+				}
+	        },    
+	        {field:'frequency',title:'频次',width:100,align:'center',
+	        	editor:{
+					type:'textbox',
+				}
+	        }  ],
+			
+		});
+	}
+	
+	return oTableInit;
+};
 
+function dict_fre_modal_open(){
+	var IdSelections=$("#drugsmessage #json_table").bootstrapTable('getSelections');
+	if(IdSelections.length!=1){
+		swal({
+            title: "提示",
+            text: "请选择一条数据进行操作"
+        });
+		return
+	}
+	$("#dict_fre_modal #dict_table").bootstrapTable('refresh',{silent:true});
+	$('#bb #dict_fre_modal').modal('show');
+}
+function dict_fre_modal_yes(){
+	var IdSelections=$("#dict_fre_modal #dict_table").bootstrapTable('getSelections');
+	if(IdSelections.length!=1){
+		swal({
+            title: "提示",
+            text: "请选择一条数据进行操作"
+        });
+		return
+	}
+	
+	var SelectionId=$("#drugsmessage #json_table").bootstrapTable('getSelectionId_CH');
+	$("#drugsmessage #json_table").bootstrapTable('updateRow',{
+		index:SelectionId,
+		row:{
+			FreqSource: "USER",
+            Frequency: IdSelections[0].frequency,
+		}
+	});
+	
+	$('#bb #dict_fre_modal').modal('hide');
+}
 //科室字典表
+var TableInit_dict_dept =function () {
+	var oTableInit=new Object();
+	var address=addurl+"/dict/dept";
+	
+	//初始化表格
+	oTableInit.Init = function(){
+		$("#dict_dept_modal #dict_table").bootstrapTable('destroy'); // 销毁数据表格,不销毁可能有数据缓存问题
+		$('#dict_dept_modal #dict_table').bootstrapTable({
+			url: address,         				// 请求后台的URL（*）
+			method: 'post',                     // 请求方式（*）
+//			dataType: "json",					//数据类型
+//			data:[{dbColName1:"aa"}],			//JSON数据
+			contentType:"application/x-www-form-urlencoded; charset=UTF-8", //get请求时可不设置，POST请求时需要HTTP内容类型
+//			toolbar: '#drug_mess #toolbar',                // 工具按钮用哪个容器
+			striped: true,                      // 是否显示行间隔色
+			cache: false,                       // 是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+			pagination: true,                   // 是否显示分页（*）
+			sortable: false,                    // 是否启用排序
+			sortOrder: "asc",                   // 排序方式
+			sidePagination: "server",           // 分页方式：client客户端分页，server服务端分页（*），两种分页JSON结构不同
+			pageNumber:1,                       // 初始化加载第一页，默认第一页
+			pageSize: 10,                       // 每页的记录行数（*）
+			pageList: [10,25,50,100],        				// 可供选择的每页的行数（*）
+			search: true,                       // 是否显示表格搜索，此搜索是客户端搜索，不会进服务端，所以，个人感觉意义不大(陈辉-验证可以提交查询数据到服务端)
+			strictSearch: true,				
+			showColumns: false,                  // 是否显示所有的列按钮
+			showRefresh: true,                  // 是否显示刷新按钮
+			showToggle:false,                    // 是否显示详细视图和列表视图的切换按钮
+			cardView: false,                    // 是否显示详细视图
+			detailView: false, 					//是否显示父子表
+			minimumCountColumns: 2,             // 最少允许的列数
+			clickToSelect: false,               // 是否启用点击选中行
+//			height: 400,                        //1.450, 行高
+												//2.如果没有设置height属性，表格自动根据记录条数觉得表格高度
+												//3.在tab标签样式里面会导致高度出错，自己CSS写固定高度
+			uniqueId: "id",                  	// 每一行的唯一标识，一般为主键列
+//			fixedColumns: true,					//固定列,引入bootstrap-table-fixed-columns.js
+//	        fixedNumber:2,						//固定前两列,引入bootstrap-table-fixed-columns.js
+			// 传递参数（*）,组织表格参数和页面查询参数
+			queryParams : function (params) {
+			    var temp = {   // 这里的键的名字和控制器的变量名必须一致，这边改动，控制器也需要改成一样的
+			    		limit: params.limit,   // 页面数量大小
+						offset: params.offset, // 当前页码
+						search: params.search, // 工具栏查询内容,search:true才有
+			    };
+			    return temp;
+			},
+			// 是否显示父子表
+			columns : [{radio : true,width:30
+			},
+			{field:'hisname',title:'机构',width:100,align:'center',
+	        	editor:{
+					type:'textbox',
+				}
+	        },    
+	        {field:'deptcode',title:'科室编号',width:100,align:'center',
+	        	editor:{
+					type:'textbox',
+				}
+	        },    
+	        {field:'deptname',title:'科室名称',width:100,align:'center',
+	        	editor:{
+					type:'textbox',
+				}
+	        }],
+			
+		});
+	}
+	
+	return oTableInit;
+};
 
+function dict_dept_modal_open(){
+	var IdSelections=$("#drugsmessage #json_table").bootstrapTable('getSelections');
+	if(IdSelections.length!=1){
+		swal({
+            title: "提示",
+            text: "请选择一条数据进行操作"
+        });
+		return
+	}
+	$("#dict_dept_modal #dict_table").bootstrapTable('refresh',{silent:true});
+	$('#bb #dict_dept_modal').modal('show');
+}
+function dict_dept_modal_yes(){
+	var IdSelections=$("#dict_dept_modal #dict_table").bootstrapTable('getSelections');
+	if(IdSelections.length!=1){
+		swal({
+            title: "提示",
+            text: "请选择一条数据进行操作"
+        });
+		return
+	}
+	
+	var SelectionId=$("#drugsmessage #json_table").bootstrapTable('getSelectionId_CH');
+	$("#drugsmessage #json_table").bootstrapTable('updateRow',{
+		index:SelectionId,
+		row:{
+			DeptCode: IdSelections[0].deptcode,
+            DeptName: IdSelections[0].deptname,
+		}
+	});
+	
+	$('#bb #dict_dept_modal').modal('hide');
+}
 //医生字典表
+var TableInit_dict_doctor =function () {
+	var oTableInit=new Object();
+	var address=addurl+"/dict/doctor";
+	
+	//初始化表格
+	oTableInit.Init = function(){
+		$("#dict_doctor_modal #dict_table").bootstrapTable('destroy'); // 销毁数据表格,不销毁可能有数据缓存问题
+		$('#dict_doctor_modal #dict_table').bootstrapTable({
+			url: address,         				// 请求后台的URL（*）
+			method: 'post',                     // 请求方式（*）
+//			dataType: "json",					//数据类型
+//			data:[{dbColName1:"aa"}],			//JSON数据
+			contentType:"application/x-www-form-urlencoded; charset=UTF-8", //get请求时可不设置，POST请求时需要HTTP内容类型
+//			toolbar: '#drug_mess #toolbar',                // 工具按钮用哪个容器
+			striped: true,                      // 是否显示行间隔色
+			cache: false,                       // 是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+			pagination: true,                   // 是否显示分页（*）
+			sortable: false,                    // 是否启用排序
+			sortOrder: "asc",                   // 排序方式
+			sidePagination: "server",           // 分页方式：client客户端分页，server服务端分页（*），两种分页JSON结构不同
+			pageNumber:1,                       // 初始化加载第一页，默认第一页
+			pageSize: 10,                       // 每页的记录行数（*）
+			pageList: [10,25,50,100],        				// 可供选择的每页的行数（*）
+			search: true,                       // 是否显示表格搜索，此搜索是客户端搜索，不会进服务端，所以，个人感觉意义不大(陈辉-验证可以提交查询数据到服务端)
+			strictSearch: true,				
+			showColumns: false,                  // 是否显示所有的列按钮
+			showRefresh: true,                  // 是否显示刷新按钮
+			showToggle:false,                    // 是否显示详细视图和列表视图的切换按钮
+			cardView: false,                    // 是否显示详细视图
+			detailView: false, 					//是否显示父子表
+			minimumCountColumns: 2,             // 最少允许的列数
+			clickToSelect: false,               // 是否启用点击选中行
+//			height: 400,                        //1.450, 行高
+												//2.如果没有设置height属性，表格自动根据记录条数觉得表格高度
+												//3.在tab标签样式里面会导致高度出错，自己CSS写固定高度
+			uniqueId: "id",                  	// 每一行的唯一标识，一般为主键列
+//			fixedColumns: true,					//固定列,引入bootstrap-table-fixed-columns.js
+//	        fixedNumber:2,						//固定前两列,引入bootstrap-table-fixed-columns.js
+			// 传递参数（*）,组织表格参数和页面查询参数
+			queryParams : function (params) {
+			    var temp = {   // 这里的键的名字和控制器的变量名必须一致，这边改动，控制器也需要改成一样的
+			    		limit: params.limit,   // 页面数量大小
+						offset: params.offset, // 当前页码
+						search: params.search, // 工具栏查询内容,search:true才有
+			    };
+			    return temp;
+			},
+			// 是否显示父子表
+			columns : [{radio : true,width:30
+			},
+			{field:'hisname',title:'机构',width:100,align:'center',
+	        	editor:{
+					type:'textbox',
+				}
+	        },    
+	        {field:'doctorcode',title:'医生编号',width:100,align:'center',
+	        	editor:{
+					type:'textbox',
+				}
+	        },    
+	        {field:'doctorname',title:'医生名称',width:100,align:'center',
+	        	editor:{
+					type:'textbox',
+				}
+	        }],
+			
+		});
+	}
+	
+	return oTableInit;
+};
 
+function dict_doctor_modal_open(){
+	var IdSelections=$("#drugsmessage #json_table").bootstrapTable('getSelections');
+	if(IdSelections.length!=1){
+		swal({
+            title: "提示",
+            text: "请选择一条数据进行操作"
+        });
+		return
+	}
+	$("#dict_doctor_modal #dict_table").bootstrapTable('refresh',{silent:true});
+	$('#bb #dict_doctor_modal').modal('show');
+}
+function dict_doctor_modal_yes(){
+	var IdSelections=$("#dict_doctor_modal #dict_table").bootstrapTable('getSelections');
+	if(IdSelections.length!=1){
+		swal({
+            title: "提示",
+            text: "请选择一条数据进行操作"
+        });
+		return
+	}
+	
+	var SelectionId=$("#drugsmessage #json_table").bootstrapTable('getSelectionId_CH');
+	$("#drugsmessage #json_table").bootstrapTable('updateRow',{
+		index:SelectionId,
+		row:{
+			DoctorCode: IdSelections[0].doctorcode,
+			DoctorName: IdSelections[0].doctorname,
+		}
+	});
+	
+	$('#bb #dict_doctor_modal').modal('hide');
+}
+
+//过敏原字典表
+var TableInit_dict_allergen =function () {
+	var oTableInit=new Object();
+	var address=addurl+"/dict/allergen";
+	
+	//初始化表格
+	oTableInit.Init = function(){
+		$("#dict_allergen_modal #dict_table").bootstrapTable('destroy'); // 销毁数据表格,不销毁可能有数据缓存问题
+		$('#dict_allergen_modal #dict_table').bootstrapTable({
+			url: address,         				// 请求后台的URL（*）
+			method: 'post',                     // 请求方式（*）
+//			dataType: "json",					//数据类型
+//			data:[{dbColName1:"aa"}],			//JSON数据
+			contentType:"application/x-www-form-urlencoded; charset=UTF-8", //get请求时可不设置，POST请求时需要HTTP内容类型
+//			toolbar: '#drug_mess #toolbar',                // 工具按钮用哪个容器
+			striped: true,                      // 是否显示行间隔色
+			cache: false,                       // 是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+			pagination: true,                   // 是否显示分页（*）
+			sortable: false,                    // 是否启用排序
+			sortOrder: "asc",                   // 排序方式
+			sidePagination: "server",           // 分页方式：client客户端分页，server服务端分页（*），两种分页JSON结构不同
+			pageNumber:1,                       // 初始化加载第一页，默认第一页
+			pageSize: 10,                       // 每页的记录行数（*）
+			pageList: [10,25,50,100],        				// 可供选择的每页的行数（*）
+			search: true,                       // 是否显示表格搜索，此搜索是客户端搜索，不会进服务端，所以，个人感觉意义不大(陈辉-验证可以提交查询数据到服务端)
+			strictSearch: true,				
+			showColumns: false,                  // 是否显示所有的列按钮
+			showRefresh: true,                  // 是否显示刷新按钮
+			showToggle:false,                    // 是否显示详细视图和列表视图的切换按钮
+			cardView: false,                    // 是否显示详细视图
+			detailView: false, 					//是否显示父子表
+			minimumCountColumns: 2,             // 最少允许的列数
+			clickToSelect: false,               // 是否启用点击选中行
+//			height: 400,                        //1.450, 行高
+												//2.如果没有设置height属性，表格自动根据记录条数觉得表格高度
+												//3.在tab标签样式里面会导致高度出错，自己CSS写固定高度
+			uniqueId: "id",                  	// 每一行的唯一标识，一般为主键列
+//			fixedColumns: true,					//固定列,引入bootstrap-table-fixed-columns.js
+//	        fixedNumber:2,						//固定前两列,引入bootstrap-table-fixed-columns.js
+			// 传递参数（*）,组织表格参数和页面查询参数
+			queryParams : function (params) {
+			    var temp = {   // 这里的键的名字和控制器的变量名必须一致，这边改动，控制器也需要改成一样的
+			    		limit: params.limit,   // 页面数量大小
+						offset: params.offset, // 当前页码
+						search: params.search, // 工具栏查询内容,search:true才有
+			    };
+			    return temp;
+			},
+			// 是否显示父子表
+			columns : [{radio : true,width:30
+			},
+			{field:'hisname',title:'机构',width:100,align:'center',
+	        	editor:{
+					type:'textbox',
+				}
+	        },    
+	        {field:'allercode',title:'过敏原编号',width:100,align:'center',
+	        	editor:{
+					type:'textbox',
+				}
+	        },    
+	        {field:'allername',title:'过敏原名称',width:100,align:'center',
+	        	editor:{
+					type:'textbox',
+				}
+	        }],
+			
+		});
+	}
+	
+	return oTableInit;
+};
+
+function dict_allergen_modal_open(){
+	var IdSelections=$("#allergenmessage #json_table").bootstrapTable('getSelections');
+	if(IdSelections.length!=1){
+		swal({
+            title: "提示",
+            text: "请选择一条数据进行操作"
+        });
+		return
+	}
+	$("#dict_allergen_modal #dict_table").bootstrapTable('refresh',{silent:true});
+	$('#cc #dict_allergen_modal').modal('show');
+}
+function dict_allergen_modal_yes(){
+	var IdSelections=$("#dict_allergen_modal #dict_table").bootstrapTable('getSelections');
+	if(IdSelections.length!=1){
+		swal({
+            title: "提示",
+            text: "请选择一条数据进行操作"
+        });
+		return
+	}
+	
+	var SelectionId=$("#allergenmessage #json_table").bootstrapTable('getSelectionId_CH');
+	$("#allergenmessage #json_table").bootstrapTable('updateRow',{
+		index:SelectionId,
+		row:{
+//			Index: aller_work_row+1,
+			AllerSource: "USER",
+			AllerCode: IdSelections[0].allercode,
+			AllerName:IdSelections[0].allername,
+			AllerSymptom:""
+		}
+	});
+	
+	$('#cc #dict_allergen_modal').modal('hide');
+}
 //疾病字典表
+var TableInit_dict_disease =function () {
+	var oTableInit=new Object();
+	var address=addurl+"/dict/disease";
+	
+	//初始化表格
+	oTableInit.Init = function(){
+		$("#dict_disease_modal #dict_table").bootstrapTable('destroy'); // 销毁数据表格,不销毁可能有数据缓存问题
+		$('#dict_disease_modal #dict_table').bootstrapTable({
+			url: address,         				// 请求后台的URL（*）
+			method: 'post',                     // 请求方式（*）
+//			dataType: "json",					//数据类型
+//			data:[{dbColName1:"aa"}],			//JSON数据
+			contentType:"application/x-www-form-urlencoded; charset=UTF-8", //get请求时可不设置，POST请求时需要HTTP内容类型
+//			toolbar: '#drug_mess #toolbar',                // 工具按钮用哪个容器
+			striped: true,                      // 是否显示行间隔色
+			cache: false,                       // 是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+			pagination: true,                   // 是否显示分页（*）
+			sortable: false,                    // 是否启用排序
+			sortOrder: "asc",                   // 排序方式
+			sidePagination: "server",           // 分页方式：client客户端分页，server服务端分页（*），两种分页JSON结构不同
+			pageNumber:1,                       // 初始化加载第一页，默认第一页
+			pageSize: 10,                       // 每页的记录行数（*）
+			pageList: [10,25,50,100],        				// 可供选择的每页的行数（*）
+			search: true,                       // 是否显示表格搜索，此搜索是客户端搜索，不会进服务端，所以，个人感觉意义不大(陈辉-验证可以提交查询数据到服务端)
+			strictSearch: true,				
+			showColumns: false,                  // 是否显示所有的列按钮
+			showRefresh: true,                  // 是否显示刷新按钮
+			showToggle:false,                    // 是否显示详细视图和列表视图的切换按钮
+			cardView: false,                    // 是否显示详细视图
+			detailView: false, 					//是否显示父子表
+			minimumCountColumns: 2,             // 最少允许的列数
+			clickToSelect: false,               // 是否启用点击选中行
+//			height: 400,                        //1.450, 行高
+												//2.如果没有设置height属性，表格自动根据记录条数觉得表格高度
+												//3.在tab标签样式里面会导致高度出错，自己CSS写固定高度
+			uniqueId: "id",                  	// 每一行的唯一标识，一般为主键列
+//			fixedColumns: true,					//固定列,引入bootstrap-table-fixed-columns.js
+//	        fixedNumber:2,						//固定前两列,引入bootstrap-table-fixed-columns.js
+			// 传递参数（*）,组织表格参数和页面查询参数
+			queryParams : function (params) {
+			    var temp = {   // 这里的键的名字和控制器的变量名必须一致，这边改动，控制器也需要改成一样的
+			    		limit: params.limit,   // 页面数量大小
+						offset: params.offset, // 当前页码
+						search: params.search, // 工具栏查询内容,search:true才有
+			    };
+			    return temp;
+			},
+			// 是否显示父子表
+			columns : [{radio : true,width:30
+			},
+			{field:'hisname',title:'机构',width:100,align:'center',
+	        	editor:{
+					type:'textbox',
+				}
+	        },    
+	        {field:'discode',title:'疾病编号',width:100,align:'center',
+	        	editor:{
+					type:'textbox',
+				}
+	        },    
+	        {field:'disname',title:'疾病名称',width:100,align:'center',
+	        	editor:{
+					type:'textbox',
+				}
+	        }],
+			
+		});
+	}
+	
+	return oTableInit;
+};
 
+function dict_disease_modal_open(){
+	var IdSelections=$("#diseasemessage #json_table").bootstrapTable('getSelections');
+	if(IdSelections.length!=1){
+		swal({
+            title: "提示",
+            text: "请选择一条数据进行操作"
+        });
+		return
+	}
+	$("#dict_disease_modal #dict_table").bootstrapTable('refresh',{silent:true});
+	$('#dd #dict_disease_modal').modal('show');
+}
+function dict_disease_modal_yes(){
+	var IdSelections=$("#dict_disease_modal #dict_table").bootstrapTable('getSelections');
+	if(IdSelections.length!=1){
+		swal({
+            title: "提示",
+            text: "请选择一条数据进行操作"
+        });
+		return
+	}
+	
+	var SelectionId=$("#diseasemessage #json_table").bootstrapTable('getSelectionId_CH');
+	$("#diseasemessage #json_table").bootstrapTable('updateRow',{
+		index:SelectionId,
+		row:{
+//			Index: dis_work_row+1,
+			DisSource: 'USER',
+			DiseaseCode:IdSelections[0].discode,
+			DiseaseName:IdSelections[0].disname,
+			DisTimeType:0,
+			Ishospinfection:-1
+		}
+	});
+	
+	$('#dd #dict_disease_modal').modal('hide');
+}
 //手术字典表
+var TableInit_dict_operation =function () {
+	var oTableInit=new Object();
+	var address=addurl+"/dict/operation";
+	
+	//初始化表格
+	oTableInit.Init = function(){
+		$("#dict_operation_modal #dict_table").bootstrapTable('destroy'); // 销毁数据表格,不销毁可能有数据缓存问题
+		$('#dict_operation_modal #dict_table').bootstrapTable({
+			url: address,         				// 请求后台的URL（*）
+			method: 'post',                     // 请求方式（*）
+//			dataType: "json",					//数据类型
+//			data:[{dbColName1:"aa"}],			//JSON数据
+			contentType:"application/x-www-form-urlencoded; charset=UTF-8", //get请求时可不设置，POST请求时需要HTTP内容类型
+//			toolbar: '#drug_mess #toolbar',                // 工具按钮用哪个容器
+			striped: true,                      // 是否显示行间隔色
+			cache: false,                       // 是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+			pagination: true,                   // 是否显示分页（*）
+			sortable: false,                    // 是否启用排序
+			sortOrder: "asc",                   // 排序方式
+			sidePagination: "server",           // 分页方式：client客户端分页，server服务端分页（*），两种分页JSON结构不同
+			pageNumber:1,                       // 初始化加载第一页，默认第一页
+			pageSize: 10,                       // 每页的记录行数（*）
+			pageList: [10,25,50,100],        				// 可供选择的每页的行数（*）
+			search: true,                       // 是否显示表格搜索，此搜索是客户端搜索，不会进服务端，所以，个人感觉意义不大(陈辉-验证可以提交查询数据到服务端)
+			strictSearch: true,				
+			showColumns: false,                  // 是否显示所有的列按钮
+			showRefresh: true,                  // 是否显示刷新按钮
+			showToggle:false,                    // 是否显示详细视图和列表视图的切换按钮
+			cardView: false,                    // 是否显示详细视图
+			detailView: false, 					//是否显示父子表
+			minimumCountColumns: 2,             // 最少允许的列数
+			clickToSelect: false,               // 是否启用点击选中行
+//			height: 400,                        //1.450, 行高
+												//2.如果没有设置height属性，表格自动根据记录条数觉得表格高度
+												//3.在tab标签样式里面会导致高度出错，自己CSS写固定高度
+			uniqueId: "id",                  	// 每一行的唯一标识，一般为主键列
+//			fixedColumns: true,					//固定列,引入bootstrap-table-fixed-columns.js
+//	        fixedNumber:2,						//固定前两列,引入bootstrap-table-fixed-columns.js
+			// 传递参数（*）,组织表格参数和页面查询参数
+			queryParams : function (params) {
+			    var temp = {   // 这里的键的名字和控制器的变量名必须一致，这边改动，控制器也需要改成一样的
+			    		limit: params.limit,   // 页面数量大小
+						offset: params.offset, // 当前页码
+						search: params.search, // 工具栏查询内容,search:true才有
+			    };
+			    return temp;
+			},
+			// 是否显示父子表
+			columns : [{radio : true,width:30
+			},
+			{field:'hisname',title:'机构',width:100,align:'center',
+	        	editor:{
+					type:'textbox',
+				}
+	        },    
+	        {field:'operationcode',title:'手术编号',width:100,align:'center',
+	        	editor:{
+					type:'textbox',
+				}
+	        },    
+	        {field:'operationname',title:'手术名称',width:100,align:'center',
+	        	editor:{
+					type:'textbox',
+				}
+	        }],
+			
+		});
+	}
+	
+	return oTableInit;
+};
 
+function dict_operation_modal_open(){
+	var IdSelections=$("#operationmessage #json_table").bootstrapTable('getSelections');
+	if(IdSelections.length!=1){
+		swal({
+            title: "提示",
+            text: "请选择一条数据进行操作"
+        });
+		return
+	}
+	$("#dict_operation_modal #dict_table").bootstrapTable('refresh',{silent:true});
+	$('#ee #dict_operation_modal').modal('show');
+}
+function dict_operation_modal_yes(){
+	var IdSelections=$("#dict_operation_modal #dict_table").bootstrapTable('getSelections');
+	if(IdSelections.length!=1){
+		swal({
+            title: "提示",
+            text: "请选择一条数据进行操作"
+        });
+		return
+	}
+	
+	var SelectionId=$("#operationmessage #json_table").bootstrapTable('getSelectionId_CH');
+	$("#operationmessage #json_table").bootstrapTable('updateRow',{
+		index:SelectionId,
+		row:{
+//			Index: opr_work_row+1,
+			OprCode: IdSelections[0].operationcode,
+			OprName: IdSelections[0].operationname,
+			IncisionType:'1',
+			OprStartDate:'',
+			OprEndDate: '',
+			OprMediTime:-1,
+			OprTreatTime:0
+		}
+	});
+	
+	$('#ee #dict_operation_modal').modal('hide');
+}
 //分解JSON
 function json_fenjie(json){
 	PassClient= json.PassClient;
@@ -1803,6 +2387,9 @@ function json_fenjie(json){
 	ScreenOperationList= json.ScreenOperationList;
 	ScreenDrugList= json.ScreenDrugList;
 	InputJsonInfoList= json.InputJsonInfoList; 
+	
+	//机构编码复制
+	$("#HospID").val(PassClient.HospID);
 	
 	//病人信息赋值
 	$('#patientmessage #PatCode').val(Patient.PatCode);
@@ -1938,7 +2525,9 @@ function json_fenjie(json){
 			$('#fujiatask #prtasktype').val(InputJsonInfo.urgent);
 		}
 		if(InputJsonInfo.type=="druginfo"){
-			$('#fujiadrug #json_table').bootstrapTable('load',InputJsonInfo); 
+			var aaa = new Array();
+			aaa.push(InputJsonInfo);
+			$('#fujiadrug #json_table').bootstrapTable('load',aaa); 
 //			$('#fujiadrug #json_table').bootstrapTable('append',{
 //				type:"druginfo",
 //				index: InputJsonInfo.index,
@@ -2018,46 +2607,567 @@ function json_fenjie(json){
 
 //合并JSON
 function json_hebing(){
+	var json = {};
 	
+	//保存客户端信息
+	PassClient.HospID=$('#HospID').val();
+	json['PassClient']=PassClient;
+	
+	//保存病人信息
+	var Patient={};
+	Patient['PatCode']=$('#patientmessage #PatCode').val();
+	Patient['InHospNo']=$('#patientmessage #InHospNo').val();
+	Patient['VisitCode']=$('#patientmessage #VisitCode').val();
+	Patient['Name']=$('#patientmessage #Name').val();
+	Patient['Sex']=$('#patientmessage #Sex').val();
+	Patient['Birthday']=$('#patientmessage #Birthday input').val();
+	Patient['HeightCM']=$('#patientmessage #HeightCM').val();
+	Patient['WeighKG']=$('#patientmessage #WeighKG').val();
+	Patient['DeptCode']=$('#patientmessage #DeptCode').val();
+	Patient['DeptName']=$('#patientmessage #DeptName').val();
+	Patient['DoctorCode']=$('#patientmessage #DoctorCode').val();
+	Patient['DoctorName']=$('#patientmessage #DoctorName').val();
+	Patient['PatStatus']=parseInt($('#patientmessage #PatStatus').val());
+	Patient['IsLactation']=parseInt($('#patientmessage #IsLactation').val());
+	Patient['IsPregnancy']=parseInt($('#patientmessage #IsPregnancy').val());
+	Patient['PregStartDate']=$('#patientmessage #PregStartDate').val();
+	Patient['HepDamageDegree']=parseInt($('#patientmessage #HepDamageDegree').val());
+	Patient['RenDamageDegree']=parseInt($('#patientmessage #RenDamageDegree').val());
+	Patient['UseTime']=$('#patientmessage #UseTime input').val();
+	Patient['CheckMode']=$('#patientmessage #CheckMode').val();
+	Patient['IsDoSave']=parseInt($('#patientmessage #IsDoSave').val());
+	Patient['Age']=$('#patientmessage #Age').val();
+	Patient['PayClass']=$('#patientmessage #PayClass').val();
+	Patient['IsTestEtiology']=parseInt($('#patientmessage #IsTestEtiology').val());
+	Patient['InHospDate']=$('#patientmessage #InHospDate input').val();
+	Patient['OutHospDate']=$('#patientmessage #OutHospDate input').val();
+	Patient['IDCard']=$('#patientmessage #IDCard').val();
+	Patient['Telephone']=$('#patientmessage #Telephone').val();
+	json['Patient']=Patient;
+	
+	//保存过敏原信息
+	var ScreenAllergenList={};
+	ScreenAllergenList["ScreenAllergens"] = $('#allergenmessage #json_table').bootstrapTable('getData');
+	json["ScreenAllergenList"]=ScreenAllergenList;
+	
+	//保存疾病信息
+	var ScreenMedCondList={};
+	var disrows=$('#diseasemessage #json_table').bootstrapTable('getData');
+	var ScreenMedConds=new Array();
+	for(var i=0;i<disrows.length;i++){
+		var disrow=disrows[i];
+		disrow["DisTimeType"]=parseInt(disrow.DisTimeType);
+		disrow["Ishospinfection"]=parseInt(disrow.Ishospinfection);
+		ScreenMedConds[i]=disrow;
+	}
+	ScreenMedCondList["ScreenMedConds"] =ScreenMedConds;
+	json["ScreenMedCondList"]=ScreenMedCondList;
+	
+	//保存手术信息
+	var ScreenOperationList={};
+	var oprrows=$('#operationmessage #json_table').bootstrapTable('getData');
+	var ScreenOperations=new Array();
+	for(var i=0;i<oprrows.length;i++){
+		var oprrow=oprrows[i];
+		oprrow["OprMediTime"]=parseInt(oprrow.OprMediTime);
+		oprrow["OprTreatTime"]=parseInt(oprrow.OprTreatTime);
+		ScreenOperations[i]=oprrow;
+	}
+	ScreenOperationList["ScreenOperations"] = ScreenOperations;
+	json["ScreenOperationList"]=ScreenOperationList;
+	
+	//保存医嘱信息
+	var ScreenDrugList={};
+	var odrrows=$('#drugsmessage #json_table').bootstrapTable('getData');
+	var ScreenDrugs=new Array();
+	for(var i=0;i<odrrows.length;i++){
+		var odrrow=odrrows[i];
+		//字符串转整型
+		odrrow['OrderNo']=parseInt(odrrow.OrderNo);
+		odrrow['IsTempDrug']=parseInt(odrrow.IsTempDrug);
+		odrrow['OrderType']=parseInt(odrrow.OrderType);
+		odrrow['Purpose']=parseInt(odrrow.Purpose);
+		if(odrrow.CompName==undefined){
+			odrrow['CompName']='';
+		}
+		if(odrrow.FreqSource==undefined){
+			odrrow['FreqSource']='USER';
+		}
+		if(odrrow.MediTime==undefined){
+			odrrow['MediTime']='';
+		}
+		if(odrrow.RouteSource==undefined){
+			odrrow['RouteSource']='USER';
+		}
+		
+		ScreenDrugs[i]=odrrow;
+	}
+	ScreenDrugList['ScreenDrugs'] = ScreenDrugs;
+	json['ScreenDrugList']=ScreenDrugList;
+	
+	//保存附加信息
+//	json["InputJsonInfoList"]=InputJsonInfoList;
+	var InputJsonInfoList={};
+	var InputJsonInfos=new Array();
+	
+	var jsontype={};
+	jsontype["type"]="jsontype";
+	jsontype["screentype"]=$('#fujiamessage #jsontype').val();
+	InputJsonInfos.push(jsontype);
+	
+	var prtasktype={};
+	prtasktype["type"]="prtasktype";
+	prtasktype["urgent"]=$('#fujiatask #prtasktype').val();
+	InputJsonInfos.push(prtasktype);
+	
+	var fujiadrug=$('#fujiadrug #json_table').bootstrapTable('getData');
+	for(var i=0;i<fujiadrug.length;i++){
+		if(fujiadrug[i] != undefined){
+			InputJsonInfos.push(fujiadrug[i]);
+		}
+	}
+	
+	var fujiadisease=$('#fujiadisease #json_table').bootstrapTable('getData');
+	for(var i=0;i<fujiadisease.length;i++){
+		if(fujiadisease[i] != undefined){
+			InputJsonInfos.push(fujiadisease[i]);
+		}
+	}
+	
+	var fujiaotherrecip=$('#fujiaotherrecip #json_table').bootstrapTable('getData');
+	for(var i=0;i<fujiaotherrecip.length;i++){
+		if(fujiaotherrecip[i] != undefined){
+			InputJsonInfos.push(fujiaotherrecip[i]);
+		}
+	}
+	
+	var fujiaexaminfo=$('#fujiaexaminfo #json_table').bootstrapTable('getData');
+	for(var i=0;i<fujiaexaminfo.length;i++){
+		if(fujiaexaminfo[i] != undefined){
+			InputJsonInfos.push(fujiaexaminfo[i]);
+		}
+	}
+		
+	var fujialabinfo=$('#fujialabinfo #json_table').bootstrapTable('getData');
+	for(var i=0;i<fujialabinfo.length;i++){
+		if(fujialabinfo[i] != undefined){
+			InputJsonInfos.push(fujialabinfo[i]);
+		}
+	}
+	
+	InputJsonInfoList["InputJsonInfos"]=InputJsonInfos;
+	json["InputJsonInfoList"]=InputJsonInfoList;
+	
+//	console.log(JSON.stringify(json))
+	
+	var updateaddress=addurl+'/prescription/update';
+	
+	$.ajax({
+		type:"POST",
+		url:updateaddress,
+		async:false,
+		cache:true,
+		data:{
+			pre_id: $('#pre_id').val(),
+			patientname:$('#patientname').val(),
+			prescription_json:JSON.stringify(json)
+		},
+		success: function(result){
+			if(result==1){
+				location.reload();
+			}
+			
+		},
+		error:function(XMLResponse){
+			alert(XMLResponse.responseText)
+		}
+	});
 }
 
 
 //药品信息操作
 function drug_append(){
-	var IdSelections = $('#drugsmessage .fixed-table-pagination .pagination-info').text();
-	var sum=IdSelections.split('总共 ');
+	var str = $('#drugsmessage .fixed-table-pagination .pagination-info').text();
+	var sum=str.split('总共 ');
 	sum=sum[1].split(' 条');
 	parseInt(sum[0]);
 	$('#drugsmessage #json_table').bootstrapTable('append',{
-		Index: parseInt(sum[0])+1
+		  RecipNo: '',
+		  Index: parseInt(sum[0])+1,
+		  OrderNo:0,
+		  DrugSource: '',
+		  DrugUniqueCode: '',
+		  DrugCode: '',
+		  DrugName: '',
+		  DoseUnit: '',
+		  Form: '',
+		  Strength: '',
+		  CompName: '',
+		  RouteSource: '',
+		  RouteCode: '',
+		  RouteName: '',
+		  FreqSource: '',
+		  Frequency: '',
+		  DosePerTime: '',
+		  StartTime: '',
+		  EndTime: '',
+		  ExecuteTime: '',
+		  DeptCode: '',
+		  DeptName: '',
+		  DoctorCode: '',
+		  DoctorName: '',
+		  GroupTag: '',
+		  IsTempDrug:0 ,
+		  OrderType:0,
+		  Pharmacists: '',
+		  Pharmacists_: '',
+		  Num: '',
+		  NumUnit: '',
+		  Cost: '',
+		  Purpose: 0,
+		  OprCode: '',
+		  MediTime: '',
+		  Remark: ''
 	})
 }
 function drug_del(){
+	var IdSelections=$("#drugsmessage #json_table").bootstrapTable('getSelections');
+	if(IdSelections.length==0){
+		swal({
+            title: "提示",
+            text: "请选择一条数据进行操作"
+        });
+		return
+	}
 	swal({
-        title: "Are you sure?",
-        text: "You will not be able to recover this imaginary file!",
+        title: "提示",
+        text: "请确认是否进行删除数据操作",
         type: "warning",
         showCancelButton: true,
         confirmButtonColor: "#DD6B55",
         confirmButtonText: "Yes, delete it!",
         closeOnConfirm: false
     }, function () {
-    	
-    	var IdSelections = $('#drugsmessage #json_table').bootstrapTable('getSelections');
-    	if(IdSelections.length==0){
-    		return;
-    	}
-    	var pre_ids='';
-    	for(var i=0;i<IdSelections.length;i++){
-    		if(i==0){
-    			pre_ids=pre_ids+IdSelections[i].pre_id;
-    		}else{
-    			pre_ids=pre_ids+','+ IdSelections[i].pre_id;
-    		}
-    	}
-    	
-    	$('#drugsmessage #json_table').bootstrapTable('removeByUniqueId',pre_ids);
-    	
+    	$('#drugsmessage #json_table').bootstrapTable('removeSelectionId_CH');
+        swal("Deleted!", "Your imaginary file has been deleted.", "success");
+    });
+}
+
+//过敏原信息操作
+function allergen_append(){
+	var str = $('#allergenmessage .fixed-table-pagination .pagination-info').text();
+	var sum=str.split('总共 ');
+	sum=sum[1].split(' 条');
+	parseInt(sum[0]);
+	$('#allergenmessage #json_table').bootstrapTable('append',{
+		Index: parseInt(sum[0])+1,
+		AllerSource: '',
+		AllerCode: '',
+		AllerName:'',
+		AllerSymptom:''
+	})
+}
+function allergen_del(){
+	var IdSelections=$("#allergenmessage #json_table").bootstrapTable('getSelections');
+	if(IdSelections.length==0){
+		swal({
+            title: "提示",
+            text: "请选择一条数据进行操作"
+        });
+		return
+	}
+	swal({
+        title: "提示",
+        text: "请确认是否进行删除数据操作",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#DD6B55",
+        confirmButtonText: "Yes, delete it!",
+        closeOnConfirm: false
+    }, function () {
+    	$('#allergenmessage #json_table').bootstrapTable('removeSelectionId_CH');
+        swal("Deleted!", "Your imaginary file has been deleted.", "success");
+    });
+}
+
+//疾病信息操作
+function disease_append(){
+	var str = $('#diseasemessage .fixed-table-pagination .pagination-info').text();
+	var sum=str.split('总共 ');
+	sum=sum[1].split(' 条');
+	parseInt(sum[0]);
+	$('#diseasemessage #json_table').bootstrapTable('append',{
+		RecipNo: '',
+		Index: parseInt(sum[0])+1,
+		DisSource: '',
+		DiseaseCode:'',
+		DiseaseName:'',
+		DisTimeType:0,
+		Ishospinfection:0
+	})
+}
+function disease_del(){
+	var IdSelections=$("#diseasemessage #json_table").bootstrapTable('getSelections');
+	if(IdSelections.length==0){
+		swal({
+            title: "提示",
+            text: "请选择一条数据进行操作"
+        });
+		return
+	}
+	swal({
+        title: "提示",
+        text: "请确认是否进行删除数据操作",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#DD6B55",
+        confirmButtonText: "Yes, delete it!",
+        closeOnConfirm: false
+    }, function () {
+    	$('#diseasemessage #json_table').bootstrapTable('removeSelectionId_CH');
+        swal("Deleted!", "Your imaginary file has been deleted.", "success");
+    });
+}
+
+//手术信息操作
+function operation_append(){
+	var str = $('#operationmessage .fixed-table-pagination .pagination-info').text();
+	var sum=str.split('总共 ');
+	sum=sum[1].split(' 条');
+	parseInt(sum[0]);
+	$('#operationmessage #json_table').bootstrapTable('append',{
+		Index: parseInt(sum[0])+1,
+		OprCode: '',
+		OprName: '',
+		IncisionType:'',
+		OprStartDate:'',
+		OprEndDate: '',
+		OprMediTime:0,
+		OprTreatTime:0
+	})
+}
+function operation_del(){
+	var IdSelections=$("#operationmessage #json_table").bootstrapTable('getSelections');
+	if(IdSelections.length==0){
+		swal({
+            title: "提示",
+            text: "请选择一条数据进行操作"
+        });
+		return
+	}
+	swal({
+        title: "提示",
+        text: "请确认是否进行删除数据操作",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#DD6B55",
+        confirmButtonText: "Yes, delete it!",
+        closeOnConfirm: false
+    }, function () {
+    	$('#operationmessage #json_table').bootstrapTable('removeSelectionId_CH');
+        swal("Deleted!", "Your imaginary file has been deleted.", "success");
+    });
+}
+
+//附加-补充药品信息操作
+function fujia_drug_append(){
+	var str = $('#fujiadrug .fixed-table-pagination .pagination-info').text();
+	var sum=str.split('总共 ');
+	sum=sum[1].split(' 条');
+	parseInt(sum[0]);
+	$('#fujiadrug #json_table').bootstrapTable('append',{
+		type:"druginfo",
+		index: parseInt(sum[0])+1,
+		driprate: '',
+		driptime: '',
+		duration:''
+	})
+}
+function fujia_drug_del(){
+	var IdSelections=$("#fujiadrug #json_table").bootstrapTable('getSelections');
+	if(IdSelections.length==0){
+		swal({
+            title: "提示",
+            text: "请选择一条数据进行操作"
+        });
+		return
+	}
+	swal({
+        title: "提示",
+        text: "请确认是否进行删除数据操作",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#DD6B55",
+        confirmButtonText: "Yes, delete it!",
+        closeOnConfirm: false
+    }, function () {
+    	$('#fujiadrug #json_table').bootstrapTable('removeSelectionId_CH');
+        swal("Deleted!", "Your imaginary file has been deleted.", "success");
+    });
+}
+
+//附加-补充疾病信息操作
+function fujia_disease_append(){
+	var str = $('#fujiadisease .fixed-table-pagination .pagination-info').text();
+	var sum=str.split('总共 ');
+	sum=sum[1].split(' 条');
+	parseInt(sum[0]);
+	$('#fujiadisease #json_table').bootstrapTable('append',{
+		type:"diseaseinfo",
+		index: parseInt(sum[0])+1,
+		starttime: '',
+		endtime: ''
+	})
+}
+function fujia_disease_del(){
+	var IdSelections=$("#fujiadisease #json_table").bootstrapTable('getSelections');
+	if(IdSelections.length==0){
+		swal({
+            title: "提示",
+            text: "请选择一条数据进行操作"
+        });
+		return
+	}
+	swal({
+        title: "提示",
+        text: "请确认是否进行删除数据操作",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#DD6B55",
+        confirmButtonText: "Yes, delete it!",
+        closeOnConfirm: false
+    }, function () {
+    	$('#fujiadisease #json_table').bootstrapTable('removeSelectionId_CH');
+        swal("Deleted!", "Your imaginary file has been deleted.", "success");
+    });
+}
+
+//附加-补充历史医嘱信息操作
+function fujia_otherrecip_append(){
+	var str = $('#fujiaotherrecip .fixed-table-pagination .pagination-info').text();
+	var sum=str.split('总共 ');
+	sum=sum[1].split(' 条');
+	parseInt(sum[0]);
+	$('#fujiaotherrecip #json_table').bootstrapTable('append',{
+		type:"otherrecipinfo",
+		hiscode: '',
+		index: '',
+		recipno: '',
+		drugsource: '',
+		druguniquecode:'',
+		drugname: '',
+		doseunit: '',
+		routesource: '',
+		routecode: '',
+		routename: ''
+	})
+}
+function fujia_otherrecip_del(){
+	var IdSelections=$("#fujiaotherrecip #json_table").bootstrapTable('getSelections');
+	if(IdSelections.length==0){
+		swal({
+            title: "提示",
+            text: "请选择一条数据进行操作"
+        });
+		return
+	}
+	swal({
+        title: "提示",
+        text: "请确认是否进行删除数据操作",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#DD6B55",
+        confirmButtonText: "Yes, delete it!",
+        closeOnConfirm: false
+    }, function () {
+    	$('#fujiaotherrecip #json_table').bootstrapTable('removeSelectionId_CH');
+        swal("Deleted!", "Your imaginary file has been deleted.", "success");
+    });
+}
+
+//附加-补充检查信息操作
+function fujia_examinfo_append(){
+	var str = $('#fujiaexaminfo .fixed-table-pagination .pagination-info').text();
+	var sum=str.split('总共 ');
+	sum=sum[1].split(' 条');
+	parseInt(sum[0]);
+	$('#fujiaexaminfo #json_table').bootstrapTable('append',{
+		type:"examinfo",
+		requestno:'',
+		labexamcode: '',
+		labexamname:'',
+		startdatetime: '',
+		deptcode: '',
+		deptname:'',
+		doctorcode:'',
+		doctorname: ''
+	})
+}
+function fujia_examinfo_del(){
+	var IdSelections=$("#fujiaexaminfo #json_table").bootstrapTable('getSelections');
+	if(IdSelections.length==0){
+		swal({
+            title: "提示",
+            text: "请选择一条数据进行操作"
+        });
+		return
+	}
+	swal({
+        title: "提示",
+        text: "请确认是否进行删除数据操作",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#DD6B55",
+        confirmButtonText: "Yes, delete it!",
+        closeOnConfirm: false
+    }, function () {
+    	$('#fujiaexaminfo #json_table').bootstrapTable('removeSelectionId_CH');
+        swal("Deleted!", "Your imaginary file has been deleted.", "success");
+    });
+}
+
+//附加-补充检验信息操作
+function fujia_labinfo_append(){
+	var str = $('#fujialabinfo .fixed-table-pagination .pagination-info').text();
+	var sum=str.split('总共 ');
+	sum=sum[1].split(' 条');
+	parseInt(sum[0]);
+	$('#fujialabinfo #json_table').bootstrapTable('append',{
+		type:"labinfo",
+		requestno: '',
+		labexamcode: '',
+		labexamname: '',
+		ch_reporttime: '',
+		deptcode: '',
+		deptname: '',
+		doctorcode: '',
+		doctorname: '',
+		ch_resultflag:'',
+		ch_labeltypedesc:'',
+		ch_labresult:'',
+		ch_range:'',
+		ch_unit:''
+	})
+}
+function fujia_labinfo_del(){
+	var IdSelections=$("#fujialabinfo #json_table").bootstrapTable('getSelections');
+	if(IdSelections.length==0){
+		swal({
+            title: "提示",
+            text: "请选择一条数据进行操作"
+        });
+		return
+	}
+	swal({
+        title: "提示",
+        text: "请确认是否进行删除数据操作",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#DD6B55",
+        confirmButtonText: "Yes, delete it!",
+        closeOnConfirm: false
+    }, function () {
+    	$('#fujialabinfo #json_table').bootstrapTable('removeSelectionId_CH');
         swal("Deleted!", "Your imaginary file has been deleted.", "success");
     });
 }

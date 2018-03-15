@@ -152,3 +152,13 @@
 0:0:0:0:0:0:0:1 - - [10/Mar/2018:13:12:41 +0800] "GET /SP_TEST_MANAGE_BT/prescription/prescription_edit?pre_id=32 HTTP/1.1" 200 52782 http-bio-8095-exec-10 217
 0:0:0:0:0:0:0:1 - - [10/Mar/2018:13:12:41 +0800] "GET /SP_TEST_MANAGE_BT/chjs/prescription/prescription_edit.js HTTP/1.1" 304 - http-bio-8095-exec-5 1
 0:0:0:0:0:0:0:1 - - [10/Mar/2018:13:12:51 +0800] "GET /SP_TEST_MANAGE_BT/prescription/prescription_edit?pre_id=32 HTTP/1.1" 200 52782 http-bio-8095-exec-5 30
+0:0:0:0:0:0:0:1 - - [10/Mar/2018:18:12:37 +0800] "GET /SP_TEST_MANAGE_BT/prescription/prescription_edit?pre_id=32 HTTP/1.1" 200 52944 http-bio-8095-exec-6 358
+0:0:0:0:0:0:0:1 - - [10/Mar/2018:18:12:37 +0800] "GET /SP_TEST_MANAGE_BT/bootstrap_home/bootstrap-table/bootstrap-table.css HTTP/1.1" 304 - http-bio-8095-exec-11 2
+0:0:0:0:0:0:0:1 - - [10/Mar/2018:18:12:37 +0800] "GET /SP_TEST_MANAGE_BT/chcss/prescription/prescription_edit.css HTTP/1.1" 304 - http-bio-8095-exec-6 2
+0:0:0:0:0:0:0:1 - - [10/Mar/2018:18:12:37 +0800] "GET /SP_TEST_MANAGE_BT/chjs/prescription/prescription_edit.js HTTP/1.1" 304 - http-bio-8095-exec-6 2
+0:0:0:0:0:0:0:1 - - [10/Mar/2018:18:12:39 +0800] "GET /SP_TEST_MANAGE_BT/prescription/prescription_edit?pre_id=32 HTTP/1.1" 200 52944 http-bio-8095-exec-1 25
+0:0:0:0:0:0:0:1 - - [10/Mar/2018:18:12:58 +0800] "GET /SP_TEST_MANAGE_BT/prescription/prescription_edit?pre_id=32 HTTP/1.1" 200 52782 http-bio-8095-exec-1 249
+0:0:0:0:0:0:0:1 - - [10/Mar/2018:18:13:02 +0800] "GET /SP_TEST_MANAGE_BT/prescription/prescription_edit?pre_id=32 HTTP/1.1" 200 52782 http-bio-8095-exec-1 23
+0:0:0:0:0:0:0:1 - - [10/Mar/2018:18:13:09 +0800] "GET /SP_TEST_MANAGE_BT/prescription/prescription_edit?pre_id=32 HTTP/1.1" 200 52782 http-bio-8095-exec-1 56
+0:0:0:0:0:0:0:1 - - [10/Mar/2018:18:13:19 +0800] "GET /SP_TEST_MANAGE_BT/prescription/prescription_edit?pre_id=32 HTTP/1.1" 200 52944 http-bio-8095-exec-1 206
+0:0:0:0:0:0:0:1 - - [10/Mar/2018:18:13:21 +0800] "GET /SP_TEST_MANAGE_BT/prescription/prescription_edit?pre_id=32 HTTP/1.1" 200 52944 http-bio-8095-exec-1 38

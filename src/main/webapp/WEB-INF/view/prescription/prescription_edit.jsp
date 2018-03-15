@@ -40,6 +40,8 @@
 <!-- Sweet alert -->
 <link href="${pageContext.request.contextPath}/bootstrap_home/css/sweetalert.css" rel="stylesheet">
 <script src="${pageContext.request.contextPath}/bootstrap_home/js/plugins/sweetalert/sweetalert.min.js"></script>
+<!-- 等待效果 -->
+<script src="${pageContext.request.contextPath}/bootstrap_home/js/plugins/pace/pace.min.js"></script>
 
 <!-- MY JS -->
 <link href="${pageContext.request.contextPath}/chcss/prescription/prescription_edit.css" rel="stylesheet">
@@ -49,16 +51,21 @@
 <body style="background-color: #f3f3f4">
 <input id="addurl" type="hidden" value="${pageContext.request.contextPath}">
 <input id="prescription_json" type="hidden" value="${fn:escapeXml(prescription_json) }">
-
+<input id="pre_id" type="hidden" value="${pre_id}">
+<input id="patientname" type="hidden" value="${patientname}">
 <div id="wrapper" >
 	<div class="panel panel-default">
 	    <div class="panel-heading">处方操作</div>
 	    <div class="panel-body">
-	        <form id="formSearch" class="form-horizontal">
-		        <div class="col-sm-2" style="text-align: left;">
-		            <button type="button" id="prescription_save" class="btn btn-primary" >保存</button>
+	    	<div class="col-sm-2">
+		      	<div class="input-group">
+		            <span class="input-group-addon">机构编码</span>
+		            <input type="text" class="form-control" id="HospID" name="HospID">
 		        </div>
-	        </form>
+		    </div>
+	        <div class="col-sm-2" style="text-align: left;">
+	            <button type="button" id="prescription_save" class="btn btn-primary" onclick="json_hebing()">保存</button>
+	        </div>
 	    </div>
 	</div>  
 	<div class="panel">
@@ -340,35 +347,33 @@
 	
 	<div class="tab-pane fade" id="bb">
 		<div class="container-fluid" id="drugsmessage" style="background-color: #f3f3f4 ">
-			<div class="panel-body" style="padding-bottom:0px;">
-				<div id="toolbar" class="btn-group">
-					<div class="col-sm-12">
-						<button id="btn_add" type="button" class="btn btn-default" onclick="drug_append()">
-				        	<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增
-					    </button>
-					    <button id="btn_delete" type="button" class="btn btn-default" onclick="drug_del();">
-					        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>删除
-					    </button>
-					    <button id="btn_dict_drug" type="button" class="btn btn-default" data-toggle="modal" data-target="#dict_drug_modal">
-					        <span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span>药品字典表
-					    </button>
-					    <button id="btn_dict_route" type="button" class="btn btn-default" data-toggle="modal" data-target="#dict_route_modal">
-					        <span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span>给药途径字典表
-					    </button>
-					     <button id="btn_dict_fre" type="button" class="btn btn-default" data-toggle="modal" data-target="#dict_fre_modal">
-					        <span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span>频次字典表
-					    </button>
-					    <button id="btn_dict_dept" type="button" class="btn btn-default" data-toggle="modal" data-target="#dict_dept_modal">
-					        <span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span>科室字典表
-					    </button>
-					    <button id="btn_dict_doctor" type="button" class="btn btn-default" data-toggle="modal" data-target="#dict_doctor_modal">
-					        <span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span>医生字典表
-					    </button>
-					</div>
+			<div id="toolbar" class="btn-group">
+				<div class="col-sm-12">
+					<button id="btn_add" type="button" class="btn btn-default" onclick="drug_append()">
+			        	<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增
+				    </button>
+				    <button id="btn_delete" type="button" class="btn btn-default" onclick="drug_del();">
+				        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>删除
+				    </button>
+				    <button id="btn_dict_drug" type="button" class="btn btn-default" data-toggle="modal" onclick="dict_drug_modal_open()">
+				        <span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span>药品字典表
+				    </button>
+				    <button id="btn_dict_route" type="button" class="btn btn-default" data-toggle="modal" onclick="dict_route_modal_open()">
+				        <span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span>给药途径字典表
+				    </button>
+				     <button id="btn_dict_fre" type="button" class="btn btn-default" data-toggle="modal" onclick="dict_fre_modal_open()">
+				        <span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span>频次字典表
+				    </button>
+				    <button id="btn_dict_dept" type="button" class="btn btn-default" data-toggle="modal" onclick="dict_dept_modal_open()">
+				        <span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span>科室字典表
+				    </button>
+				    <button id="btn_dict_doctor" type="button" class="btn btn-default" data-toggle="modal" onclick="dict_doctor_modal_open()">
+				        <span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span>医生字典表
+				    </button>
 				</div>
-				<!-- 信息表格 -->
-		        <table id="json_table" style="table-layout:fixed; "></table>
 			</div>
+			<!-- 信息表格 -->
+	        <table id="json_table" style="table-layout:fixed; "></table>
 		</div>
 		
 		<!-- 模态框（Modal）字典表 -->
@@ -403,7 +408,7 @@
 					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-						<button type="button" class="btn btn-primary">确认</button>
+						<button type="button" class="btn btn-primary" onclick="dict_route_modal_yes()">确认</button>
 					</div>
 				</div><!-- /.modal-content -->
 			</div><!-- /.modal -->
@@ -422,7 +427,7 @@
 					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-						<button type="button" class="btn btn-primary">确认</button>
+						<button type="button" class="btn btn-primary" onclick="dict_fre_modal_yes()">确认</button>
 					</div>
 				</div><!-- /.modal-content -->
 			</div><!-- /.modal -->
@@ -441,7 +446,7 @@
 					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-						<button type="button" class="btn btn-primary">确认</button>
+						<button type="button" class="btn btn-primary" onclick="dict_dept_modal_yes()">确认</button>
 					</div>
 				</div><!-- /.modal-content -->
 			</div><!-- /.modal -->
@@ -460,7 +465,7 @@
 					</div>
 					<div class="modal-footer">
 						<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
-						<button type="button" class="btn btn-primary">确认</button>
+						<button type="button" class="btn btn-primary" onclick="dict_doctor_modal_yes()">确认</button>
 					</div>
 				</div><!-- /.modal-content -->
 			</div><!-- /.modal -->
@@ -472,16 +477,37 @@
 		<div class="container-fluid" id="allergenmessage" style="background-color: #f3f3f4 ">
 			<div id="toolbar" class="btn-group">
 				<div class="col-sm-12">
-					<button id="btn_add" type="button" class="btn btn-default" data-toggle="modal" data-target="#drug_mess">
+					<button id="btn_add" type="button" class="btn btn-default" onclick="allergen_append()">
 			        	<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增
 				    </button>
-				    <button id="btn_delete" type="button" class="btn btn-default" onclick="fnClickDelRow();">
+				    <button id="btn_delete" type="button" class="btn btn-default" onclick="allergen_del()">
 				        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>删除
+				    </button>
+				    <button id="btn_dict_doctor" type="button" class="btn btn-default" data-toggle="modal" onclick="dict_allergen_modal_open()">
+				        <span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span>过敏原字典表
 				    </button>
 				</div>
 			</div>
 			<!-- 信息表格 -->
 	        <table id="json_table" style="table-layout:fixed; "></table>
+		</div>
+		<!-- 模态框（Modal）字典表 -->
+		<div class="modal fade" id="dict_allergen_modal" tabindex="-1" role="dialog"  aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title">过敏原字典表</h4>
+					</div>
+					<div class="modal-body">
+						<table id="dict_table" style="table-layout:fixed;"></table>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+						<button type="button" class="btn btn-primary" onclick="dict_allergen_modal_yes()">确认</button>
+					</div>
+				</div><!-- /.modal-content -->
+			</div><!-- /.modal -->
 		</div>
 	</div>
 	
@@ -489,16 +515,37 @@
 		<div class="container-fluid" id="diseasemessage" style="background-color: #f3f3f4 ">
 			<div id="toolbar" class="btn-group">
 				<div class="col-sm-12">
-					<button id="btn_add" type="button" class="btn btn-default" data-toggle="modal" data-target="#drug_mess">
+					<button id="btn_add" type="button" class="btn btn-default" onclick="disease_append()">
 			        	<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增
 				    </button>
-				    <button id="btn_delete" type="button" class="btn btn-default" onclick="fnClickDelRow();">
+				    <button id="btn_delete" type="button" class="btn btn-default" onclick="disease_del()">
 				        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>删除
+				    </button>
+				    <button id="btn_dict_doctor" type="button" class="btn btn-default" data-toggle="modal" onclick="dict_disease_modal_open()">
+				        <span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span>疾病字典表
 				    </button>
 				</div>
 			</div>
 			<!-- 信息表格 -->
 	        <table id="json_table" style="table-layout:fixed; "></table>
+		</div>
+		<!-- 模态框（Modal）字典表 -->
+		<div class="modal fade" id="dict_disease_modal" tabindex="-1" role="dialog"  aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title">疾病字典表</h4>
+					</div>
+					<div class="modal-body">
+						<table id="dict_table" style="table-layout:fixed;"></table>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+						<button type="button" class="btn btn-primary" onclick="dict_disease_modal_yes()">确认</button>
+					</div>
+				</div><!-- /.modal-content -->
+			</div><!-- /.modal -->
 		</div>
 	</div>
 	
@@ -506,16 +553,37 @@
 		<div class="container-fluid" id="operationmessage" style="background-color: #f3f3f4 ">
 			<div id="toolbar" class="btn-group">
 				<div class="col-sm-12">
-					<button id="btn_add" type="button" class="btn btn-default" data-toggle="modal" data-target="#drug_mess">
+					<button id="btn_add" type="button" class="btn btn-default"  onclick="operation_append()">
 			        	<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增
 				    </button>
-				    <button id="btn_delete" type="button" class="btn btn-default" onclick="fnClickDelRow();">
+				    <button id="btn_delete" type="button" class="btn btn-default" onclick="operation_del()">
 				        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>删除
+				    </button>
+				    <button id="btn_dict_doctor" type="button" class="btn btn-default" data-toggle="modal" onclick="dict_operation_modal_open()">
+				        <span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span>手术字典表
 				    </button>
 				</div>
 			</div>
 			<!-- 信息表格 -->
 	        <table id="json_table" style="table-layout:fixed; "></table>
+		</div>
+		<!-- 模态框（Modal）字典表 -->
+		<div class="modal fade" id="dict_operation_modal" tabindex="-1" role="dialog"  aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+						<h4 class="modal-title">手术字典表</h4>
+					</div>
+					<div class="modal-body">
+						<table id="dict_table" style="table-layout:fixed;"></table>
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+						<button type="button" class="btn btn-primary" onclick="dict_operation_modal_yes()">确认</button>
+					</div>
+				</div><!-- /.modal-content -->
+			</div><!-- /.modal -->
 		</div>
 	</div>
 	
@@ -571,10 +639,10 @@
 		<div class="container-fluid" id="fujiadrug" style="background-color: #f3f3f4 ">
 			<div id="toolbar" class="btn-group">
 				<div class="col-sm-12">
-					<button id="btn_add" type="button" class="btn btn-default" data-toggle="modal" data-target="#drug_mess">
+					<button id="btn_add" type="button" class="btn btn-default" onclick="fujia_drug_append()">
 			        	<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增
 				    </button>
-				    <button id="btn_delete" type="button" class="btn btn-default" onclick="fnClickDelRow();">
+				    <button id="btn_delete" type="button" class="btn btn-default" onclick="fujia_drug_del()">
 				        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>删除
 				    </button>
 				</div>
@@ -588,10 +656,10 @@
 		<div class="container-fluid" id="fujiadisease" style="background-color: #f3f3f4 ">
 			<div id="toolbar" class="btn-group">
 				<div class="col-sm-12">
-					<button id="btn_add" type="button" class="btn btn-default" data-toggle="modal" data-target="#drug_mess">
+					<button id="btn_add" type="button" class="btn btn-default" onclick="fujia_disease_append()">
 			        	<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增
 				    </button>
-				    <button id="btn_delete" type="button" class="btn btn-default" onclick="fnClickDelRow();">
+				    <button id="btn_delete" type="button" class="btn btn-default" onclick="fujia_disease_del()">
 				        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>删除
 				    </button>
 				</div>
@@ -605,10 +673,10 @@
 		<div class="container-fluid" id="fujiaotherrecip" style="background-color: #f3f3f4 ">
 			<div id="toolbar" class="btn-group">
 				<div class="col-sm-12">
-					<button id="btn_add" type="button" class="btn btn-default" data-toggle="modal" data-target="#drug_mess">
+					<button id="btn_add" type="button" class="btn btn-default" onclick="fujia_otherrecip_append()">
 			        	<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增
 				    </button>
-				    <button id="btn_delete" type="button" class="btn btn-default" onclick="fnClickDelRow();">
+				    <button id="btn_delete" type="button" class="btn btn-default" onclick="fujia_otherrecip_del()">
 				        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>删除
 				    </button>
 				</div>
@@ -622,10 +690,10 @@
 		<div class="container-fluid" id="fujiaexaminfo" style="background-color: #f3f3f4 ">
 			<div id="toolbar" class="btn-group">
 				<div class="col-sm-12">
-					<button id="btn_add" type="button" class="btn btn-default" data-toggle="modal" data-target="#drug_mess">
+					<button id="btn_add" type="button" class="btn btn-default" onclick="fujia_examinfo_append()">
 			        	<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增
 				    </button>
-				    <button id="btn_delete" type="button" class="btn btn-default" onclick="fnClickDelRow();">
+				    <button id="btn_delete" type="button" class="btn btn-default" onclick="fujia_examinfo_del()">
 				        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>删除
 				    </button>
 				</div>
@@ -639,10 +707,10 @@
 		<div class="container-fluid" id="fujialabinfo" style="background-color: #f3f3f4 ">
 			<div id="toolbar" class="btn-group">
 				<div class="col-sm-12">
-					<button id="btn_add" type="button" class="btn btn-default" data-toggle="modal" data-target="#drug_mess">
+					<button id="btn_add" type="button" class="btn btn-default" onclick="fujia_labinfo_append()">
 			        	<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增
 				    </button>
-				    <button id="btn_delete" type="button" class="btn btn-default" onclick="fnClickDelRow();">
+				    <button id="btn_delete" type="button" class="btn btn-default" onclick="fujia_labinfo_del()">
 				        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>删除
 				    </button>
 				</div>
