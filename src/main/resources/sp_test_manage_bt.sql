@@ -10,7 +10,7 @@ Target Server Type    : MYSQL
 Target Server Version : 50718
 File Encoding         : 65001
 
-Date: 2018-03-10 17:04:21
+Date: 2018-04-26 11:20:26
 */
 
 SET FOREIGN_KEY_CHECKS=0;
@@ -62,6 +62,126 @@ PRIMARY KEY (`learngroupid`)
 ENGINE=InnoDB
 DEFAULT CHARACTER SET=utf8 COLLATE=utf8_general_ci
 AUTO_INCREMENT=12
+
+;
+
+-- ----------------------------
+-- Table structure for mc_dict_allergen
+-- ----------------------------
+DROP TABLE IF EXISTS `mc_dict_allergen`;
+CREATE TABLE `mc_dict_allergen` (
+`match_scheme`  int(11) NOT NULL DEFAULT 0 ,
+`allercode`  varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' ,
+`allername`  varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
+`searchcode`  varchar(256) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
+`is_save`  int(11) NOT NULL DEFAULT 0 ,
+`pass_allerid`  int(11) NULL DEFAULT 0 ,
+`pass_allertype`  int(11) NULL DEFAULT 0 ,
+`pass_allername`  varchar(500) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' ,
+`match_time`  varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' ,
+`match_user`  varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' ,
+`unable_match`  int(11) NULL DEFAULT 0 ,
+`unable_match_desc`  varchar(70) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' ,
+`createdate`  timestamp NULL DEFAULT CURRENT_TIMESTAMP ,
+PRIMARY KEY (`match_scheme`, `allercode`)
+)
+ENGINE=InnoDB
+DEFAULT CHARACTER SET=utf8 COLLATE=utf8_general_ci
+
+;
+
+-- ----------------------------
+-- Table structure for mc_dict_costitem
+-- ----------------------------
+DROP TABLE IF EXISTS `mc_dict_costitem`;
+CREATE TABLE `mc_dict_costitem` (
+`match_scheme`  int(11) NOT NULL DEFAULT 0 ,
+`itemcode`  varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
+`itemname`  varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
+`itemtype`  int(11) NULL DEFAULT '-1' ,
+`is_byx`  int(11) NULL DEFAULT '-1' ,
+`searchcode`  varchar(256) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
+`is_save`  int(11) NOT NULL DEFAULT 0 ,
+`inserttime`  timestamp NULL DEFAULT CURRENT_TIMESTAMP ,
+PRIMARY KEY (`match_scheme`, `itemcode`)
+)
+ENGINE=InnoDB
+DEFAULT CHARACTER SET=utf8 COLLATE=utf8_general_ci
+
+;
+
+-- ----------------------------
+-- Table structure for mc_dict_dept
+-- ----------------------------
+DROP TABLE IF EXISTS `mc_dict_dept`;
+CREATE TABLE `mc_dict_dept` (
+`match_scheme`  int(11) NOT NULL DEFAULT 0 ,
+`deptcode`  varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
+`deptname`  varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' ,
+`searchcode`  varchar(256) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
+`is_clinic`  int(11) NULL DEFAULT '-1' ,
+`is_inhosp`  int(11) NULL DEFAULT '-1' ,
+`is_emergency`  int(11) NULL DEFAULT '-1' ,
+`is_save`  int(11) NULL DEFAULT 0 ,
+`inserttime`  timestamp NULL DEFAULT CURRENT_TIMESTAMP ,
+PRIMARY KEY (`deptcode`, `match_scheme`)
+)
+ENGINE=InnoDB
+DEFAULT CHARACTER SET=utf8 COLLATE=utf8_general_ci
+
+;
+
+-- ----------------------------
+-- Table structure for mc_dict_disease
+-- ----------------------------
+DROP TABLE IF EXISTS `mc_dict_disease`;
+CREATE TABLE `mc_dict_disease` (
+`match_scheme`  int(11) NOT NULL DEFAULT 0 ,
+`discode`  varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' ,
+`disname`  varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
+`searchcode`  varchar(256) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
+`typecode`  varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' ,
+`typename`  varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' ,
+`dis_type`  int(11) NULL DEFAULT '-1' ,
+`is_mxb`  int(11) NOT NULL DEFAULT '-1' ,
+`is_save`  int(11) NOT NULL DEFAULT 0 ,
+`pass_icd_code`  varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' ,
+`pass_icd_name`  varchar(500) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' ,
+`match_user`  varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' ,
+`match_time`  varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' ,
+`unable_match`  int(11) NULL DEFAULT 0 ,
+`unable_match_desc`  varchar(70) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' ,
+`createdate`  timestamp NULL DEFAULT CURRENT_TIMESTAMP ,
+PRIMARY KEY (`match_scheme`, `discode`)
+)
+ENGINE=InnoDB
+DEFAULT CHARACTER SET=utf8 COLLATE=utf8_general_ci
+
+;
+
+-- ----------------------------
+-- Table structure for mc_dict_doctor
+-- ----------------------------
+DROP TABLE IF EXISTS `mc_dict_doctor`;
+CREATE TABLE `mc_dict_doctor` (
+`match_scheme`  int(11) NOT NULL DEFAULT 0 ,
+`doctorcode`  varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '' ,
+`doctorname`  varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' ,
+`deptcode`  varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' ,
+`deptname`  varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' ,
+`doctorlevel`  varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' ,
+`ilevel`  int(11) NULL DEFAULT '-1' ,
+`is_clinic`  int(11) NULL DEFAULT '-1' ,
+`searchcode`  varchar(256) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
+`prespriv`  int(11) NULL DEFAULT 1 ,
+`is_save`  int(11) NOT NULL DEFAULT 0 ,
+`password`  varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL DEFAULT '63+lFq5e5+aJseZ/cuRKjA==' ,
+`antilevel`  int(11) NULL DEFAULT '-1' ,
+`createdate`  timestamp NULL DEFAULT CURRENT_TIMESTAMP ,
+PRIMARY KEY (`match_scheme`, `doctorcode`)
+)
+ENGINE=InnoDB
+DEFAULT CHARACTER SET=utf8 COLLATE=utf8_general_ci
 
 ;
 
@@ -191,6 +311,135 @@ DEFAULT CHARACTER SET=utf8 COLLATE=utf8_general_ci
 ;
 
 -- ----------------------------
+-- Table structure for mc_dict_exam
+-- ----------------------------
+DROP TABLE IF EXISTS `mc_dict_exam`;
+CREATE TABLE `mc_dict_exam` (
+`match_scheme`  int(11) NOT NULL DEFAULT 0 ,
+`examcode`  varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
+`examname`  varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
+`type`  int(11) NULL DEFAULT '-1' ,
+`searchcode`  varchar(256) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
+`is_save`  int(11) NOT NULL DEFAULT 0 ,
+`updatedate`  timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP ,
+PRIMARY KEY (`examcode`, `match_scheme`)
+)
+ENGINE=InnoDB
+DEFAULT CHARACTER SET=utf8 COLLATE=utf8_general_ci
+
+;
+
+-- ----------------------------
+-- Table structure for mc_dict_frequency
+-- ----------------------------
+DROP TABLE IF EXISTS `mc_dict_frequency`;
+CREATE TABLE `mc_dict_frequency` (
+`match_scheme`  int(11) NOT NULL DEFAULT 0 ,
+`frequency`  varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
+`times`  int(11) NULL DEFAULT '-1' ,
+`days`  int(11) NULL DEFAULT '-1' ,
+`pharmfrequency`  varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' ,
+`unable_match`  int(11) NULL DEFAULT 0 ,
+`match_desc`  varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' ,
+`is_save`  int(11) NOT NULL DEFAULT 0 ,
+`createdate`  timestamp NULL DEFAULT CURRENT_TIMESTAMP ,
+PRIMARY KEY (`match_scheme`, `frequency`)
+)
+ENGINE=InnoDB
+DEFAULT CHARACTER SET=utf8 COLLATE=utf8_general_ci
+
+;
+
+-- ----------------------------
+-- Table structure for mc_dict_lab
+-- ----------------------------
+DROP TABLE IF EXISTS `mc_dict_lab`;
+CREATE TABLE `mc_dict_lab` (
+`match_scheme`  int(11) NOT NULL DEFAULT 0 ,
+`labcode`  varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
+`labname`  varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
+`type`  int(11) NULL DEFAULT '-1' ,
+`searchcode`  varchar(256) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
+`is_save`  int(11) NULL DEFAULT 0 ,
+`updatedate`  timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP ,
+PRIMARY KEY (`labname`, `labcode`, `match_scheme`)
+)
+ENGINE=InnoDB
+DEFAULT CHARACTER SET=utf8 COLLATE=utf8_general_ci
+
+;
+
+-- ----------------------------
+-- Table structure for mc_dict_labsub
+-- ----------------------------
+DROP TABLE IF EXISTS `mc_dict_labsub`;
+CREATE TABLE `mc_dict_labsub` (
+`match_scheme`  int(11) NOT NULL DEFAULT 0 ,
+`itemcode`  varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
+`itemname`  varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
+`type_id`  int(11) NULL DEFAULT '-1' ,
+`medshow_id`  int(11) NULL DEFAULT NULL ,
+`searchcode`  varchar(256) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
+`is_save`  int(11) NOT NULL DEFAULT 0 ,
+`updatedate`  timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP ,
+PRIMARY KEY (`itemcode`, `itemname`, `match_scheme`)
+)
+ENGINE=InnoDB
+DEFAULT CHARACTER SET=utf8 COLLATE=utf8_general_ci
+
+;
+
+-- ----------------------------
+-- Table structure for mc_dict_operation
+-- ----------------------------
+DROP TABLE IF EXISTS `mc_dict_operation`;
+CREATE TABLE `mc_dict_operation` (
+`match_scheme`  int(11) NOT NULL DEFAULT 0 ,
+`operationcode`  varchar(64) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
+`operationname`  varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
+`searchcode`  varchar(256) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
+`typename`  varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' ,
+`useanti`  int(11) NULL DEFAULT '-1' ,
+`premoment_low`  double NULL DEFAULT '-1' ,
+`premoment_high`  double NULL DEFAULT '-1' ,
+`drugtime`  int(11) NULL DEFAULT '-1' ,
+`is_save`  int(11) NOT NULL DEFAULT 0 ,
+`createdate`  timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP ,
+PRIMARY KEY (`match_scheme`, `operationcode`)
+)
+ENGINE=InnoDB
+DEFAULT CHARACTER SET=utf8 COLLATE=utf8_general_ci
+
+;
+
+-- ----------------------------
+-- Table structure for mc_dict_route
+-- ----------------------------
+DROP TABLE IF EXISTS `mc_dict_route`;
+CREATE TABLE `mc_dict_route` (
+`match_scheme`  int(11) NOT NULL DEFAULT 0 ,
+`routecode`  varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
+`routename`  varchar(128) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' ,
+`searchcode`  varchar(256) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
+`route_type`  int(11) NULL DEFAULT '-1' ,
+`abbrev`  varchar(10) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' ,
+`is_save`  int(11) NOT NULL DEFAULT 0 ,
+`pass_routeid`  int(11) NULL DEFAULT 0 ,
+`pass_route_name`  varchar(256) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' ,
+`match_user`  varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' ,
+`match_time`  varchar(20) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' ,
+`unable_match`  int(11) NULL DEFAULT 0 ,
+`unable_match_desc`  varchar(70) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' ,
+`isskintest`  int(11) NULL DEFAULT 0 ,
+`createdate`  timestamp NULL DEFAULT CURRENT_TIMESTAMP ,
+PRIMARY KEY (`match_scheme`, `routecode`)
+)
+ENGINE=InnoDB
+DEFAULT CHARACTER SET=utf8 COLLATE=utf8_general_ci
+
+;
+
+-- ----------------------------
 -- Table structure for mc_hospital_match_relation
 -- ----------------------------
 DROP TABLE IF EXISTS `mc_hospital_match_relation`;
@@ -232,6 +481,243 @@ AUTO_INCREMENT=199008002
 ;
 
 -- ----------------------------
+-- Table structure for mc_modulename
+-- ----------------------------
+DROP TABLE IF EXISTS `mc_modulename`;
+CREATE TABLE `mc_modulename` (
+`pkid`  int(11) NOT NULL ,
+`moduletype`  int(11) NULL DEFAULT NULL ,
+`moduleid`  int(11) NULL DEFAULT NULL ,
+`modulename`  varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
+`pharm_modulename`  varchar(32) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
+`seqnum`  int(11) NULL DEFAULT NULL ,
+`has_std`  int(11) NULL DEFAULT NULL ,
+`has_custom`  int(11) NULL DEFAULT NULL ,
+`has_shield`  int(11) NULL DEFAULT NULL ,
+`is_show_menu`  int(11) NULL DEFAULT NULL ,
+PRIMARY KEY (`pkid`)
+)
+ENGINE=InnoDB
+DEFAULT CHARACTER SET=utf8 COLLATE=utf8_general_ci
+
+;
+
+-- ----------------------------
+-- Table structure for pa_files
+-- ----------------------------
+DROP TABLE IF EXISTS `pa_files`;
+CREATE TABLE `pa_files` (
+`fileid`  int(10) NOT NULL AUTO_INCREMENT ,
+`linkid`  int(10) NULL DEFAULT NULL ,
+`linkfile`  longblob NULL ,
+`linktype`  int(10) NULL DEFAULT NULL ,
+PRIMARY KEY (`fileid`)
+)
+ENGINE=InnoDB
+DEFAULT CHARACTER SET=utf8 COLLATE=utf8_general_ci
+AUTO_INCREMENT=90
+
+;
+
+-- ----------------------------
+-- Table structure for pa_project
+-- ----------------------------
+DROP TABLE IF EXISTS `pa_project`;
+CREATE TABLE `pa_project` (
+`projectid`  int(10) NOT NULL AUTO_INCREMENT ,
+`projectname`  varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
+`remark`  varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
+`teamid`  int(10) NOT NULL ,
+PRIMARY KEY (`projectid`, `projectname`, `teamid`)
+)
+ENGINE=InnoDB
+DEFAULT CHARACTER SET=utf8 COLLATE=utf8_general_ci
+AUTO_INCREMENT=21
+
+;
+
+-- ----------------------------
+-- Table structure for pa_script
+-- ----------------------------
+DROP TABLE IF EXISTS `pa_script`;
+CREATE TABLE `pa_script` (
+`scriptid`  int(10) NOT NULL AUTO_INCREMENT ,
+`xpath`  varchar(1000) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
+`testvalue`  longtext CHARACTER SET utf8 COLLATE utf8_general_ci NULL ,
+`scripttype`  int(10) NULL DEFAULT NULL ,
+`scriptname`  varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
+`step`  int(10) NULL DEFAULT NULL ,
+`testid`  int(10) NULL DEFAULT NULL ,
+`testurl`  varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
+PRIMARY KEY (`scriptid`)
+)
+ENGINE=InnoDB
+DEFAULT CHARACTER SET=utf8 COLLATE=utf8_general_ci
+AUTO_INCREMENT=7652
+
+;
+
+-- ----------------------------
+-- Table structure for pa_team
+-- ----------------------------
+DROP TABLE IF EXISTS `pa_team`;
+CREATE TABLE `pa_team` (
+`teamid`  int(10) NOT NULL AUTO_INCREMENT ,
+`teamname`  varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
+`remark`  varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
+PRIMARY KEY (`teamid`)
+)
+ENGINE=InnoDB
+DEFAULT CHARACTER SET=utf8 COLLATE=utf8_general_ci
+AUTO_INCREMENT=42
+
+;
+
+-- ----------------------------
+-- Table structure for pa_testmng
+-- ----------------------------
+DROP TABLE IF EXISTS `pa_testmng`;
+CREATE TABLE `pa_testmng` (
+`testid`  int(10) NOT NULL AUTO_INCREMENT ,
+`status`  int(10) NULL DEFAULT 1 ,
+`projectid`  int(10) NOT NULL ,
+`testname`  varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
+`testno`  varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
+`testtext`  mediumtext CHARACTER SET utf8 COLLATE utf8_general_ci NULL ,
+`testin`  mediumtext CHARACTER SET utf8 COLLATE utf8_general_ci NULL ,
+`testout`  mediumtext CHARACTER SET utf8 COLLATE utf8_general_ci NULL ,
+`testresult`  mediumtext CHARACTER SET utf8 COLLATE utf8_general_ci NULL ,
+`remark`  varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
+`inserttime`  varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
+`userid`  int(10) NULL DEFAULT NULL ,
+`selenium_share_status`  int(10) NULL DEFAULT NULL ,
+`testout_response`  mediumtext CHARACTER SET utf8 COLLATE utf8_general_ci NULL ,
+PRIMARY KEY (`testid`, `projectid`, `testname`)
+)
+ENGINE=InnoDB
+DEFAULT CHARACTER SET=utf8 COLLATE=utf8_general_ci
+AUTO_INCREMENT=714
+
+;
+
+-- ----------------------------
+-- Table structure for pass_anli_err
+-- ----------------------------
+DROP TABLE IF EXISTS `pass_anli_err`;
+CREATE TABLE `pass_anli_err` (
+`errid`  int(10) NOT NULL AUTO_INCREMENT ,
+`testid`  int(10) NOT NULL ,
+`testname`  varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
+`json_err`  mediumtext CHARACTER SET utf8 COLLATE utf8_general_ci NULL ,
+PRIMARY KEY (`errid`)
+)
+ENGINE=InnoDB
+DEFAULT CHARACTER SET=utf8 COLLATE=utf8_general_ci
+AUTO_INCREMENT=79
+
+;
+
+-- ----------------------------
+-- Table structure for pass_files
+-- ----------------------------
+DROP TABLE IF EXISTS `pass_files`;
+CREATE TABLE `pass_files` (
+`fileid`  int(10) NOT NULL AUTO_INCREMENT ,
+`linkid`  int(10) NULL DEFAULT NULL ,
+`linkfile`  longblob NULL ,
+`linktype`  int(10) NULL DEFAULT NULL ,
+PRIMARY KEY (`fileid`)
+)
+ENGINE=InnoDB
+DEFAULT CHARACTER SET=utf8 COLLATE=utf8_general_ci
+AUTO_INCREMENT=1
+
+;
+
+-- ----------------------------
+-- Table structure for pass_project
+-- ----------------------------
+DROP TABLE IF EXISTS `pass_project`;
+CREATE TABLE `pass_project` (
+`projectid`  int(10) NOT NULL AUTO_INCREMENT ,
+`projectname`  varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
+`remark`  varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
+`teamid`  int(10) NOT NULL ,
+PRIMARY KEY (`projectid`, `projectname`, `teamid`)
+)
+ENGINE=InnoDB
+DEFAULT CHARACTER SET=utf8 COLLATE=utf8_general_ci
+AUTO_INCREMENT=29
+
+;
+
+-- ----------------------------
+-- Table structure for pass_script
+-- ----------------------------
+DROP TABLE IF EXISTS `pass_script`;
+CREATE TABLE `pass_script` (
+`scriptid`  int(10) NOT NULL AUTO_INCREMENT ,
+`xpath`  varchar(1000) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
+`testvalue`  longtext CHARACTER SET utf8 COLLATE utf8_general_ci NULL ,
+`scripttype`  int(10) NULL DEFAULT NULL ,
+`scriptname`  varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
+`step`  int(10) NULL DEFAULT NULL ,
+`testid`  int(10) NULL DEFAULT NULL ,
+`testurl`  varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
+PRIMARY KEY (`scriptid`)
+)
+ENGINE=InnoDB
+DEFAULT CHARACTER SET=utf8 COLLATE=utf8_general_ci
+AUTO_INCREMENT=1
+
+;
+
+-- ----------------------------
+-- Table structure for pass_team
+-- ----------------------------
+DROP TABLE IF EXISTS `pass_team`;
+CREATE TABLE `pass_team` (
+`teamid`  int(10) NOT NULL AUTO_INCREMENT ,
+`teamname`  varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
+`remark`  varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
+PRIMARY KEY (`teamid`)
+)
+ENGINE=InnoDB
+DEFAULT CHARACTER SET=utf8 COLLATE=utf8_general_ci
+AUTO_INCREMENT=52
+
+;
+
+-- ----------------------------
+-- Table structure for pass_testmng
+-- ----------------------------
+DROP TABLE IF EXISTS `pass_testmng`;
+CREATE TABLE `pass_testmng` (
+`testid`  int(10) NOT NULL AUTO_INCREMENT ,
+`status`  int(10) NULL DEFAULT 1 ,
+`projectid`  int(10) NOT NULL ,
+`testname`  varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
+`testno`  varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
+`testtext`  mediumtext CHARACTER SET utf8 COLLATE utf8_general_ci NULL ,
+`testin`  mediumtext CHARACTER SET utf8 COLLATE utf8_general_ci NULL ,
+`testout`  mediumtext CHARACTER SET utf8 COLLATE utf8_general_ci NULL ,
+`testresult`  mediumtext CHARACTER SET utf8 COLLATE utf8_general_ci NULL ,
+`remark`  varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
+`inserttime`  varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
+`userid`  int(10) NULL DEFAULT NULL ,
+`moduleid`  int(11) NULL DEFAULT NULL ,
+`modulename`  varchar(255) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
+`testout_response`  mediumtext CHARACTER SET utf8 COLLATE utf8_general_ci NULL ,
+`anlitype`  int(10) NULL DEFAULT NULL ,
+PRIMARY KEY (`testid`, `projectid`, `testname`)
+)
+ENGINE=InnoDB
+DEFAULT CHARACTER SET=utf8 COLLATE=utf8_general_ci
+AUTO_INCREMENT=81974
+
+;
+
+-- ----------------------------
 -- Table structure for prescription
 -- ----------------------------
 DROP TABLE IF EXISTS `prescription`;
@@ -243,7 +729,7 @@ PRIMARY KEY (`pre_id`)
 )
 ENGINE=InnoDB
 DEFAULT CHARACTER SET=utf8 COLLATE=utf8_general_ci
-AUTO_INCREMENT=43
+AUTO_INCREMENT=44
 
 ;
 
@@ -261,6 +747,26 @@ PRIMARY KEY (`projectid`, `projectname`, `teamid`)
 ENGINE=InnoDB
 DEFAULT CHARACTER SET=utf8 COLLATE=utf8_general_ci
 AUTO_INCREMENT=25
+
+;
+
+-- ----------------------------
+-- Table structure for sa_gather_log
+-- ----------------------------
+DROP TABLE IF EXISTS `sa_gather_log`;
+CREATE TABLE `sa_gather_log` (
+`id`  int(11) NOT NULL AUTO_INCREMENT ,
+`anlitype`  int(10) NULL DEFAULT 0 ,
+`moduleid`  int(10) NULL DEFAULT NULL ,
+`modulename`  varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
+`testname`  varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT '' ,
+`gatherbaseinfo`  mediumtext CHARACTER SET utf8 COLLATE utf8_general_ci NULL ,
+`gatherresult`  mediumtext CHARACTER SET utf8 COLLATE utf8_general_ci NULL ,
+PRIMARY KEY (`id`)
+)
+ENGINE=InnoDB
+DEFAULT CHARACTER SET=utf8 COLLATE=utf8_general_ci
+AUTO_INCREMENT=20
 
 ;
 
@@ -299,6 +805,23 @@ PRIMARY KEY (`fileid`)
 ENGINE=InnoDB
 DEFAULT CHARACTER SET=utf8 COLLATE=utf8_general_ci
 AUTO_INCREMENT=1
+
+;
+
+-- ----------------------------
+-- Table structure for serverip
+-- ----------------------------
+DROP TABLE IF EXISTS `serverip`;
+CREATE TABLE `serverip` (
+`serverid`  int(10) NOT NULL AUTO_INCREMENT ,
+`servername`  varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL ,
+`serveraddress`  text CHARACTER SET utf8 COLLATE utf8_general_ci NULL ,
+`iptype`  int(10) NULL DEFAULT NULL ,
+PRIMARY KEY (`serverid`)
+)
+ENGINE=InnoDB
+DEFAULT CHARACTER SET=utf8 COLLATE=utf8_general_ci
+AUTO_INCREMENT=27
 
 ;
 
@@ -349,18 +872,14 @@ CREATE TABLE `sys_users` (
 `username`  varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
 `password`  varchar(100) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
 `upanddown`  int(10) NULL DEFAULT 0 ,
-`browserpath`  varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
 `remark`  varchar(10000) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
-`pa_screen`  varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
-`pa_screen_win`  varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
-`urlid`  varchar(200) CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL ,
 `state`  int(10) NULL DEFAULT 1 ,
 `level`  int(10) NULL DEFAULT 1 ,
 PRIMARY KEY (`userid`, `loginname`)
 )
 ENGINE=InnoDB
 DEFAULT CHARACTER SET=utf8 COLLATE=utf8_general_ci
-AUTO_INCREMENT=41
+AUTO_INCREMENT=46
 
 ;
 
@@ -376,7 +895,7 @@ PRIMARY KEY (`teamid`)
 )
 ENGINE=InnoDB
 DEFAULT CHARACTER SET=utf8 COLLATE=utf8_general_ci
-AUTO_INCREMENT=45
+AUTO_INCREMENT=46
 
 ;
 
@@ -472,14 +991,74 @@ ALTER TABLE `mc_dict_drug_pass` AUTO_INCREMENT=65625;
 ALTER TABLE `mc_hospital_match_relation` AUTO_INCREMENT=199008002;
 
 -- ----------------------------
+-- Auto increment value for pa_files
+-- ----------------------------
+ALTER TABLE `pa_files` AUTO_INCREMENT=90;
+
+-- ----------------------------
+-- Auto increment value for pa_project
+-- ----------------------------
+ALTER TABLE `pa_project` AUTO_INCREMENT=21;
+
+-- ----------------------------
+-- Auto increment value for pa_script
+-- ----------------------------
+ALTER TABLE `pa_script` AUTO_INCREMENT=7652;
+
+-- ----------------------------
+-- Auto increment value for pa_team
+-- ----------------------------
+ALTER TABLE `pa_team` AUTO_INCREMENT=42;
+
+-- ----------------------------
+-- Auto increment value for pa_testmng
+-- ----------------------------
+ALTER TABLE `pa_testmng` AUTO_INCREMENT=714;
+
+-- ----------------------------
+-- Auto increment value for pass_anli_err
+-- ----------------------------
+ALTER TABLE `pass_anli_err` AUTO_INCREMENT=79;
+
+-- ----------------------------
+-- Auto increment value for pass_files
+-- ----------------------------
+ALTER TABLE `pass_files` AUTO_INCREMENT=1;
+
+-- ----------------------------
+-- Auto increment value for pass_project
+-- ----------------------------
+ALTER TABLE `pass_project` AUTO_INCREMENT=29;
+
+-- ----------------------------
+-- Auto increment value for pass_script
+-- ----------------------------
+ALTER TABLE `pass_script` AUTO_INCREMENT=1;
+
+-- ----------------------------
+-- Auto increment value for pass_team
+-- ----------------------------
+ALTER TABLE `pass_team` AUTO_INCREMENT=52;
+
+-- ----------------------------
+-- Auto increment value for pass_testmng
+-- ----------------------------
+ALTER TABLE `pass_testmng` AUTO_INCREMENT=81974;
+
+-- ----------------------------
 -- Auto increment value for prescription
 -- ----------------------------
-ALTER TABLE `prescription` AUTO_INCREMENT=43;
+ALTER TABLE `prescription` AUTO_INCREMENT=44;
 
 -- ----------------------------
 -- Auto increment value for project
 -- ----------------------------
 ALTER TABLE `project` AUTO_INCREMENT=25;
+
+-- ----------------------------
+-- Auto increment value for sa_gather_log
+-- ----------------------------
+ALTER TABLE `sa_gather_log` AUTO_INCREMENT=20;
 
 -- ----------------------------
 -- Auto increment value for script
@@ -490,6 +1069,11 @@ ALTER TABLE `script` AUTO_INCREMENT=7652;
 -- Auto increment value for seleniumfiles
 -- ----------------------------
 ALTER TABLE `seleniumfiles` AUTO_INCREMENT=1;
+
+-- ----------------------------
+-- Auto increment value for serverip
+-- ----------------------------
+ALTER TABLE `serverip` AUTO_INCREMENT=27;
 
 -- ----------------------------
 -- Auto increment value for sys_message
@@ -504,12 +1088,12 @@ ALTER TABLE `sys_url` AUTO_INCREMENT=25;
 -- ----------------------------
 -- Auto increment value for sys_users
 -- ----------------------------
-ALTER TABLE `sys_users` AUTO_INCREMENT=41;
+ALTER TABLE `sys_users` AUTO_INCREMENT=46;
 
 -- ----------------------------
 -- Auto increment value for team
 -- ----------------------------
-ALTER TABLE `team` AUTO_INCREMENT=45;
+ALTER TABLE `team` AUTO_INCREMENT=46;
 
 -- ----------------------------
 -- Auto increment value for testmng
