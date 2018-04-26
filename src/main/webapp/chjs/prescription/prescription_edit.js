@@ -89,14 +89,65 @@ $(document).ready(function() {
 	init_time();
 	
 	//获取JSON数据,解析处理
-	var prescription_json=$("#prescription_json").val();
-	prescription_json = JSON.parse(prescription_json);
+	var prescription_json=null;
+	if($("#prescription_json").val()!=''){
+		prescription_json=$("#prescription_json").val();
+		prescription_json = JSON.parse(prescription_json);
+	}
 	json_fenjie(prescription_json);
 	
 //	$('#drugsmessage .input-group').datetimepicker({
 //		format: 'YYYY-MM-DD HH:mm:ss',  //YYYY-MM-DD HH:mm:ss
 //        locale: moment.locale('zh-cn'),
 //	});
+	
+	//鼠标浮动提示窗口-触发事件
+	$(document).on('mouseover mouseout','table td',function(){ 
+		if(event.type == 'mouseover'){//鼠标悬浮
+			if($(this).text().length>5){//浮动窗口
+				$('body').append('<div id="title" style="max-width:400px;max-height:200px;position: absolute;'
+						+'top:0px;left:0px;background-color: #fff2e8;/*自动换行*/	word-wrap: break-word;' 
+						+'overflow: hidden;text-overflow: ellipsis;'
+						+'border: 1px solid #c0c0c0; z-index:9999;"></div>');
+				$(this).mousemove(function(e) { 
+					var xx = e.originalEvent.x || e.originalEvent.layerX || 0; 
+					var yy = e.originalEvent.y || e.originalEvent.layerY || 0; 
+					var newxx=null;
+					var newyy=null;
+					
+					//如果提示框在最下面超过页面高度，则靠上显示
+					var bodyheight=document.body.offsetHeight;
+					var bodywidth=document.body.offsetWidth;
+					if((yy+30+$('#title').height())<bodyheight){
+//						newxx=xx+20;
+						newyy=yy+10;
+					}else{
+//						newxx=xx+20;
+						newyy=yy+10-$('#title').height();
+					}
+					if((xx+20+$('#title').width())<bodywidth){
+						newxx=xx+20;
+//						newyy=yy+10;
+					}else{
+						newxx=xx-20-$('#title').width();
+//						newyy=yy+10-200;
+					}
+					
+					$('#title').css('left',newxx+'px');
+					$('#title').css('top',newyy+'px');
+					
+					if($(this).find('a').length > 0){
+						$('#title').text($(this).find('a').text().substring(0,300));
+					}else{
+						$('#title').text($(this).text().substring(0,300));
+					}
+				}); 
+			}
+		}else if(event.type == 'mouseout'){//鼠标离开
+			$('#title').remove();
+		}
+	}); 
+	
 });
 
 
@@ -149,6 +200,7 @@ var TableInit_drugs =function () {
 //			},
 			// 是否显示父子表
 			columns : [{
+				field : 'ID',
 				checkbox : true,width:30
 			} ,	{
 				width:70,
@@ -185,11 +237,13 @@ var TableInit_drugs =function () {
 				field : 'DrugSource',
 				title : '药品来源',
 				editable: {
-                    type: 'text',
-                    title: 'DrugSource',
-                    validate: function (v) {
-                    }
-                }
+	                type: 'select',
+	                pk: 1,
+	                source: [
+	                    {value: 'PASS_INNER_PASS', text: 'PASS_INNER_PASS'},
+	                    {value: 'USER', text: 'USER'},
+	                ]
+	            }
 			}, {
 				width:150,
 				field : 'DrugUniqueCode',
@@ -265,11 +319,13 @@ var TableInit_drugs =function () {
 				field : 'RouteSource',
 				title : '给药途径来源',
 				editable: {
-                    type: 'text',
-                    title: 'RouteSource',
-                    validate: function (v) {
-                    }
-                }
+	                type: 'select',
+	                pk: 1,
+	                source: [
+	                    {value: 'PASS_INNER_PASS', text: 'PASS_INNER_PASS'},
+	                    {value: 'USER', text: 'USER'},
+	                ]
+	            }
 			}, {
 				width:110,
 				field : 'RouteCode',
@@ -295,11 +351,13 @@ var TableInit_drugs =function () {
 				field : 'FreqSource',
 				title : '频次来源',
 				editable: {
-                    type: 'text',
-                    title: 'FreqSource',
-                    validate: function (v) {
-                    }
-                }
+	                type: 'select',
+	                pk: 1,
+	                source: [
+	                    {value: 'PASS_INNER_PASS', text: 'PASS_INNER_PASS'},
+	                    {value: 'USER', text: 'USER'},
+	                ]
+	            }
 			}, {
 				width:50,
 				field : 'Frequency',
@@ -539,7 +597,18 @@ var TableInit_drugs =function () {
                     }
                 }
 			} ],
-			
+			// 1.点击每行进行函数的触发
+			onClickRow : function(row, tr,flied){
+				if($(tr).find('input').prop("checked")){//check类型的input
+					$(tr).attr('class','');//改变样式
+					$(tr).find('input').prop("checked",false);//改变勾选状态
+					row.ID=false;//改变勾选值
+				}else{
+					$(tr).attr('class','selected');
+					$(tr).find('input').prop("checked",true);
+					row.ID=true;
+				}
+			},
 		});
 	}
 	
@@ -603,11 +672,13 @@ var TableInit_allergen =function () {
 	        },    
 	        {field:'AllerSource',title:'过敏原来源',width:100,align:'center',
 	        	editable: {
-                    type: 'text',
-                    title: 'AllerSource',
-                    validate: function (v) {
-                    }
-                }
+	                type: 'select',
+	                pk: 1,
+	                source: [
+	                    {value: 'PASS_INNER_PASS', text: 'PASS_INNER_PASS'},
+	                    {value: 'USER', text: 'USER'},
+	                ]
+	            }
 	        },    
 	        {field:'AllerCode',title:'过敏原编号',width:100,align:'center',
 	        	editable: {
@@ -705,11 +776,13 @@ var TableInit_disease =function () {
 	        },    
 	        {field:'DisSource',title:'疾病来源',width:100,align:'center',
 	        	editable: {
-                    type: 'text',
-                    title: 'DisSource',
-                    validate: function (v) {
-                    }
-                }
+	                type: 'select',
+	                pk: 1,
+	                source: [
+	                    {value: 'PASS_INNER_PASS', text: 'PASS_INNER_PASS'},
+	                    {value: 'USER', text: 'USER'},
+	                ]
+	            }
 	        },
 	        {field:'DiseaseCode',title:'疾病编号',width:100,align:'center',
 	        	editable: {
@@ -2380,6 +2453,18 @@ function dict_operation_modal_yes(){
 }
 //分解JSON
 function json_fenjie(json){
+	if(json==null){
+		PassClient= {};
+		Patient= {};
+		ScreenAllergenList= {};
+		ScreenMedCondList= {};
+		ScreenOperationList= {};
+		ScreenDrugList= {};
+		InputJsonInfoList= {}; 
+		
+		return;
+	}
+	
 	PassClient= json.PassClient;
 	Patient= json.Patient;
 	ScreenAllergenList= json.ScreenAllergenList;
@@ -2527,7 +2612,8 @@ function json_fenjie(json){
 		if(InputJsonInfo.type=="druginfo"){
 			var aaa = new Array();
 			aaa.push(InputJsonInfo);
-			$('#fujiadrug #json_table').bootstrapTable('load',aaa); 
+//			$('#fujiadrug #json_table').bootstrapTable('load',aaa); 
+			$('#fujiadrug #json_table').bootstrapTable('append',aaa); 
 //			$('#fujiadrug #json_table').bootstrapTable('append',{
 //				type:"druginfo",
 //				index: InputJsonInfo.index,
@@ -2539,7 +2625,7 @@ function json_fenjie(json){
 		if(InputJsonInfo.type=="diseaseinfo"){
 			var aaa = new Array();
 			aaa.push(InputJsonInfo);
-			$('#fujiadisease #json_table').bootstrapTable('load',aaa); 
+			$('#fujiadisease #json_table').bootstrapTable('append',aaa); 
 //			$('#fujiadisease #json_table').bootstrapTable('append',{
 //				type:"diseaseinfo",
 //				index: InputJsonInfo.index,
@@ -2550,7 +2636,7 @@ function json_fenjie(json){
 		if(InputJsonInfo.type=="otherrecipinfo"){
 			var aaa = new Array();
 			aaa.push(InputJsonInfo);
-			$('#fujiaotherrecip #json_table').bootstrapTable('load',aaa); 
+			$('#fujiaotherrecip #json_table').bootstrapTable('append',aaa); 
 //			$('#fujiaotherrecip #json_table').bootstrapTable('append',{
 //				type:"otherrecipinfo",
 //				hiscode: InputJsonInfo.hiscode,
@@ -2568,7 +2654,7 @@ function json_fenjie(json){
 		if(InputJsonInfo.type=="examinfo"){
 			var aaa = new Array();
 			aaa.push(InputJsonInfo);
-			$('#fujiaexaminfo #json_table').bootstrapTable('load',aaa); 
+			$('#fujiaexaminfo #json_table').bootstrapTable('append',aaa); 
 //			$('#fujiaexaminfo #json_table').bootstrapTable('append',{
 //				type:"examinfo",
 //				requestno:InputJsonInfo.requestno,
@@ -2584,7 +2670,7 @@ function json_fenjie(json){
 		if(InputJsonInfo.type=="labinfo"){
 			var aaa = new Array();
 			aaa.push(InputJsonInfo);
-			$('#fujialabinfo #json_table').bootstrapTable('load',aaa);
+			$('#fujialabinfo #json_table').bootstrapTable('append',aaa);
 //			$('#fujialabinfo #json_table').bootstrapTable('append',{
 //				type:"labinfo",
 //				requestno: InputJsonInfo.requestno,
@@ -2630,7 +2716,7 @@ function json_hebing(){
 	Patient['PatStatus']=parseInt($('#patientmessage #PatStatus').val());
 	Patient['IsLactation']=parseInt($('#patientmessage #IsLactation').val());
 	Patient['IsPregnancy']=parseInt($('#patientmessage #IsPregnancy').val());
-	Patient['PregStartDate']=$('#patientmessage #PregStartDate').val();
+	Patient['PregStartDate']=$('#patientmessage #PregStartDate input').val();
 	Patient['HepDamageDegree']=parseInt($('#patientmessage #HepDamageDegree').val());
 	Patient['RenDamageDegree']=parseInt($('#patientmessage #RenDamageDegree').val());
 	Patient['UseTime']=$('#patientmessage #UseTime input').val();
@@ -2769,14 +2855,26 @@ function json_hebing(){
 		cache:true,
 		data:{
 			pre_id: $('#pre_id').val(),
-			patientname:$('#patientname').val(),
-			prescription_json:JSON.stringify(json)
+//			patientname:$('#patientname').val(),
+			prescription_json:JSON.stringify(json),
+			prescriptiontype:$('#prescriptiontype').val(),
 		},
 		success: function(result){
-			if(result==1){
-				location.reload();
-			}
-			
+//			swal({
+//	            title: "提示",
+//	            text: result
+//	        });
+			swal({ 
+				  title: "提示", 
+				  text: result, 
+//				  confirmButtonColor: "#DD6B55",
+				  confirmButtonText: "OK", 
+				  closeOnConfirm: false, 
+				},
+				function(isConfirm){ 
+					location.reload();
+				});
+//			location.reload();
 		},
 		error:function(XMLResponse){
 			alert(XMLResponse.responseText)

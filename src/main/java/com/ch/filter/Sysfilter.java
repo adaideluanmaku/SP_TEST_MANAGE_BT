@@ -46,10 +46,35 @@ public class Sysfilter implements Filter {
 		HttpServletRequest req=(HttpServletRequest) request;//把ServletRequest强转成HttpServletRequest
 		HttpServletResponse res=(HttpServletResponse) response;//把ServletResponse强转成HttpServletResponse
 		
+//		if(req.getRequestURI().contains("ws") || req.getRequestURI().contains("/websocket")){
+//			chain.doFilter(req, res);
+//			return;
+//		}
+		
+		if(req.getRequestURI().contains(".js") || req.getRequestURI().contains(".css")){
+			chain.doFilter(req, res);
+			return;
+		}
+		if(req.getRequestURI().contains("login.jsp") || req.getRequestURI().contains("login/zhuce") 
+				|| req.getRequestURI().contains("/login/login")){
+			chain.doFilter(req, res);
+			return;
+		}
+		
 		//过滤session
 		HttpSession session=req.getSession();
+		String new_sessionid=session.getId();
+		String old_sesseionid="";
+		if(session.getAttribute("sessionid")!=null){
+			old_sesseionid=session.getAttribute("sessionid").toString();
+		}
 		
-		chain.doFilter(req, res);
+		if(new_sessionid.equals(old_sesseionid)){
+			chain.doFilter(req, res);
+			return;
+		}
+		
+		res.sendRedirect("/SP_TEST_MANAGE_BT/login.jsp");
 	}
 
 	/**

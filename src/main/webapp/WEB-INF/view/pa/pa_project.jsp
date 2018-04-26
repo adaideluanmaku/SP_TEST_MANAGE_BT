@@ -9,7 +9,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>INSPINIA | team</title>
+<title>INSPINIA | project</title>
 <!-- SYS CSS -->
 <link href="${pageContext.request.contextPath}/bootstrap_home/css/bootstrap.min.css" rel="stylesheet">
 <link href="${pageContext.request.contextPath}/bootstrap_home/css/style.css" rel="stylesheet">
@@ -28,11 +28,26 @@
 <link href="${pageContext.request.contextPath}/bootstrap_home/bootstrap-dialog/bootstrap-dialog.min.css" rel="stylesheet" >
 <script src="${pageContext.request.contextPath}/bootstrap_home/bootstrap-dialog/bootstrap-dialog.min.js"></script>
     
+<!-- bootstrapValidator -->
+<link rel="stylesheet" href="${pageContext.request.contextPath}/bootstrap_home/bootstrapValidator/css/bootstrapValidator.css"/>
+<script src="${pageContext.request.contextPath}/bootstrap_home/bootstrapValidator/js/bootstrapValidator.js"></script>
+<script src="${pageContext.request.contextPath}/bootstrap_home/bootstrapValidator/js/language/zh_CN.js"></script>
+
+<!-- Sweet alert -->
+<link href="${pageContext.request.contextPath}/bootstrap_home/css/sweetalert.css" rel="stylesheet">
+<script src="${pageContext.request.contextPath}/bootstrap_home/js/plugins/sweetalert/sweetalert.min.js"></script>
+
+<!-- select2 -->
+<link href="${pageContext.request.contextPath}/bootstrap_home/bootstrap-select2/css/select2.css" rel="stylesheet" />
+<script src="${pageContext.request.contextPath}/bootstrap_home/bootstrap-select2/js/select2.js"></script>
+<script src="${pageContext.request.contextPath}/bootstrap_home/bootstrap-select2/js/i18n/zh-CN.js"></script>
+
+
 <!-- MY JS -->
 <script type="text/javascript" src="${pageContext.request.contextPath}/chjs/pa/pa_project.js"></script>
 
 </head>
-<body style="background-color: #f3f3f4">
+<body style="background-color: #ffffff;">
 <input id="addurl" type="hidden" value="${pageContext.request.contextPath}">
 
 <div id="wrapper" >
@@ -48,39 +63,30 @@
 			<div class="col-lg-2"></div>
 		</div>
 		<div class="animated fadeInRight">
-			<div id="table">
+			<div id="table_div">
 				<!-- 列表表格-开始制作 -->
 				<div class="panel-body" style="padding-bottom:0px;">
 					<div class="panel panel-default">
 					    <div class="panel-heading">查询条件</div>
 					    <div class="panel-body">
-					        <form id="formSearch" class="form-horizontal">
-					            <div class="form-group" style="margin-top:15px">
-					                <label class="control-label col-sm-1" for="txt_search_departmentname">部门名称</label>
-					                <div class="col-sm-3">
-					                    <input type="text" class="form-control" id="txt_search_departmentname">
-					                </div>
-					                <label class="control-label col-sm-1" for="txt_search_statu">状态</label>
-					                <div class="col-sm-3">
-					                    <input type="text" class="form-control" id="txt_search_statu">
-					                </div>
-					                <div class="col-sm-2" style="text-align: left;">
-					                    <button type="button" id="btn_query" class="btn btn-primary" >查询</button>
-					                </div>
-					            </div>
-					        </form>
+			                <label class="control-label col-sm-1" for="txt_search_departmentname" style="padding-top:7px">项目名称</label>
+			                <div class="col-sm-3">
+			                    <input type="text" class="form-control" id="projectname">
+			                </div>
+			                <div class="col-sm-2" style="text-align: left;">
+			                    <button type="button" id="btn_query" class="btn btn-primary" onclick="table_search()">查询</button>
+			                </div>
 					    </div>
 					</div>  
-					
 					<div id="toolbar" class="btn-group">
 						<div class="col-sm-12">
-							<button id="btn_add" type="button" class="btn btn-default">
+							<button id="btn_add" type="button" class="btn btn-default" onclick="open_dialog()">
 					        	<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增
 						    </button>
-						    <button id="btn_edit" type="button" class="btn btn-default">
+						    <button id="btn_edit" type="button" class="btn btn-default" onclick="edit_dialog()">
 						        <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>修改
 						    </button>
-						    <button id="btn_delete" type="button" class="btn btn-default">
+						    <button id="btn_delete" type="button" class="btn btn-default" onclick="del_data()">
 						        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>删除
 						    </button>
 						    <div  class="btn-group">
@@ -100,35 +106,53 @@
 						</div>
 					</div>
 					<!-- 增加表格样式：style="table-layout: fixed"时，设置列宽才能生效 -->
-					<table id="tb_departments" style="table-layout:fixed; "></table>
+					<table id="table_data" style="table-layout:fixed; "></table>
 				</div>
-				
-				<!-- dialog -->
-				<!-- 模态框（Modal） -->
-				<div class="hide" id="myModal" >
-					<form role="form">
-						<div class="form-group">
-							<label for="name">名称</label>
-							<input type="text" class="form-control" id="name" placeholder="请输入名称">
-						</div>
-						<div class="form-group">
-							<label for="inputfile">文件输入</label>
-							<input type="file" id="inputfile">
-							<p class="help-block">这里是块级帮助文本的实例。</p>
-						</div>
-						<div class="checkbox">
-							<label>
-								<input type="checkbox"> 请打勾
-							</label>
-						</div>
-						<button type="submit" class="btn btn-default">提交</button>
-					</form>
-				</div> 
 				<!-- 数据表格-结束 -->
 			</div>
 		</div>
 	</div>
 </div>
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="modal_dialog" tabindex="-1" role="dialog" data-backdrop="static" data-keyboard="false" aria-labelledby="myModalLabel" aria-hidden="true" height="600px">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title">团队维护</h4>
+			</div>
+			<div class="modal-body" style="height:400px;overflow:auto">
+				<form class="form-horizontal" role="form" id="dialog_form">
+					<input type="hidden" id="projectid" name="projectid" value="">
+					<div class="form-group">
+			            <label for="teamid" class="col-sm-2 control-label">团队名称</label>
+			            <div class="col-sm-4">
+			            	<select id='teamid' name="teamid" class="js-data-example-ajax" style="width:100%"></select>
+			            </div>
+			        </div>
+					<div class="form-group">
+						<label for="projectname" class="col-sm-2 control-label">项目名称</label>
+						<div class="col-sm-4">
+							<input type="text" class="form-control" id="projectname"  name="projectname">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="remark" class="col-sm-2 control-label">备注</label>
+						<div class="col-sm-10">
+							<textarea class="col-sm-12" rows="10" id="remark" name="remark"></textarea>
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+				<button type="button" class="btn btn-primary" id="btn_add" onclick="add_data()">确定</button>
+				<button type="button" class="btn btn-primary" id="btn_update" onclick="update_data()">更新</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal -->
+</div>
+
 </body>
 </html>
 

@@ -13,7 +13,7 @@ import com.ch.sysuntils.DataGrid;
 
 
 @Service
-public class Dict {
+public class Dictbean {
 	@Autowired
 	JdbcTemplate jdbcTemplate;
 	@Autowired

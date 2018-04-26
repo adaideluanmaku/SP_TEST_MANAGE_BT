@@ -106,7 +106,7 @@
 	</bean> -->
 	
 	<!-- HTML方式读取资源文件，数据源配置, 改为druid数据库连接池 oracle-->
-	<!-- <bean id="dataSource_oracle" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+	<bean id="dataSource_oracle" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
 		<property name="url" value="${jdbc.orclurl}" />
 		<property name="username" value="${jdbc.orclusername}" />
 		<property name="password" value="${jdbc.orclpassword}" />
@@ -130,12 +130,12 @@
 		<property name="logAbandoned" value="true" />
 
 		<property name="filters" value="stat" />
-	</bean> -->
+	</bean>
 	
   	<!-- jdbc template for import -->
- 	<!-- <bean id="jdbcTemplate_oracle" class="org.springframework.jdbc.core.JdbcTemplate">
+ 	<bean id="jdbcTemplate_oracle" class="org.springframework.jdbc.core.JdbcTemplate">
  		<property name="dataSource" ref="dataSource_oracle" /> 
- 	</bean> -->
+ 	</bean>
 	
 	 <!-- HTML方式读取资源文件，数据源配置, 改为druid数据库连接池 mysql-passpa2db-->
 	<!-- <bean id="dataSource_anli" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">

@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.ch.service.Dict;
+import com.ch.service.Dictbean;
 import com.ch.sysuntils.DataGrid;
 
 @Controller
@@ -25,7 +25,7 @@ public class DictAciton {
 	@Autowired
 	JdbcTemplate jdbcTemplate;
 	@Autowired
-	Dict dict;
+	Dictbean dict;
 	
 	@ResponseBody
 	@RequestMapping("/drug")

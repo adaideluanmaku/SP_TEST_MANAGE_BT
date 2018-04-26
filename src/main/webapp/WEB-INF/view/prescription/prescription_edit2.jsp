@@ -50,11 +50,9 @@
 	<div class="panel panel-default">
 	    <div class="panel-heading">处方操作</div>
 	    <div class="panel-body">
-	        <form id="formSearch" class="form-horizontal">
-		        <div class="col-sm-2" style="text-align: left;">
-		            <button type="button" id="prescription_save" class="btn btn-primary" >保存</button>
-		        </div>
-	        </form>
+	        <div class="col-sm-2" style="text-align: left;">
+	            <button type="button" id="prescription_save" class="btn btn-primary" >保存</button>
+	        </div>
 	    </div>
 	</div>  
 	<div class="panel">

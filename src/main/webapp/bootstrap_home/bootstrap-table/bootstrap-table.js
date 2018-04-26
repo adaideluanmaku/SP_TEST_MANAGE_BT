@@ -1742,7 +1742,6 @@
             if (column.checkbox || column.radio) {
                 type = column.checkbox ? 'checkbox' : type;
                 type = column.radio ? 'radio' : type;
-
                 text = [sprintf(that.options.cardView ?
                         '<div class="card-view %s">' : '<td class="bs-checkbox %s">', column['class'] || ''),
                     '<input' +
@@ -2508,7 +2507,7 @@
         this.initBody(true);
     };
     
-    //CH CHENHUI CODE selected remove
+    //CH CHENHUI CODE selecteds remove
     BootstrapTable.prototype.removeSelectionId_CH = function () {
     	var that = this;
         var objs=that.$body[0].childNodes;

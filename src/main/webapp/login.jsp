@@ -40,16 +40,16 @@ if(window !=top){
 			</p>
 			<p>Login in. To see it in action.</p>
 			<form class="m-t" role="form"
-				action="${pageContext.request.contextPath}/login/login">
+				action="${pageContext.request.contextPath}/login/login" method="post">
 				<div class="form-group">
-					<input type="text" class="form-control" placeholder="Username"
+					<input type="text" id="loginname" class="form-control" placeholder="loginname"
 						name="loginname" required="">
 				</div>
 				<div class="form-group">
-					<input type="password" class="form-control" placeholder="Password"
+					<input type="password" id="Password" class="form-control" placeholder="Password"
 						name="password" required="">
 				</div>
-				<button type="submit" class="btn btn-primary block full-width m-b">Login</button>
+				<button type="submit" id="Login" class="btn btn-primary block full-width m-b">Login</button>
 
 				<a href="login.html#"><small>Forgot password?</small></a>
 				<p class="text-muted text-center">

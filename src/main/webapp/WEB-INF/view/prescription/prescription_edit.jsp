@@ -43,9 +43,15 @@
 <!-- 等待效果 -->
 <script src="${pageContext.request.contextPath}/bootstrap_home/js/plugins/pace/pace.min.js"></script>
 
+<!-- PASSJS -->
+<link href="${pageContext.request.contextPath}/PassJs/McCssAll.css" rel="stylesheet">
+<script type="text/javascript" src="${pageContext.request.contextPath}/PassJs/McConfig.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/PassJs/McJsAll.js"></script>
+
 <!-- MY JS -->
 <link href="${pageContext.request.contextPath}/chcss/prescription/prescription_edit.css" rel="stylesheet">
 <script type="text/javascript" src="${pageContext.request.contextPath}/chjs/prescription/prescription_edit.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/chjs/prescription/passjs_screen.js"></script>
 
 </head>
 <body style="background-color: #f3f3f4">
@@ -53,6 +59,7 @@
 <input id="prescription_json" type="hidden" value="${fn:escapeXml(prescription_json) }">
 <input id="pre_id" type="hidden" value="${pre_id}">
 <input id="patientname" type="hidden" value="${patientname}">
+<input id="prescriptiontype" type="hidden" value="${prescriptiontype}">
 <div id="wrapper" >
 	<div class="panel panel-default">
 	    <div class="panel-heading">处方操作</div>
@@ -65,6 +72,15 @@
 		    </div>
 	        <div class="col-sm-2" style="text-align: left;">
 	            <button type="button" id="prescription_save" class="btn btn-primary" onclick="json_hebing()">保存</button>
+	        </div>
+	         <div class="col-sm-2" style="text-align: left;">
+	            <button type="button" class="btn btn-primary" onclick="js_screen()">审查</button>
+	        </div>
+	        <div class="col-sm-2" style="text-align: left;">
+	            <button type="button" class="btn btn-primary" onclick="js_shuomingshu()">说明书</button>
+	        </div>
+	        <div class="col-sm-2" style="text-align: left;">
+	            <button type="button" class="btn btn-primary" onclick="js_fudongchuangkou()">浮动窗口</button>
 	        </div>
 	    </div>
 	</div>  
@@ -117,18 +133,18 @@
 			    <div class="col-sm-2">
 			      	<div class="input-group">
 			            <span class="input-group-addon">费别</span>
-			            <input type="text" class="form-control" id="PayClass" name="PayClass">
+			            <input type="text" class="form-control" id="PayClass" name="PayClass" >
 			        </div>
 			    </div>
 			    <div class="col-sm-2">
 			      	<div class="input-group">
 			            <span class="input-group-addon">病人状态</span>
 			            <select class="form-control m-b" name="PatStatus" id="PatStatus">
-	                            <option value="1" selected="selected"><font style="vertical-align: inherit;">住院</font></option>
-	                            <option value="2"><font style="vertical-align: inherit;">门诊</font></option>
-	                            <option value="3"><font style="vertical-align: inherit;">急诊</font></option>
-	                            <option value="0"><font style="vertical-align: inherit;">出院</font></option>
-	                        </select>
+                            <option value="1" selected="selected"><font style="vertical-align: inherit;">住院</font></option>
+                            <option value="2"><font style="vertical-align: inherit;">门诊</font></option>
+                            <option value="3"><font style="vertical-align: inherit;">急诊</font></option>
+                            <option value="0"><font style="vertical-align: inherit;">出院</font></option>
+                        </select>
 			        </div>
 			    </div>
 			</div>
@@ -377,7 +393,7 @@
 		</div>
 		
 		<!-- 模态框（Modal）字典表 -->
-		<div class="modal fade" id="dict_drug_modal" tabindex="-1" role="dialog"  aria-hidden="true">
+		<div class="modal fade" id="dict_drug_modal" tabindex="-1" data-backdrop="static" data-keyboard="false" role="dialog"  aria-hidden="true">
 			<div class="modal-dialog">
 				<div class="modal-content">
 					<div class="modal-header">
@@ -415,7 +431,7 @@
 		</div>
 		
 		<!-- 模态框（Modal）字典表 -->
-		<div class="modal fade" id="dict_fre_modal" tabindex="-1" role="dialog"  aria-hidden="true">
+		<div class="modal fade" id="dict_fre_modal" tabindex="-1" data-backdrop="static" data-keyboard="false" role="dialog"  aria-hidden="true">
 			<div class="modal-dialog">
 				<div class="modal-content">
 					<div class="modal-header">
@@ -434,7 +450,7 @@
 		</div>
 		
 		<!-- 模态框（Modal）字典表 -->
-		<div class="modal fade" id="dict_dept_modal" tabindex="-1" role="dialog"  aria-hidden="true">
+		<div class="modal fade" id="dict_dept_modal" tabindex="-1" data-backdrop="static" data-keyboard="false" role="dialog"  aria-hidden="true">
 			<div class="modal-dialog">
 				<div class="modal-content">
 					<div class="modal-header">
@@ -453,7 +469,7 @@
 		</div>
 		
 		<!-- 模态框（Modal）字典表 -->
-		<div class="modal fade" id="dict_doctor_modal" tabindex="-1" role="dialog"  aria-hidden="true">
+		<div class="modal fade" id="dict_doctor_modal" tabindex="-1" data-backdrop="static" data-keyboard="false" role="dialog"  aria-hidden="true">
 			<div class="modal-dialog">
 				<div class="modal-content">
 					<div class="modal-header">
@@ -492,7 +508,7 @@
 	        <table id="json_table" style="table-layout:fixed; "></table>
 		</div>
 		<!-- 模态框（Modal）字典表 -->
-		<div class="modal fade" id="dict_allergen_modal" tabindex="-1" role="dialog"  aria-hidden="true">
+		<div class="modal fade" id="dict_allergen_modal" tabindex="-1" data-backdrop="static" data-keyboard="false" role="dialog"  aria-hidden="true">
 			<div class="modal-dialog">
 				<div class="modal-content">
 					<div class="modal-header">
@@ -530,7 +546,7 @@
 	        <table id="json_table" style="table-layout:fixed; "></table>
 		</div>
 		<!-- 模态框（Modal）字典表 -->
-		<div class="modal fade" id="dict_disease_modal" tabindex="-1" role="dialog"  aria-hidden="true">
+		<div class="modal fade" id="dict_disease_modal" tabindex="-1"  data-backdrop="static" data-keyboard="false" role="dialog"  aria-hidden="true">
 			<div class="modal-dialog">
 				<div class="modal-content">
 					<div class="modal-header">
@@ -568,7 +584,7 @@
 	        <table id="json_table" style="table-layout:fixed; "></table>
 		</div>
 		<!-- 模态框（Modal）字典表 -->
-		<div class="modal fade" id="dict_operation_modal" tabindex="-1" role="dialog"  aria-hidden="true">
+		<div class="modal fade" id="dict_operation_modal" tabindex="-1" data-backdrop="static" data-keyboard="false" role="dialog"  aria-hidden="true">
 			<div class="modal-dialog">
 				<div class="modal-content">
 					<div class="modal-header">

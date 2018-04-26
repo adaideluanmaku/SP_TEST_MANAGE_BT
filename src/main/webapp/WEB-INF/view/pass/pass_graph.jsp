@@ -9,7 +9,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>CH+ | PASS</title>
+<title>CH+ | PA</title>
 <!-- SYS CSS -->
 <link href="${pageContext.request.contextPath}/bootstrap_home/css/bootstrap.min.css" rel="stylesheet">
 <link href="${pageContext.request.contextPath}/bootstrap_home/css/style.css" rel="stylesheet">
@@ -20,12 +20,8 @@
 <script type="text/javascript" src="${pageContext.request.contextPath}/bootstrap_home/js/jquery-3.2.1.min.js"></script>
 <!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
 <script type="text/javascript" src="${pageContext.request.contextPath}/bootstrap_home/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
-<!-- Flot -->
-<script src="${pageContext.request.contextPath}/bootstrap_home/js/plugins/flot/jquery.flot.js"></script>
-<script src="${pageContext.request.contextPath}/bootstrap_home/js/plugins/flot/jquery.flot.tooltip.min.js"></script>
-<script src="${pageContext.request.contextPath}/bootstrap_home/js/plugins/flot/jquery.flot.resize.js"></script>
-<script src="${pageContext.request.contextPath}/bootstrap_home/js/plugins/flot/jquery.flot.pie.js"></script>
-<script src="${pageContext.request.contextPath}/bootstrap_home/js/plugins/flot/jquery.flot.time.js"></script>
+<!-- echarts -->
+<script type="text/javascript" src="${pageContext.request.contextPath}/baidu_echarts/echarts.js"></script>
 
 <!-- MY JS -->
 <script type="text/javascript" src="${pageContext.request.contextPath}/chjs/pass/pass_graph.js"></script>
@@ -45,7 +41,7 @@
 			</div>
 			<div class="col-lg-2"></div>
 		</div>
-		<div class="wrapper wrapper-content animated fadeInRight">
+		<div class="wrapper wrapper-content">
 			<div class="row">
 				<div class="col-sm-6">
 					<div class="ibox float-e-margins">
@@ -53,47 +49,34 @@
 							<h5>
 								柱状图  
 							</h5>
-							<div class="ibox-tools">
-								<a class="collapse-link"> <i class="fa fa-chevron-up"></i>
-								</a> <a class="dropdown-toggle" data-toggle="dropdown"
-									href="graph_flot.html#"> <i class="fa fa-wrench"></i>
-								</a>
-								<ul class="dropdown-menu dropdown-user">
-									<li><a href="graph_flot.html#">Config option 1</a></li>
-									<li><a href="graph_flot.html#">Config option 2</a></li>
-								</ul>
-								<a class="close-link"> <i class="fa fa-times"></i>
-								</a>
-							</div>
 						</div>
 						<div class="ibox-content">
-							<div class="flot-chart">
-								<div class="flot-chart-content" id="flot-bar-chart"></div>
-							</div>
+							<div id="echarts" style="width: 500px;height:400px;"></div>	
 						</div>
 					</div>
 				</div>
 				<div class="col-sm-6">
 					<div class="ibox float-e-margins">
 						<div class="ibox-title">
-							<h5>线型图</h5>
-							<div class="ibox-tools">
-								<a class="collapse-link"> <i class="fa fa-chevron-up"></i>
-								</a> <a class="dropdown-toggle" data-toggle="dropdown"
-									href="graph_flot.html#"> <i class="fa fa-wrench"></i>
-								</a>
-								<ul class="dropdown-menu dropdown-user">
-									<li><a href="graph_flot.html#">Config option 1</a></li>
-									<li><a href="graph_flot.html#">Config option 2</a></li>
-								</ul>
-								<a class="close-link"> <i class="fa fa-times"></i>
-								</a>
-							</div>
+							<h5>
+								柱状图  
+							</h5>
 						</div>
 						<div class="ibox-content">
-							<div class="flot-chart">
-								<div class="flot-chart-content" id="flot-line-chart"></div>
-							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="row">
+				<div class="col-sm-12">
+					<div class="ibox float-e-margins">
+						<div class="ibox-title">
+							<h5>
+								柱状图  
+							</h5>
+						</div>
+						<div class="ibox-content">
+							<div id="echarts1" style="width: 800px;height:400px;"></div>	
 						</div>
 					</div>
 				</div>

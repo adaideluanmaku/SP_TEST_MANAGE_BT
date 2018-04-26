@@ -6,37 +6,18 @@ $(document).ready(function() {
 	var oTable=new TableInit();
 	oTable.Init();
 	
-	//查询按钮功能
-	$("#btn_query").click(function(){
-		oTable.search();
-	})
-	
-	//操作已勾选数据
-	$("#btn_delete").click(function(){
-		var ids = oTable.getIdSelections();//返回一个包含所有选中行中id列值的数组
-		alert(ids);
-	})
-	
-	//声明一个dialog窗口
-	var oDialog = new DialogInit();
-	
-	$("#btn_add").click(function(){
-		oDialog.Init();
-//		$('#myModal').modal('show');
-	})
-	
-	//根据div高度更新table高度
-//	$('#tb_departments').bootstrapTable('resetView',{height:document.getElementById("tableview").offsetHeight-111});	
+	//初始化所有表单校验规则
+	all_form_validator();
 });
 
 //创建一个表格对象
 var TableInit =function () {
 	var oTableInit=new Object();
-	var address=addurl+"/pass/pass_team";
+	var address=addurl+"/pass/team_query";
 	
 	//初始化表格
 	oTableInit.Init = function(){
-		$('#tb_departments').bootstrapTable({
+		$('#table_data').bootstrapTable({
 			url:address,         				// 请求后台的URL（*）
 			method: 'post',                     // 请求方式（*）
 //			dataType: "json",					//数据类型
@@ -51,16 +32,16 @@ var TableInit =function () {
 			pageNumber:1,                       // 初始化加载第一页，默认第一页
 			pageSize: 10,                       // 每页的记录行数（*）
 			pageList: [10, 25, 50, 100],        // 可供选择的每页的行数（*）
-			search: true,                       // 是否显示表格搜索，此搜索是客户端搜索，不会进服务端，所以，个人感觉意义不大(陈辉-验证可以提交查询数据到服务端)
-			strictSearch: true,				
-			showColumns: true,                  // 是否显示所有的列按钮
-			showRefresh: true,                  // 是否显示刷新按钮
+//			search: true,                       // 是否显示表格搜索，此搜索是客户端搜索，不会进服务端，所以，个人感觉意义不大(陈辉-验证可以提交查询数据到服务端)
+//			strictSearch: true,				
+//			showColumns: true,                  // 是否显示所有的列按钮
+//			showRefresh: true,                  // 是否显示刷新按钮
 			minimumCountColumns: 2,             // 最少允许的列数
 			clickToSelect: false,               // 是否启用点击选中行
-			height: 450,                        //450, 行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
+			height: 480,                        //450, 行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
 			uniqueId: "ID",                     // 每一行的唯一标识，一般为主键列
-			showToggle:true,                    // 是否显示详细视图和列表视图的切换按钮
-			cardView: false,                    // 是否显示详细视图
+//			showToggle:true,                    // 是否显示详细视图和列表视图的切换按钮
+//			cardView: false,                    // 是否显示详细视图
 			detailView: false, 					//是否显示父子表
 //			fixedColumns: true,					//固定列,引入bootstrap-table-fixed-columns.js
 //	        fixedNumber:2,						//固定前两列,引入bootstrap-table-fixed-columns.js
@@ -73,226 +54,226 @@ var TableInit =function () {
 //				    sortOrder: params.order,//排位命令（desc，asc） 
 //					search: params.search, // 工具栏查询内容,search:true才有
 					
-					departmentname: $("#txt_search_departmentname").val(),
-					statu: $("#txt_search_statu").val(),
+					teamname: $("#teamname").val(),
 			    };
 			    return temp;
 			},
 			// 是否显示父子表
 			columns : [ {
+				field : 'ID',
 				checkbox : true
 			} , {
-				field : 'Name',
-				title : '部门名称',
+				field : 'teamid',
+				title : '团队ID',
 				width : 300,
 				
 			}, {
-				field : 'ParentName',
-				title : '上级部门',
+				field : 'teamname',
+				title : '团队名称',
 				width : 300
 			}, {
-				field : 'Level',
-				title : '部门级别',
-				width : 300
-			}, {
-				field : 'Desc',
-				title : '描述',
-				width : 300
-			}, {
-				field : 'Desc0',
-				title : '描述0',
-				width : 300,
-			}, {
-				field : 'Desc1',
-				title : '描述1',
-				width : 300,
-				formatter: function (value, row, index) {
-                    if (value != "") {
-                        return '111';
-                    }
-                    else
-                        return '222';
-                }
-			}, {
-				field : 'Desc2',
-				title : '描述2',
-				visible: false,
-				width : 300
-			}, {
-				field : 'Desc3',
-				title : '描述3',
-				width : 300
-			}, {
-				field : 'Desc4',
-				title : '描述4',
-				width : 300
-			}, {
-				field : 'Desc5',
-				title : '描述5',
-				width : 300
-			}, {
-				field : 'Desc6',
-				title : '描述6',
-				width : 300
-			}, {
-				field : 'Desc7',
-				title : '描述7',
-				width : 300
-			} ],
+				field : 'remark',
+				title : '备注',
+			}],
 			
 			// 1.点击每行进行函数的触发
 			onClickRow : function(row, tr,flied){
-//				alert(1);
-//				alert(row);
-//				alert(tr);
-//				alert(flied)         
+				if($(tr).find('input').prop("checked")){//check类型的input
+					$(tr).attr('class','');//改变样式
+					$(tr).find('input').prop("checked",false);//改变勾选状态
+					row.ID=false;//改变勾选值
+				}else{
+					$(tr).attr('class','selected');
+					$(tr).find('input').prop("checked",true);
+					row.ID=true;
+				}
 			},
 
 			// 2. 点击前面的复选框进行对应的操作
 			// 点击全选框时触发的操作
 			onCheckAll:function(rows){
-//				alert(2);
-//				alert(rows);      
 			},
 			// 点击每一个单选框时触发的操作
 			onCheck:function(row){
-//				alert(3);
-//				alert(row);      
 			},
 			// 取消每一个单选框时对应的操作；
 			onUncheck:function(row){
-//				alert(4);
-//				alert(row);      
 			}
 		});
 	}
 	
-	
-	//查询功能调用该方法
-	oTableInit.search = function(){
-		$('#tb_departments').bootstrapTable('refresh', {url: address});
-	}
-	
-	//返回当前列表已选数据，返回的是数组
-	oTableInit.getIdSelections = function(){
-		//返回整个数据
-		var IdSelections = $('#tb_departments').bootstrapTable('getSelections');
-		
-		//返回具体字段数据
-		for(var i=0;i<IdSelections.length;i++){
-			IdSelections[i]=IdSelections[i].ID;
-		}
-		return IdSelections;
-	}
-	
-	//消息提示框
-	oTableInit.dialog = function(){
-		BootstrapDialog.show({
-			title : 'More dialog sizes',				//标题
-			closable: false,							//点击空白处禁止关闭
-//			message : 'Hi Apple!',
-			message: function(dialog) {
-                var $content = $('<div><button class="btn btn-success">Revert button status right now.</button></div>');
-                return $content;
-            },
-			size : BootstrapDialog.SIZE_NORMAL, 		// 默认尺寸
-			buttons : [ {
-				label : '发&nbsp;&nbsp;&nbsp;送',
-				action : function(dialog) {
-					dialog.close();
-				}
-			}, {
-				label : '取消',
-				action : function(dialog) {
-					dialog.close();
-				}
-			},{
-				label : 'Normal',
-				action : function(dialog) {
-					dialog.setTitle('Normal');
-					dialog.setSize(BootstrapDialog.SIZE_NORMAL);
-				}
-			}, {
-				label : 'Small',
-				action : function(dialog) {
-					dialog.setTitle('Small');
-					dialog.setSize(BootstrapDialog.SIZE_SMALL);
-				}
-			}, {
-				label : 'Wide',
-				action : function(dialog) {
-					dialog.setTitle('Wide');
-					dialog.setSize(BootstrapDialog.SIZE_WIDE);
-				}
-			}, {
-				label : 'Large',
-				action : function(dialog) {
-					dialog.setTitle('Large');
-					dialog.setSize(BootstrapDialog.SIZE_LARGE);
-				}
-			}]
-		});
-		
-		return dialog;
-	};
-	
 	return oTableInit;
 };
 
+//查询功能调用该方法
+function table_search(){
+	var address=addurl+"/pass/team_query";
+	$('#table_data').bootstrapTable('refresh', {url: address});
+}
 
-//创建一个模态框dialog对象
-var DialogInit = function(){
-	var oDialogInit = new Object();
+function open_dialog(){
+	//清空表单
+	document.getElementById('dialog_form').reset();
+	//重置表单校验,销毁重构
+	$('#dialog_form').data('bootstrapValidator').destroy();
+    $('#dialog_form').data('bootstrapValidator', null);
+    all_form_validator();
+    
+	$('#modal_dialog button').show();
+	$('#modal_dialog #btn_update').hide();
+	$('#modal_dialog').modal('show');
+}
 
-	//表单提示窗口
-	oDialogInit.Init = function(){
-		BootstrapDialog.show({
-			title : 'More dialog sizes',				//标题
-			closable: false,							//点击空白处禁止关闭
-//			message : 'Hi Apple!',						//dialog提示语
-			message: function(dialog) {
-                var content = $(document.getElementById("myModal").innerHTML);
-                return content;
-            },
-			size : BootstrapDialog.SIZE_NORMAL, 		// 默认尺寸
-			buttons : [ {
-				label : '发&nbsp;&nbsp;&nbsp;送',
-				action : function(dialog) {
-					dialog.close();
-				}
-			}, {
-				label : '取消',
-				action : function(dialog) {
-					dialog.close();
-				}
-			},{
-				label : 'Normal',
-				action : function(dialog) {
-					dialog.setTitle('Normal');
-					dialog.setSize(BootstrapDialog.SIZE_NORMAL);
-				}
-			}, {
-				label : 'Small',
-				action : function(dialog) {
-					dialog.setTitle('Small');
-					dialog.setSize(BootstrapDialog.SIZE_SMALL);
-				}
-			}, {
-				label : 'Wide',
-				action : function(dialog) {
-					dialog.setTitle('Wide');
-					dialog.setSize(BootstrapDialog.SIZE_WIDE);
-				}
-			}, {
-				label : 'Large',
-				action : function(dialog) {
-					dialog.setTitle('Large');
-					dialog.setSize(BootstrapDialog.SIZE_LARGE);
-				}
-			}]
-		});
-	};
+function add_data(){
+	var queryaddress=addurl+'/pass/team_query';
+	var addaddress=addurl+'/pass/team_add';
 	
-	return oDialogInit;
+	 //获取表单对象
+    $("#dialog_form").bootstrapValidator('validate');//提交验证  
+    if (!$("#dialog_form").data('bootstrapValidator').isValid()) {//获取验证结果，如果成功，执行下面代码  
+    	return;
+    }  
+    
+	$.ajax({
+		type:"POST",
+		url:addaddress,
+		async:false,
+		cache:true,
+		data:$('#dialog_form').serialize(),
+		success: function(result){
+			if(result=='ok'){
+				swal("" ,result,"success");
+//				//清空表单
+//				document.getElementById("prescription_dialog_form").reset();
+				$('#table_data').bootstrapTable('refresh', {url: queryaddress});
+			}else{
+				swal("", result,"error");
+			}
+			$('#modal_dialog').modal('hide');
+		},
+		error:function(XMLResponse){
+			alert(XMLResponse.responseText)
+		}
+	});
+}
+
+function del_data(){
+	var IdSelections = $('#table_data').bootstrapTable('getSelections');
+	if(IdSelections.length != 1){
+		swal({
+            title: "警告",
+            text: "请至少选择一条数据进行操作."
+        });
+		return;
+	}
 	
+	swal({
+        title: "Are you sure?",
+        text: "You will not be able to recover this imaginary file!",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#DD6B55",
+        confirmButtonText: "Yes, delete it!",
+        closeOnConfirm: false
+    }, function () {
+    	var queryaddress=addurl+'/pass/team_query';
+    	var deladdress=addurl+'/pass/team_del';
+    	
+    	var teamids=new Array();
+    	for(var i=0;i<IdSelections.length;i++){
+    		teamids.push(IdSelections[i].teamid);
+    	}
+    	
+    	$.ajax({
+    		type:"POST",
+    		url:deladdress,
+    		async:false,
+    		cache:true,
+    		data:{teamids:teamids},
+    		success: function(result){
+    			if(result=='ok'){
+    				swal("" ,result,"success");
+    				$('#table_data').bootstrapTable('refresh', {url: queryaddress});
+    			}else{
+    				swal("", result,"error");
+    			}
+    		},
+    		error:function(XMLResponse){
+    			alert(XMLResponse.responseText)
+    		}
+    	});
+    });
+}
+
+function edit_dialog(){
+	$('#modal_dialog button').show();
+	$('#modal_dialog #btn_add').hide();
+	
+	var IdSelections = $('#table_data').bootstrapTable('getSelections');
+	if(IdSelections.length != 1){
+		swal({
+            title: "警告",
+            text: "请选择一条数据进行操作."
+        });
+		return;
+	}
+	
+	$('#dialog_form #teamid').val(IdSelections[0].teamid);
+	$('#dialog_form #teamname').val(IdSelections[0].teamname);
+	$('#dialog_form #remark').val(IdSelections[0].remark);
+	
+	$('#modal_dialog').modal('show');
+}
+
+function update_data(){
+	var queryaddress=addurl+'/pass/team_query';
+	var addaddress=addurl+'/pass/team_update';
+	$.ajax({
+		type:"POST",
+		url:addaddress,
+		async:false,
+		cache:true,
+		data:$('#dialog_form').serialize(),
+		success: function(result){
+			if(result=='ok'){
+				swal("" ,result,"success");
+				$('#table_data').bootstrapTable('refresh', {url: queryaddress});
+			}else{
+				swal("", result,"error");
+			}
+			$('#modal_dialog').modal('hide');
+		},
+		error:function(XMLResponse){
+			alert(XMLResponse.responseText)
+		}
+	});
+}
+
+//初始化表单所有输入框的验证功能
+function all_form_validator(){
+	$("#dialog_form").bootstrapValidator({  
+        live: 'enabled',//验证时机，enabled是内容有变化就验证（默认），disabled和submitted是提交再验证  
+        excluded: [':disabled', ':hidden', ':not(:visible)'],//排除无需验证的控件，比如被禁用的或者被隐藏的  
+//        submitButtons: '#prescription_dialog_form1 #btn_add',//指定提交按钮，如果验证失败则变成disabled，但我没试成功，反而加了这句话非submit按钮也会提交到action指定页面  
+        message: '通用的验证失败消息',//好像从来没出现过  
+        feedbackIcons: {//根据验证结果显示的各种图标  
+            valid: 'glyphicon glyphicon-ok',  
+            invalid: 'glyphicon glyphicon-remove',  
+            validating: 'glyphicon glyphicon-refresh'  
+        },  
+        fields: {  
+        	teamname: {
+                validators: {  
+                    notEmpty: {//检测非空,radio也可用  
+                        message: '文本框必须输入'  
+                    },  
+                    stringLength: {//检测长度  
+                        min: 1,  
+//                        max: 30,  
+                        message: '长度必须大于1'  
+                    },  
+                }  
+            } ,
+        }  
+    });  
 }

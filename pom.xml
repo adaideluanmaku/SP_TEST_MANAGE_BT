@@ -303,11 +303,11 @@
 		</dependency> -->
 		
 		<!-- 11g -->
-		<!-- <dependency>
+		 <dependency>
 		    <groupId>com.oracle</groupId>
 		    <artifactId>ojdbc6</artifactId>
    			<version>11.2.0.1.0</version>
-		</dependency> -->
+		</dependency>
 		
 		
 		<!-- Base64加解编码 -->
@@ -409,6 +409,32 @@
 		    <version>6.11</version>
 		    <scope>test</scope>
 		</dependency>
+		
+		<!-- dom4j-->
+		<dependency>
+		    <groupId>dom4j</groupId>
+		    <artifactId>dom4j</artifactId>
+		    <version>1.6.1</version>
+		</dependency>
+		<dependency>
+		    <groupId>xml-apis</groupId>
+		    <artifactId>xml-apis</artifactId>
+		    <version>1.4.01</version>
+		</dependency>
+		
+		<!-- sqlserver -->
+		<dependency>
+		    <groupId>com.microsoft.sqlserver</groupId>
+		    <artifactId>sqljdbc4</artifactId>
+		    <version>4.0</version>
+		</dependency>
+		
+		<!-- httpclient -->
+		<dependency>
+		    <groupId>org.apache.httpcomponents</groupId>
+		    <artifactId>httpclient</artifactId>
+		    <version>4.5.5</version>
+		</dependency>
 	</dependencies>
 	
 	<!-- 配置私服开始 -->
@@ -476,7 +502,7 @@
 					<skipTests>true</skipTests>
 				</configuration>
 			</plugin>
-
+			
 		</plugins>
 	</build>
 </project>

@@ -32,6 +32,7 @@
 
 <!-- MY JS -->
 <script type="text/javascript" src="${pageContext.request.contextPath}/chjs/homepage.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/chjs/bootstrap-loading.js"></script>
 
 <title>TEST_MANAGE</title>
 </head>
@@ -43,40 +44,45 @@
 	<nav class="navbar-default navbar-static-side" >
 		<ul class="nav metismenu" id="side-menu">
 			<li class="nav-header">
-				<div class="dropdown profile-element">
+				<nav align="center">
 					<span><img alt="image" class="img-circle" src="${pageContext.request.contextPath}/chimg/hxj-small.png" /></span> 
 					<a data-toggle="dropdown" class="dropdown-toggle" href="#"> 
 						<span class="clear"> 
-							<span class="block m-t-xs"> <strong class="font-bold">啊哦额</strong></span> 
-							<span class="text-muted text-xs block">快捷操作<b class="caret"></b></span>
-						</span>
+							<span class="block m-t-xs"> <strong class="font-bold">${loginname }</strong></span> 
+							<!-- <span class="text-muted text-xs block">快捷操作<b class="caret"></b></span> -->
+						</span>	
 					</a>
-					<ul class="dropdown-menu animated fadeInRight m-t-xs">
+					<%-- <ul class="dropdown-menu animated fadeInRight m-t-xs">
 						<li><a href="javascript:alert(1)">Profile</a></li>
 						<li><a href="javascript:alert(1)">Contacts</a></li>
 						<li><a href="javascript:alert(1)">Mailbox</a></li>
 						<li class="divider"></li>
-						<li><a href="login.html">Logout</a></li>
-					</ul>
-				</div>
-				<div class="logo-element">CH+</div>
+						<li><a href="${pageContext.request.contextPath}/login/logout">Logout</a></li>
+					</ul> --%>
+				</nav>
+				
 			</li>
-			<li class="active"><a href=""> <i class="fa fa-th-large"></i>
+			<li class="active">
+				<a href="javascript:void(0)"> 
+					<i class="fa fa-th-large"></i>
 					<span class="nav-label">统计管理</span> <span class="fa arrow"></span>
-			</a>
+				</a>
 				<ul class="nav nav-second-level">
 					<li class="active"><a href="javascript:void(0);" onclick="home_graph()">总览</a></li>
 				</ul></li>
-			<li><a href="index.html#"> <i class="fa fa-bar-chart-o"></i><span
-					class="nav-label">PASS测试管理</span> <span class="fa arrow"></span></a>
+			<li><a href="javascript:void(0)"> 
+					<i class="fa fa-th-large"></i>
+					<span class="nav-label">PASS测试管理</span> 
+					<span class="fa arrow"></span>
+				</a>
 				<ul class="nav nav-second-level collapse">
 					<li><a href="javascript:void(0);" onclick="pass_graph()">PASS统计</a></li>
 					<li><a href="javascript:void(0);" onclick="pass_team()">团队管理</a></li>
 					<li><a href="javascript:void(0);" onclick="pass_project()">项目管理</a></li>
 					<li><a href="javascript:void(0);" onclick="pass_testmng()">案例管理</a></li>
 				</ul></li>
-			<li><a href="index.html#">
-					<i class="fa fa-bar-chart-o"></i>
+			<li><a href="javascript:void(0)">
+					<i class="fa fa-th-large"></i>
 					<span class="nav-label">PA测试管理</span> <span class="fa arrow"></span>
 				</a>
 				<ul class="nav nav-second-level collapse">
@@ -84,47 +90,63 @@
 					<li><a href="javascript:void(0);" onclick="pa_team()">团队管理</a></li>
 					<li><a href="javascript:void(0);" onclick="pa_project()">项目管理</a></li>
 					<li><a href="javascript:void(0);" onclick="pa_testmng()">案例管理</a></li>
+					<li><a href="javascript:void(0);" onclick="pa_tools()">工具箱</a></li>
 				</ul></li>
-			<li><a href="index.html#">
-					<i class="fa fa-bar-chart-o"></i>
+			<li><a href="javascript:void(0)">
+					<i class="fa fa-th-large"></i>
 					<span class="nav-label">用药研究</span> <span class="fa arrow"></span>
 				</a>
 				<ul class="nav nav-second-level collapse">
 					<li><a href="javascript:void(0);" onclick="prescription()">处方管理</a></li>
 				</ul></li>
-			<li><a href="index.html#"> <i class="fa fa-bar-chart-o"></i><span
-					class="nav-label">政府项目测试管理</span> <span class="fa arrow"></span></a>
+			<li><a href=""javascript:void(0)> 
+					<i class="fa fa-th-large"></i>
+					<span class="nav-label">政府项目测试管理</span> 
+					<span class="fa arrow"></span>
+				</a>
 				<ul class="nav nav-second-level collapse">
 					<li><a href="javascript:void(0);" onclick="zfxm_graph()">政府项目统计</a></li>
 					<li><a href="javascript:alert(1)">团队管理</a></li>
 					<li><a href="javascript:alert(1)">项目管理</a></li>
 					<li><a href="javascript:alert(1)">案例管理</a></li>
 				</ul></li>
-			<li><a href="index.html#"> <i class="fa fa-bar-chart-o"></i><span
-					class="nav-label">学习记录</span> <span class="fa arrow"></span></a>
+			<li><a href="javascript:void(0)"> 
+					<i class="fa fa-th-large"></i>
+					<span class="nav-label">学习记录</span>
+					<span class="fa arrow"></span>
+				</a>
 				<ul class="nav nav-second-level collapse">
 					<li><a href="javascript:void(0);" onclick="learn_graph()">学习统计</a></li>
 					<li><a href="javascript:alert(1)">学习分类</a></li>
 					<li><a href="javascript:alert(1)">学习笔记</a></li>
 					<li><a href="javascript:alert(1)">待续</a></li>
 				</ul></li>
-			<li><a href="index.html#"> <i class="fa fa-bar-chart-o"></i><span
-					class="nav-label">工作计划</span> <span class="fa arrow"></span></a>
+			<li><a href="javascript:void(0)"> 
+					<i class="fa fa-th-large"></i>
+					<span class="nav-label">工作计划</span> 
+					<span class="fa arrow"></span>
+				</a>
 				<ul class="nav nav-second-level collapse">
 					<li><a href="javascript:void(0);" onclick="works_graph()">工作统计</a></li>
 					<li><a href="javascript:alert(1)">计划管理</a></li>
 					<li><a href="javascript:alert(1)">待续</a></li>
 					<li><a href="javascript:alert(1)">待续</a></li>
 				</ul></li>
-			<li><a href="index.html#"> <i class="fa fa-bar-chart-o"></i><span
-					class="nav-label">账户管理</span> <span class="fa arrow"></span></a>
+			<li><a href="javascript:void(0)"> 
+					<i class="fa fa-th-large"></i>
+					<span class="nav-label">系统管理</span> 
+					<span class="fa arrow"></span>
+				</a>
 				<ul class="nav nav-second-level collapse">
-					<li><a href="javascript:alert(1)">用户信息</a></li>
-					<li><a href="javascript:alert(1)">待续</a></li>
+					<li><a href="javascript:void(0)" onclick="sysmanage_users()">用户信息</a></li>
+					<li><a href="javascript:void(0)" onclick="sysmanage_serverip()">访问地址</a></li>
 					<li><a href="javascript:alert(1)">待续</a></li>
 				</ul></li>
-			<li><a href="index.html#"> <i class="fa fa-bar-chart-o"></i><span
-					class="nav-label">使用工具集</span> <span class="fa arrow"></span></a>
+			<li><a href="javascript:void(0)"> 
+					<i class="fa fa-th-large"></i>
+					<span class="nav-label">使用工具集</span> 
+					<span class="fa arrow"></span>
+				</a>
 				<ul class="nav nav-second-level collapse">
 					<li><a href="javascript:alert(1)">工具1</a></li>
 					<li><a href="javascript:alert(1)">工具2</a></li>

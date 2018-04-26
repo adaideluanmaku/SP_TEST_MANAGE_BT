@@ -33,6 +33,9 @@ function pass_testmng() {
 	$("#iframe_box").attr("src", addurl + "/homepage/pass_testmng");
 }
 
+function pass_tools() {
+	$("#iframe_box").attr("src", addurl + "/homepage/pass_tools");
+}
 // PA目录页面跳转
 function pa_graph() {
 	$("#iframe_box").attr("src", addurl + "/homepage/pa_graph");
@@ -68,4 +71,12 @@ function learn_graph() {
 // 工作目录页面跳转
 function works_graph() {
 	$("#iframe_box").attr("src", addurl + "/homepage/works_graph");
+}
+
+//系统管理页面跳转
+function sysmanage_serverip() {
+	$("#iframe_box").attr("src", addurl + "/homepage/sysmanage_serverip");
+}
+function sysmanage_users() {
+	$("#iframe_box").attr("src", addurl + "/homepage/sysmanage_users");
 }

@@ -18,6 +18,10 @@
 .bootstrap-table .table:not(.table-condensed) > tbody > tr > td,
 .bootstrap-table .table:not(.table-condensed) > tfoot > tr > td {
     padding: 8px;
+    /* CH CODE CHENHUI */
+    overflow: hidden;
+	text-overflow: ellipsis;
+	white-space:nowrap;
 }
 
 .bootstrap-table .table.table-no-bordered > thead > tr > th,
@@ -126,7 +130,8 @@
 
 /* the same color with .active */
 .fixed-table-container tbody .selected td {
-    background-color: #f5f5f5;
+    /* background-color: #f5f5f5; */
+    background-color: #def8e0; /* CHENHUI CH CODE */
 }
 
 .fixed-table-container .bs-checkbox {

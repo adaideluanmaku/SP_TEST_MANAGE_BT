@@ -38,11 +38,10 @@
 <script src="${pageContext.request.contextPath}/bootstrap_home/bootstrapValidator/js/language/zh_CN.js"></script>
   
 <!-- MY JS -->
-<link href="${pageContext.request.contextPath}/chcss/prescription/prescription.css" rel="stylesheet">
 <script type="text/javascript" src="${pageContext.request.contextPath}/chjs/prescription/prescription.js"></script>
 
 </head>
-<body style="background-color: #f3f3f4">
+<body style="background-color: #ffffff;">
 <input id="addurl" type="hidden" value="${pageContext.request.contextPath}">
 
 <div id="wrapper" >
@@ -65,17 +64,13 @@
 					<div class="panel panel-default">
 					    <div class="panel-heading">查询条件</div>
 					    <div class="panel-body">
-					        <form id="formSearch" class="form-horizontal">
-					            <div class="form-group" style="margin-top:15px">
-					                <label class="control-label col-sm-1" >病人姓名</label>
-					                <div class="col-sm-3">
-					                    <input type="text" class="form-control" id="patientname">
-					                </div>
-					                <div class="col-sm-2" style="text-align: left;">
-					                    <button type="button" id="btn_query" class="btn btn-primary" >查询</button>
-					                </div>
-					            </div>
-					        </form>
+			                <label class="control-label col-sm-1" style="padding-top:7px">病人姓名</label>
+			                <div class="col-sm-3">
+			                    <input type="text" class="form-control" id="patientname">
+			                </div>
+			                <div class="col-sm-2" style="text-align: left;">
+			                    <button type="button" id="btn_query" class="btn btn-primary" onclick="table_data_search()">查询</button>
+			                </div>
 					    </div>
 					</div>  
 					
@@ -107,7 +102,7 @@
 						</div>
 					</div>
 					<!-- 增加表格样式：style="table-layout: fixed"时，设置列宽才能生效 -->
-					<table id="table_prescription" style="table-layout: fixed;"></table>
+					<table id="table_data" style="table-layout: fixed;"></table>
 				</div>
 				<!-- 数据表格-结束 -->
 			</div>
@@ -116,7 +111,7 @@
 </div>
 
 <!-- 模态框（Modal） -->
-<div class="modal fade" id="prescription_dialog" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" height="600px">
+<div class="modal fade" id="prescription_dialog" tabindex="-1" data-backdrop="static" data-keyboard="false" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" height="600px">
 	<div class="modal-dialog">
 		<div class="modal-content">
 			<div class="modal-header">

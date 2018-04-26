@@ -6,39 +6,53 @@ $(document).ready(function() {
 	var oTable=new TableInit();
 	oTable.Init();
 	
-	//查询按钮功能
-	$('#btn_query').click(function(){
-		oTable.search();
-	})
-	
 	//鼠标浮动提示窗口-触发事件
-	$(document).on('mouseover mouseout','#table_prescription td',function(){ 
+	$(document).on('mouseover mouseout','table td',function(){ 
 		if(event.type == 'mouseover'){//鼠标悬浮
-			if($(this).text().length>10){//浮动窗口
+			if($(this).text().length>5){//浮动窗口
 				$('body').append('<div id="title" style="max-width:400px;max-height:200px;position: absolute;'
 						+'top:0px;left:0px;background-color: #fff2e8;/*自动换行*/	word-wrap: break-word;' 
 						+'overflow: hidden;text-overflow: ellipsis;'
-						+'border: 1px solid #c0c0c0;"></div>');
+						+'border: 1px solid #c0c0c0;  z-index:9999;"></div>');
 				$(this).mousemove(function(e) { 
 					var xx = e.originalEvent.x || e.originalEvent.layerX || 0; 
 					var yy = e.originalEvent.y || e.originalEvent.layerY || 0; 
+					var newxx=null;
+					var newyy=null;
+					
 					//如果提示框在最下面超过页面高度，则靠上显示
 					var bodyheight=document.body.offsetHeight;
-					if((yy+10+200)<bodyheight){
-						$('#title').css('left',xx+20+'px');
-						$('#title').css('top',yy+10+'px');
+					var bodywidth=document.body.offsetWidth;
+					if((yy+30+$('#title').height())<bodyheight){
+//						newxx=xx+20;
+						newyy=yy+10;
 					}else{
-						$('#title').css('left',xx+20+'px');
-						$('#title').css('top',yy+10-200+'px');
+//						newxx=xx+20;
+						newyy=yy+10-$('#title').height();
+					}
+					if((xx+20+$('#title').width())<bodywidth){
+						newxx=xx+20;
+//						newyy=yy+10;
+					}else{
+						newxx=xx-20-$('#title').width();
+//						newyy=yy+10-200;
 					}
 					
-					$('#title').text($(this).text());
+					$('#title').css('left',newxx+'px');
+					$('#title').css('top',newyy+'px');
+					
+					if($(this).find('a').length > 0){
+						$('#title').text($(this).find('a').text().substring(0,300));
+					}else{
+						$('#title').text($(this).text().substring(0,300));
+					}
+					
 				}); 
 			}
 		}else if(event.type == 'mouseout'){//鼠标离开
 			$('#title').remove();
 		}
-	}); 
+	});
 	
 	
 	//初始化所有表单校验规则
@@ -54,8 +68,8 @@ var TableInit =function () {
 	
 	//初始化表格
 	oTableInit.Init = function(){
-		$("#table_prescription").bootstrapTable('destroy'); // 销毁数据表格,不销毁可能有数据缓存问题
-		$('#table_prescription').bootstrapTable({
+		$("#table_data").bootstrapTable('destroy'); // 销毁数据表格,不销毁可能有数据缓存问题
+		$('#table_data').bootstrapTable({
 			url:queryaddress,         				// 请求后台的URL（*）
 			method: 'post',                     // 请求方式（*）
 //			dataType: "json",					//数据类型
@@ -79,7 +93,7 @@ var TableInit =function () {
 			detailView: false, 					//是否显示父子表
 			minimumCountColumns: 2,             // 最少允许的列数
 			clickToSelect: false,               // 是否启用点击选中行
-			height: 450,                        //450, 行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
+			height: 480,                        //450, 行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
 //			uniqueId: "ID",                     // 每一行的唯一标识，一般为主键列
 //			fixedColumns: true,					//固定列,引入bootstrap-table-fixed-columns.js
 //	        fixedNumber:2,						//固定前两列,引入bootstrap-table-fixed-columns.js
@@ -92,12 +106,13 @@ var TableInit =function () {
 //				    sortOrder: params.order,//排位命令（desc，asc） 
 //					search: params.search, // 工具栏查询内容,search:true才有
 					
-					patientname: $('#formSearch #patientname').val(),
+					patientname: $('#table_div #patientname').val(),
 			    };
 			    return temp;
 			},
 			// 是否显示父子表
 			columns : [ {
+				field : 'ID',
 				checkbox : true,
 			} , {
 				field : 'patientname',
@@ -116,56 +131,56 @@ var TableInit =function () {
 				width : 50,
 				align : 'center',
 				formatter: function(value,row,index){
-					if(row.prescription_json==undefined || row.prescription_json==''){
-						return '--'
-					}
+//					if(row.prescription_json==undefined || row.prescription_json==''){
+//						return '--'
+//					}
 					
-                    return '<a href="'+addurl+'/prescription/prescription_edit?pre_id='+row.pre_id+'&patientname='+row.patientname+'" target="_blank">打开</a>';
+                    return '<a href="'+addurl+'/prescription/prescription_edit?prescriptiontype=1&pre_id='+row.pre_id+'&patientname='+row.patientname+'" target="_blank">打开</a>';
 				}
 			}],
 			
 			// 1.点击每行进行函数的触发
 			onDblClickRow : function(row, $element ,field){
-//				alert(1);
 //				alert(row);
-//				alert($element);
-//				alert(field);
 			},
 			
 			// 1.点击每行进行函数的触发
 			onClickRow : function(row, tr,flied){
-//				alert(1);
-//				alert(row);
-//				alert(tr);
-//				alert(flied)         
+				if($(tr).find('input').prop("checked")){//check类型的input
+					$(tr).attr('class','');//改变样式
+					$(tr).find('input').prop("checked",false);//改变勾选状态
+					row.ID=false;//改变勾选值
+				}else{
+					$(tr).attr('class','selected');
+					$(tr).find('input').prop("checked",true);
+					row.ID=true;
+				}
 			},
 
 			// 2. 点击前面的复选框进行对应的操作
 			// 点击全选框时触发的操作
 			onCheckAll:function(rows){
-//				alert(2);
 //				alert(rows);      
 			},
 			// 点击每一个单选框时触发的操作
 			onCheck:function(row){
-//				alert(3);
 //				alert(row);      
 			},
 			// 取消每一个单选框时对应的操作；
 			onUncheck:function(row){
-//				alert(4);
 //				alert(row);      
 			}
 		});
 	}
 	
-	//查询功能调用该方法
-	oTableInit.search = function(){
-		$('#table_prescription').bootstrapTable('refresh', {url: queryaddress});
-	}
-	
 	return oTableInit;
 };
+
+//查询功能调用该方法
+function table_data_search(){
+	var queryaddress=addurl+'/prescription/query';
+	$('#table_data').bootstrapTable('refresh', {url: queryaddress});
+}
 
 function open_prescription_dialog(){
 	//清空表单
@@ -197,13 +212,14 @@ function add_prescription_data(){
 		cache:true,
 		data:$('#prescription_dialog_form').serialize(),
 		success: function(result){
-			if(result==1){
+			if(result=='ok'){
 //				//清空表单
-//				document.getElementById("prescription_dialog_form").reset();
-				$('#prescription_dialog').modal('hide');
-				$('#table_prescription').bootstrapTable('refresh', {url: queryaddress});
+				document.getElementById("prescription_dialog_form").reset();
+				$('#table_data').bootstrapTable('refresh', {url: queryaddress});
+			}else{
+				swal("Add!", result, "success");
 			}
-			
+			$('#prescription_dialog').modal('hide');
 		},
 		error:function(XMLResponse){
 			alert(XMLResponse.responseText)
@@ -221,24 +237,13 @@ function del_prescription_data(){
         confirmButtonText: "Yes, delete it!",
         closeOnConfirm: false
     }, function () {
-    	
     	var queryaddress=addurl+'/prescription/query';
     	var deladdress=addurl+'/prescription/del';
-    	
-    	var IdSelections = $('#table_prescription').bootstrapTable('getSelections');
-    	if(IdSelections.length==0){
-    		return;
+    	var Selections = $('#table_data').bootstrapTable('getSelections');
+    	var pre_ids=new Array();
+    	for(var i=0;i<Selections.length;i++){
+    		pre_ids.push(Selections[i].pre_id);
     	}
-    	var pre_ids='';
-    	for(var i=0;i<IdSelections.length;i++){
-    		if(i==0){
-    			pre_ids=pre_ids+IdSelections[i].pre_id;
-    		}else{
-    			pre_ids=pre_ids+','+ IdSelections[i].pre_id;
-    		}
-    		
-    	}
-    	
     	$.ajax({
     		type:"POST",
     		url:deladdress,
@@ -246,13 +251,19 @@ function del_prescription_data(){
     		cache:true,
     		data:{pre_id:pre_ids},
     		success: function(result){
-    			$('#table_prescription').bootstrapTable('refresh', {url: queryaddress});
+    			if(result=='ok'){
+    				$('#table_data').bootstrapTable('refresh', {url: queryaddress});
+    			}else{
+    				swal("Deleted!", result, "success");
+    			}
+    			$('#prescription_dialog').modal('hide');
     		},
     		error:function(XMLResponse){
     			alert(XMLResponse.responseText)
     		}
     	});
-        swal("Deleted!", "Your imaginary file has been deleted.", "success");
+    	
+    	swal("Deleted!", "Your imaginary file has been deleted.", "success");
     });
 }
 
@@ -260,7 +271,7 @@ function edit_prescription_dialog(){
 	$('#prescription_dialog button').show();
 	$('#prescription_dialog #btn_add').hide();
 	
-	var IdSelections = $('#table_prescription').bootstrapTable('getSelections');
+	var IdSelections = $('#table_data').bootstrapTable('getSelections');
 	if(IdSelections.length != 1){
 		swal({
             title: "警告",
@@ -286,11 +297,12 @@ function update_prescription_data(){
 		cache:true,
 		data:$('#prescription_dialog_form').serialize(),
 		success: function(result){
-			if(result==1){
-				$('#prescription_dialog').modal('hide');
-				$('#table_prescription').bootstrapTable('refresh', {url: queryaddress});
+			if(result=='ok'){
+				$('#table_data').bootstrapTable('refresh', {url: queryaddress});
+			}else{
+				swal("Update!", result, "success");
 			}
-			
+			$('#prescription_dialog').modal('hide');
 		},
 		error:function(XMLResponse){
 			alert(XMLResponse.responseText)
@@ -298,6 +310,7 @@ function update_prescription_data(){
 	});
 }
 
+//初始化表单所有输入框的验证功能
 function all_form_validator(){
 	$("#prescription_dialog_form").bootstrapValidator({  
         live: 'enabled',//验证时机，enabled是内容有变化就验证（默认），disabled和submitted是提交再验证  
@@ -322,13 +335,13 @@ function all_form_validator(){
                     },  
                 }  
             } ,
-            prescription_json: {
-	            validators: {  
-	                notEmpty: {//检测非空,radio也可用  
-	                    message: '文本框必须输入'  
-	                },  
-	            }  
-	        } 
+//            prescription_json: {
+//	            validators: {  
+//	                notEmpty: {//检测非空,radio也可用  
+//	                    message: '文本框必须输入'  
+//	                },  
+//	            }  
+//	        } 
         }  
     });  
 }

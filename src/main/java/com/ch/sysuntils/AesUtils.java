@@ -25,7 +25,7 @@ public class AesUtils {
 	private static String strDefaultKey = "national";
 
 	/**
-	 * 解密
+	 * 加密
 	 * 
 	 * @param content
 	 *            待加密内容
@@ -135,7 +135,7 @@ public class AesUtils {
 	}
 	
 	public static void main(String[] args) throws Exception {
-		String content = "123";
+		String content = "admin123";
 
 		AesUtils aesUtils=new AesUtils();
 		System.out.println("加密后：" + aesUtils.encrypt(content));

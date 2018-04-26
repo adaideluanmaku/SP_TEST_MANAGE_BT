@@ -34,6 +34,11 @@ public class HomepageAction {
 		return new ModelAndView("pass/pass_testmng");
 	}
 	
+	@RequestMapping("/pass_tools")
+	public ModelAndView pass_tools(){
+		return new ModelAndView("pass/pass_tools");
+	}
+	
 	//PA目录
 	@RequestMapping("/pa_graph")
 	public ModelAndView graph_pa(){
@@ -77,5 +82,16 @@ public class HomepageAction {
 	@RequestMapping("/works_graph")
 	public ModelAndView graph_works(){
 		return new ModelAndView("works/works_graph");
+	}
+	
+	//系统设置
+	@RequestMapping("/sysmanage_serverip")
+	public ModelAndView sysmanage_serverip(){
+		return new ModelAndView("sysmanage/serverip");
+	}
+	
+	@RequestMapping("/sysmanage_users")
+	public ModelAndView sysmanage_users(){
+		return new ModelAndView("sysmanage/users");
 	}
 }

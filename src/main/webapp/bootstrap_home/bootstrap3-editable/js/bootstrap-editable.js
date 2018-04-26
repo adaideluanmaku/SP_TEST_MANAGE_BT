@@ -4455,10 +4455,10 @@ $(function(){
         template: 'D / MMM / YYYY   H : mm',
         //initial value, can be `new Date()`    
         value: null,                       
-        minYear: 1900,//1970
+        minYear: 1900,//1970 CHENHUI CH CDOE
         maxYear: new Date().getFullYear(),
         yearDescending: true,
-        minuteStep: 5,
+        minuteStep: 1,//5 CHENHUI CH CDOE
         secondStep: 1,
         firstItem: 'empty', //'name', 'empty', 'none'
         errorClass: null,
