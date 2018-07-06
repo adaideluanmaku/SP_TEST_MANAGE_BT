@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xmlns:context="http://www.springframework.org/schema/context"
+    xmlns:mvc="http://www.springframework.org/schema/mvc"
+    xmlns:websocket="http://www.springframework.org/schema/websocket"
+    
+    xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.1.xsd
+        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.1.xsd
+  		http://www.springframework.org/schema/websocket http://www.springframework.org/schema/websocket/spring-websocket.xsd">
+ 
+    <!-- HTML方式读取自定义配置文件路径 -->
+    <context:property-placeholder ignore-unresolvable="true" location="classpath*:/config.properties" />
+    
+    <!-- CLASS包路径，接收拦截的所有请求 -->
+    <context:component-scan base-package="com.ch"/>
+    
+    <!-- don't handle the static resource -->
+    <mvc:default-servlet-handler />
+ 
+    <!-- if you use annotation you must configure following setting -->
+    <mvc:annotation-driven />
+    
+    <!-- SPRING-mvc socket配置（socketjs）
+    <mvc:resources location="/resources/" mapping="/resources/**" />
+	<context:component-scan base-package="com.ch1" /> -->
+	
+
+  	<!-- 
+    <bean id="configurationEncryptor" class="org.jasypt.encryption.pbe.StandardPBEStringEncryptor">
+  		<property name="config" ref="environmentVariablesConfiguration" /> 
+  	</bean>
+ 	<bean id="propertyConfigurer" class="org.jasypt.spring.properties.EncryptablePropertyPlaceholderConfigurer">
+  		<constructor-arg ref="configurationEncryptor" /> 
+ 		<property name="locations">
+ 		<list>
+  			<value>classpath:config.properties</value> 
+  		</list>
+  		</property>
+  	</bean>
+     -->
+    
+    <!-- HTML方式读取资源文件，数据源配置, 改为druid数据库连接池 mysql-->
+	<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+		<property name="url" value="${jdbc.url}" />
+		<property name="username" value="${jdbc.username}" />
+		<property name="password" value="${jdbc.password}" />
+		<property name="initialSize" value="1" />
+		<property name="minIdle" value="10" />
+		<property name="maxActive" value="20" />
+		<property name="maxWait" value="60000" />
+		<property name="timeBetweenEvictionRunsMillis" value="60000" />
+		<property name="minEvictableIdleTimeMillis" value="300000" />
+
+		<property name="validationQuery" value="SELECT 9527" />
+		<property name="testWhileIdle" value="true" />
+		<property name="testOnBorrow" value="false" />
+		<property name="testOnReturn" value="false" />
+
+		<property name="poolPreparedStatements" value="true" />
+		<property name="maxPoolPreparedStatementPerConnectionSize" value="20" />
+
+		<property name="removeAbandoned" value="true" />
+		<property name="removeAbandonedTimeout" value="1800" />
+		<property name="logAbandoned" value="true" />
+
+		<property name="filters" value="stat" />
+	</bean>
+	
+	<!-- jdbc template for import -->
+	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+	
+	 <!-- HTML方式读取资源文件，数据源配置, 改为druid数据库连接池 mysql-passpa2db-->
+	<!-- <bean id="dataSource_passpa2db" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+		<property name="url" value="${jdbc.pa2dburl}" />
+		<property name="username" value="${jdbc.pa2dbusername}" />
+		<property name="password" value="${jdbc.pa2dbpassword}" />
+		<property name="initialSize" value="1" />
+		<property name="minIdle" value="10" />
+		<property name="maxActive" value="20" />
+		<property name="maxWait" value="60000" />
+		<property name="timeBetweenEvictionRunsMillis" value="60000" />
+		<property name="minEvictableIdleTimeMillis" value="300000" />
+
+		<property name="validationQuery" value="SELECT 9527" />
+		<property name="testWhileIdle" value="true" />
+		<property name="testOnBorrow" value="false" />
+		<property name="testOnReturn" value="false" />
+
+		<property name="poolPreparedStatements" value="true" />
+		<property name="maxPoolPreparedStatementPerConnectionSize" value="20" />
+
+		<property name="removeAbandoned" value="true" />
+		<property name="removeAbandonedTimeout" value="1800" />
+		<property name="logAbandoned" value="true" />
+
+		<property name="filters" value="stat" />
+	</bean> -->
+	
+	<!-- jdbc template for import -->
+	<!-- <bean id="jdbcTemplate_passpa2db" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref="dataSource_passpa2db" />
+	</bean> -->
+	
+	<!-- HTML方式读取资源文件，数据源配置, 改为druid数据库连接池 oracle-->
+	<bean id="dataSource_oracle" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+		<property name="url" value="${jdbc.orclurl}" />
+		<property name="username" value="${jdbc.orclusername}" />
+		<property name="password" value="${jdbc.orclpassword}" />
+		<property name="initialSize" value="1" />
+		<property name="minIdle" value="10" />
+		<property name="maxActive" value="20" />
+		<property name="maxWait" value="60000" />
+		<property name="timeBetweenEvictionRunsMillis" value="60000" />
+		<property name="minEvictableIdleTimeMillis" value="300000" />
+
+		<property name="validationQuery" value="SELECT 9527 from dual" />
+		<property name="testWhileIdle" value="true" />
+		<property name="testOnBorrow" value="false" />
+		<property name="testOnReturn" value="false" />
+
+		<property name="poolPreparedStatements" value="true" />
+		<property name="maxPoolPreparedStatementPerConnectionSize" value="20" />
+
+		<property name="removeAbandoned" value="true" />
+		<property name="removeAbandonedTimeout" value="1800" />
+		<property name="logAbandoned" value="true" />
+
+		<property name="filters" value="stat" />
+	</bean>
+	
+  	<!-- jdbc template for import -->
+ 	<bean id="jdbcTemplate_oracle" class="org.springframework.jdbc.core.JdbcTemplate">
+ 		<property name="dataSource" ref="dataSource_oracle" /> 
+ 	</bean>
+	
+ 	<!-- HTML方式读取资源文件，数据源配置, 改为druid数据库连接池 oracle-->
+	<bean id="dataSource_sqlserver" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+		<property name="url" value="${jdbc.sqlserverurl}" />
+		<property name="username" value="${jdbc.sqlserverusername}" />
+		<property name="password" value="${jdbc.sqlserverpassword}" />
+		<property name="initialSize" value="1" />
+		<property name="minIdle" value="10" />
+		<property name="maxActive" value="20" />
+		<property name="maxWait" value="60000" />
+		<property name="timeBetweenEvictionRunsMillis" value="60000" />
+		<property name="minEvictableIdleTimeMillis" value="300000" />
+
+		<property name="validationQuery" value="SELECT 9527" />
+		<property name="testWhileIdle" value="true" />
+		<property name="testOnBorrow" value="false" />
+		<property name="testOnReturn" value="false" />
+
+		<property name="poolPreparedStatements" value="true" />
+		<property name="maxPoolPreparedStatementPerConnectionSize" value="20" />
+
+		<property name="removeAbandoned" value="true" />
+		<property name="removeAbandonedTimeout" value="1800" />
+		<property name="logAbandoned" value="true" />
+
+		<property name="filters" value="stat" />
+	</bean>
+	
+  	<!-- jdbc template for import -->
+ 	<bean id="jdbcTemplate_sqlserver" class="org.springframework.jdbc.core.JdbcTemplate">
+ 		<property name="dataSource" ref="dataSource_sqlserver" /> 
+ 	</bean>
+ 	
+	 <!-- HTML方式读取资源文件，数据源配置, 改为druid数据库连接池 mysql-passpa2db-->
+	<!-- <bean id="dataSource_anli" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+		<property name="url" value="${jdbc.anliurl}" />
+		<property name="username" value="${jdbc.anliusername}" />
+		<property name="password" value="${jdbc.anlipassword}" />
+		<property name="initialSize" value="1" />
+		<property name="minIdle" value="10" />
+		<property name="maxActive" value="20" />
+		<property name="maxWait" value="60000" />
+		<property name="timeBetweenEvictionRunsMillis" value="60000" />
+		<property name="minEvictableIdleTimeMillis" value="300000" />
+
+		<property name="validationQuery" value="SELECT 9527" />
+		<property name="testWhileIdle" value="true" />
+		<property name="testOnBorrow" value="false" />
+		<property name="testOnReturn" value="false" />
+
+		<property name="poolPreparedStatements" value="true" />
+		<property name="maxPoolPreparedStatementPerConnectionSize" value="20" />
+
+		<property name="removeAbandoned" value="true" />
+		<property name="removeAbandonedTimeout" value="1800" />
+		<property name="logAbandoned" value="true" />
+
+		<property name="filters" value="stat" />
+	</bean> -->
+	
+	<!-- jdbc template for import -->
+	<!-- <bean id="jdbcTemplate_anli" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref="dataSource_anli" />
+	</bean> -->
+ 	
+    <!-- 数据源配置, 结束-->
+    
+    <!-- 文件上传下载配置-->
+    <!-- 
+    defaultEncoding：表示用来解析request请求的默认编码格式，当没有指定的时候根据Servlet规范会使用默认值ISO-8859-1。当request自己指明了它的编码格式的时候就会忽略这里指定的defaultEncoding。
+    uploadTempDir：设置上传文件时的临时目录，默认是Servlet容器的临时目录。
+    maxUploadSize：设置允许上传的最大文件大小，以字节为单位计算。当设为-1时表示无限制，默认是-1。
+    maxInMemorySize：设置在文件上传时允许写到内存中的最大值，以字节为单位计算，默认是10240。
+     -->
+    <!-- <bean id="multipartResolver" class="com.ch.progress.CustomMultipartResolver">
+    	<property name="defaultEncoding" value="utf-8"></property>
+    	<property name="maxUploadSize" value="10485760000"></property>
+    	<property name="maxInMemorySize" value="1073741824"></property>
+    </bean> -->
+    
+    <!-- 服务启动后，初始化加载这个指定文件-->
+   <!--  <bean class="com.ch.filter.Utillistenner"/> -->
+    
+    <!-- Sring配置页面跳转路径 -->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver"
+            id="internalResourceViewResolver">
+        <!-- 前缀 -->
+        <property name="prefix" value="/WEB-INF/view/" />
+        <!-- 后缀 -->
+        <property name="suffix" value=".jsp" />
+    </bean>
+</beans>
