@@ -14,6 +14,13 @@ $(document).ready(function() {
 						+'top:0px;left:0px;background-color: #fff2e8;/*自动换行*/	word-wrap: break-word;' 
 						+'overflow: hidden;text-overflow: ellipsis;'
 						+'border: 1px solid #c0c0c0;  z-index:9999;"></div>');
+				
+				if($(this).find('a').length > 0){
+					$('#title').text($(this).find('a').text().substring(0,300));
+				}else{
+					$('#title').text($(this).text().substring(0,300));
+				}
+				
 				$(this).mousemove(function(e) { 
 					var xx = e.originalEvent.x || e.originalEvent.layerX || 0; 
 					var yy = e.originalEvent.y || e.originalEvent.layerY || 0; 
@@ -40,12 +47,6 @@ $(document).ready(function() {
 					
 					$('#title').css('left',newxx+'px');
 					$('#title').css('top',newyy+'px');
-					
-					if($(this).find('a').length > 0){
-						$('#title').text($(this).find('a').text().substring(0,300));
-					}else{
-						$('#title').text($(this).text().substring(0,300));
-					}
 					
 				}); 
 			}
@@ -92,8 +93,8 @@ var TableInit =function () {
 			cardView: false,                    // 是否显示详细视图
 			detailView: false, 					//是否显示父子表
 			minimumCountColumns: 2,             // 最少允许的列数
-			clickToSelect: false,               // 是否启用点击选中行
-			height: 480,                        //450, 行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
+			clickToSelect: true,               // 是否启用点击选中行
+			height: tableheight(),                        //450, 行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
 //			uniqueId: "ID",                     // 每一行的唯一标识，一般为主键列
 //			fixedColumns: true,					//固定列,引入bootstrap-table-fixed-columns.js
 //	        fixedNumber:2,						//固定前两列,引入bootstrap-table-fixed-columns.js
@@ -112,7 +113,7 @@ var TableInit =function () {
 			},
 			// 是否显示父子表
 			columns : [ {
-				field : 'ID',
+				field : 'select',
 				checkbox : true,
 			} , {
 				field : 'patientname',
@@ -146,15 +147,6 @@ var TableInit =function () {
 			
 			// 1.点击每行进行函数的触发
 			onClickRow : function(row, tr,flied){
-				if($(tr).find('input').prop("checked")){//check类型的input
-					$(tr).attr('class','');//改变样式
-					$(tr).find('input').prop("checked",false);//改变勾选状态
-					row.ID=false;//改变勾选值
-				}else{
-					$(tr).attr('class','selected');
-					$(tr).find('input').prop("checked",true);
-					row.ID=true;
-				}
 			},
 
 			// 2. 点击前面的复选框进行对应的操作
@@ -344,4 +336,23 @@ function all_form_validator(){
 //	        } 
         }  
     });  
+}
+
+function tableheight(){
+//	alert(window.screen.availWidth)
+//	alert(document.body.clientHeight)
+//	alert(document.getElementById("header_path").offsetHeight)
+//	alert(document.getElementById("search_div").offsetHeight)
+//	alert(document.getElementById("toolbar").offsetHeight)
+	
+	var _height = document.body.clientHeight-document.getElementById("header_path").offsetHeight
+	-document.getElementById("search_div").offsetHeight-document.getElementById("toolbar").offsetHeight;
+	
+	if(window.screen.availWidth/160%1==0){
+		_height=_height-10;
+	}else{
+		_height=_height-30;
+	}
+	
+	return _height;
 }

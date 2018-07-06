@@ -12,11 +12,19 @@ public class Strisnull {
 		}
 	}
 	
-	public String isnullorstr(Object obj,String str){
+	public String isnulltostr(Object obj,String str){
 		if(obj==null || "".equals(obj)){
 			return str;
 		}else{
 			return obj.toString();
+		}
+	}
+	
+	public int isnulltoint_0(Object obj,String str){
+		if(obj==null || "".equals(obj)){
+			return 0;
+		}else{
+			return Integer.parseInt(obj.toString());
 		}
 	}
 }

@@ -46,6 +46,9 @@
 <link href="${pageContext.request.contextPath}/bootstrap_home/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet" />
 <script src="${pageContext.request.contextPath}/bootstrap_home/bootstrap3-editable/js/bootstrap-table-editable.js"></script>
 
+<!-- bootstrap-table-export -->
+<script src="${pageContext.request.contextPath}/bootstrap_home/bootstrap-table-export/bootstrap-table-export.js"></script>
+<script src="${pageContext.request.contextPath}/bootstrap_home/bootstrap-table-export/tableExport.js"></script>
 
 <!-- MY JS -->
 <script type="text/javascript" src="${pageContext.request.contextPath}/chjs/pass/pass_testmng.js"></script>
@@ -56,7 +59,7 @@
 
 <div id="wrapper" >
 	<div  class="gray-bg">
-		<div class="row wrapper border-bottom white-bg page-heading">
+		<div id="header_path" class="row wrapper border-bottom white-bg page-heading">
 			<div class="col-lg-10">
 				<ol class="breadcrumb">
 					<li><a>home</a></li>
@@ -67,73 +70,112 @@
 			<div class="col-lg-2"></div>
 		</div>
 		<div class="animated fadeInRight">
-			<div id="table_div">
-				<!-- 列表表格-开始制作 -->
-				<div class="panel-body" style="padding-bottom:0px;">
-					<div class="panel panel-default">
-					    <div class="panel-heading">查询条件</div>
-					    <div class="panel-body">
-					    	<div class="col-sm-6">
-					    	 	<div class="row" style="margin-bottom:15px">
-						    		<label for="anlitype" class="col-sm-2 control-label" style="padding-top:7px">案例类型</label>
-						            <div class="col-sm-4">
-						            	<select id="anlitype" name="anlitype" class="js-data-example-ajax" style="width:100%"></select>
-						            </div>
-					    			<label class="control-label col-sm-2" for="txt_search_departmentname" style="padding-top:7px">案例名称</label>
-					                <div class="col-sm-4">
-					                    <input type="text" class="form-control" id="searchdata">
-					                </div>
-						    	</div>
-						    	<div class="row">
-						    		<label for="teamid_search" class="col-sm-2 control-label" style="padding-top:7px">团队名称</label>
-						            <div class="col-sm-4">
-						            	<select id='teamid_search' name="teamid_search" class="js-data-example-ajax" style="width:100%"></select>
-						            </div>
-						    		<label for="projectid_search" class="col-sm-2 control-label" style="padding-top:7px">项目名称</label>
-						            <div class="col-sm-4">
-						            	<select id='projectid_search' name="projectid_search" class="js-data-example-ajax" style="width:100%"></select>
-						            </div>
-						    	</div>
-					    	</div>
-					    	<div class="col-sm-6">
-					    		<div class="col-sm-3" style="text-align: left;">
-				                    <button type="button" id="btn_query" class="btn btn-primary" onclick="table_search()">查询</button>
+			<!-- 列表表格-开始制作 -->
+			<div id="table_div" class="panel-body" style="padding-bottom:0px;">
+				<div id="search_div" class="panel panel-default">
+				    <div class="panel-heading">查询条件</div>
+				    <div class="panel-body">
+				    	<div class="row" style="margin-bottom:15px">
+				    		<div class="col-sm-3">
+			    				<label for="teamid_search" class="control-label  col-sm-4" style="padding-top:7px">团队名称</label>
+			    				<div class="col-sm-8">
+			    					<select id="teamid_search" name="teamid_search" class="js-data-example-ajax" style="width:100px"></select>
+			    				</div>
+				    		</div>
+				    		<div class="col-sm-3">
+				    			<label for="projectid_search" class="control-label col-sm-4" style="padding-top:7px">项目名称</label>
+					           	<div class="col-sm-8">
+					           		<select id="projectid_search" name="projectid_search" class="js-data-example-ajax" style="width:100px"></select>	
+					           	</div>
+					            
+				    		</div>
+				    		<div class="col-sm-3">
+				    			<label for="anlitype" class="control-label col-sm-4" style="padding-top:7px">案例类型</label>
+				    			<div class="col-sm-8">
+				    				<select id="anlitype" name="anlitype" class="js-data-example-ajax" style="width:100px"></select>
+				    			</div>
+				    		</div>
+				    	</div>
+				    	<div class="row" style="margin-bottom:15px">
+				    		<div class="col-sm-3">
+				    			<label class="control-label col-sm-4" for="moduleid" style="padding-top:7px">模块名称</label>
+				                <div class="col-sm-8">
+				                    <select id="moduleid" name="moduleid" class="js-data-example-ajax" style="width:150px"></select>
+				                </div>
+				    		</div>
+				    		<div class="col-sm-3">
+				    			<label class="control-label col-sm-4" for="searchdata" style="padding-top:7px">案例名称</label>
+				                <div class="col-sm-8">
+				                    <input id="searchdata" type="text" class="form-control" >
+				                </div>
+				    		</div>
+				    		<div class="col-sm-3">
+				    			<button type="button" id="btn_query" class="btn btn-primary" onclick="table_search()">查询</button>
+				    		</div>
+				    	</div>
+				    	<!-- <div class="col-sm-6">
+				    	 	<div class="row" style="margin-bottom:15px">
+					    		<label for="anlitype" class="col-sm-2 control-label" style="padding-top:7px">案例类型</label>
+					            <div class="col-sm-4">
+					            	<select id="anlitype" name="anlitype" class="js-data-example-ajax" style="width:100%"></select>
+					            </div>
+				    			<label class="control-label col-sm-2" for="txt_search_departmentname" style="padding-top:7px">案例名称</label>
+				                <div class="col-sm-4">
+				                    <input type="text" class="form-control" id="searchdata">
 				                </div>
 					    	</div>
-					    </div>
-					</div>  
-					<div id="toolbar" class="btn-group">
-						<div class="col-sm-12">
-							<button id="btn_add" type="button" class="btn btn-default" onclick="open_dialog()">
-					        	<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增
-						    </button>
-						    <button id="btn_edit" type="button" class="btn btn-default" onclick="edit_dialog()">
-						        <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>修改
-						    </button>
-						    <button id="btn_delete" type="button" class="btn btn-default" onclick="del_data()">
-						        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>删除
-						    </button>
-						    <div  class="btn-group">
-								<button id="dropdownMenu1" type="button"
-									class="btn btn-default dropdown-toggle" data-toggle="dropdown"
-									aria-haspopup="true" aria-expanded="true">
-									<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>工具
-								</button>
-								<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-									<li><a href="#" onclick="open_modal_dialog_serverip_all()">审查所有案例</a></li>
-									<li><a href="#" onclick="open_modal_dialog_serverip_one()">审查勾选案例</a></li>
-									<li><a href="#" onclick="open_modal_dialg_tools()">导入案例数据</a></li>
-									<li role="separator" class="divider"></li>
-									<li><a href="#">Separated link</a></li>
-								</ul>
-							</div>
+					    	<div class="row">
+					    		<label for="teamid_search" class="col-sm-2 control-label" style="padding-top:7px">团队名称</label>
+					            <div class="col-sm-4">
+					            	<select id='teamid_search' name="teamid_search" class="js-data-example-ajax" style="width:100%"></select>
+					            </div>
+					    		<label for="projectid_search" class="col-sm-2 control-label" style="padding-top:7px">项目名称</label>
+					            <div class="col-sm-4">
+					            	<select id='projectid_search' name="projectid_search" class="js-data-example-ajax" style="width:100%"></select>
+					            </div>
+					    	</div>
+				    	</div>
+				    	<div class="col-sm-6">
+				    		<div class="col-sm-3" style="text-align: left;">
+			                    <button type="button" id="btn_query" class="btn btn-primary" onclick="table_search()">查询</button>
+			                </div>
+				    	</div>-->
+				    </div> 
+				</div>  
+				<div id="toolbar" class="btn-group">
+					<div class="col-sm-12">
+						<button id="btn_add" type="button" class="btn btn-default" onclick="open_dialog()">
+				        	<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增
+					    </button>
+					    <button id="btn_edit" type="button" class="btn btn-default" onclick="edit_dialog()">
+					        <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>修改
+					    </button>
+					    <button id="btn_delete" type="button" class="btn btn-default" onclick="del_data()">
+					        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>删除
+					    </button>
+					    <div  class="btn-group">
+							<button id="dropdownMenu1" type="button"
+								class="btn btn-default dropdown-toggle" data-toggle="dropdown"
+								aria-haspopup="true" aria-expanded="true">
+								<span class="glyphicon glyphicon-sort-by-attributes" aria-hidden="true"></span>工具
+							</button>
+							<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+								<li><a href="#" onclick="open_modal_dialog_serverip_all()">审查所有案例</a></li>
+								<li><a href="#" onclick="open_modal_dialog_serverip_one()">审查勾选案例</a></li>
+								<li><a href="#" onclick="open_modal_dialg_tools()">导入案例数据</a></li>
+								<li role="separator" class="divider"></li>
+								<li><a href="#">Separated link</a></li>
+							</ul>
 						</div>
+						<button id="anli_copy" type="button" class="btn btn-default" onclick="anli_copy()">
+					        <span class="glyphicon glyphicon-retweet" aria-hidden="true"></span>复制案例
+					    </button>
 					</div>
-					<!-- 增加表格样式：style="table-layout: fixed"时，设置列宽才能生效 -->
-					<table id="table_data"></table>
 				</div>
-				<!-- 数据表格-结束 -->
+				<!-- 增加表格样式：style="table-layout: fixed"时，设置列宽才能生效 -->
+				<table id="table_data"></table>
 			</div>
+			<!-- 数据表格-结束 -->
 		</div>
 	</div>
 </div>
@@ -181,7 +223,7 @@
 			        </div>
 					<div class="form-group">
 						<label for="testname" class="col-sm-2 control-label">案例名称</label>
-						<div class="col-sm-4">
+						<div class="col-sm-6">
 							<input type="text" class="form-control" id="testname"  name="testname">
 						</div>
 					</div>

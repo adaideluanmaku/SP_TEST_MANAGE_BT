@@ -31,6 +31,13 @@ $(document).ready(function() {
 						+'top:0px;left:0px;background-color: #fff2e8;/*自动换行*/	word-wrap: break-word;' 
 						+'overflow: hidden;text-overflow: ellipsis;'
 						+'border: 1px solid #c0c0c0; z-index:9999;"></div>');
+				
+				if($(this).find('a').length > 0){
+					$('#title').text($(this).find('a').text().substring(0,300));
+				}else{
+					$('#title').text($(this).text().substring(0,300));
+				}
+				
 				$(this).mousemove(function(e) { 
 					var xx = e.originalEvent.x || e.originalEvent.layerX || 0; 
 					var yy = e.originalEvent.y || e.originalEvent.layerY || 0; 
@@ -58,11 +65,6 @@ $(document).ready(function() {
 					$('#title').css('left',newxx+'px');
 					$('#title').css('top',newyy+'px');
 					
-					if($(this).find('a').length > 0){
-						$('#title').text($(this).find('a').text().substring(0,300));
-					}else{
-						$('#title').text($(this).text().substring(0,300));
-					}
 				}); 
 			}
 		}else if(event.type == 'mouseout'){//鼠标离开
@@ -106,6 +108,7 @@ var TableInit =function () {
 	
 	//初始化表格
 	oTableInit.Init = function(){
+		$("#table_data").bootstrapTable('destroy'); // 销毁数据表格,不销毁可能有数据缓存问题
 		$('#table_data').bootstrapTable({
 			url:address,         				// 请求后台的URL（*）
 			method: 'post',                     // 请求方式（*）
@@ -127,14 +130,25 @@ var TableInit =function () {
 //			showColumns: true,                  // 是否显示所有的列按钮
 //			showRefresh: true,                  // 是否显示刷新按钮
 			minimumCountColumns: 2,             // 最少允许的列数
-			clickToSelect: false,               // 是否启用点击选中行
-			height: 480,                        //450, 行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
+			clickToSelect: true,               // 是否启用点击选中行
+			height: tableheight(),                        //450, 行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
 			uniqueId: "ID",                     // 每一行的唯一标识，一般为主键列
 //			showToggle:true,                    // 是否显示详细视图和列表视图的切换按钮
 //			cardView: false,                    // 是否显示详细视图
 			detailView: false, 					//是否显示父子表
 //			fixedColumns: true,					//固定列,引入bootstrap-table-fixed-columns.js
 //	        fixedNumber:2,						//固定前两列,引入bootstrap-table-fixed-columns.js
+			
+			showExport: true,  			// 是否显示导出按钮
+			exportDataType: "selected",		// 'basic', 'all', 'selected'.
+		    exportTypes:['excel','xml'],  	// 导出文件类型
+//		    exportOptions:{  
+//				ignoreColumn: [0,1],  	// 忽略某一列
+//				fileName: '测试案例',  	// 文件名称设置
+//				worksheetName: 'sheet1',  // 表格工作区名称
+////				tableName: '测试导出文档',  
+//		    },
+		    
 			// 传递参数（*）,组织表格参数和页面查询参数
 			queryParams : function (params) {
 			    var temp = {   // 这里的键的名字和控制器的变量名必须一致，这边改动，控制器也需要改成一样的
@@ -151,26 +165,70 @@ var TableInit =function () {
 			},
 			// 是否显示父子表
 			columns : [ {
-				field:'ID',
+				field:'select',
 				checkbox : true
 			},{
-				field:'projectname',title:'项目名称',width:100,halign:'center'
+				field:'projectname',title:'项目名称',halign:'center'
 			},{
-				field:'testresult',title:'测试',width:80,halign:'center',sortable : true
+				field:'testresult',title:'测试',halign:'center',sortable : true
 			},{
-				field:'testname',title:'案例名称',width:100,halign:'center'
+				field:'testno',title:'案例编号',halign:'center'
 			},{
-				field:'testno',title:'案例编号',width:80,halign:'center'
+				field:'testname',title:'案例名称',halign:'center'
 			},{
-				field:'testtext',title:'逻辑描述',width:250,halign:'center'
+				field:'testtext',title:'逻辑描述',halign:'center',
+				formatter: function (value, row, index) {
+					if(value!=null){
+						if (value.length>30) {
+	                    	return '<div style="width:200px;">'+value+'</div>';
+	                    }else{
+	                    	return value;
+	                    }
+					}else{
+						return value;
+					}
+                }
 			},{
-				field:'testin',title:'输入条件',width:250,halign:'center'
+				field:'testin',title:'输入条件',halign:'center',
+				formatter: function (value, row, index) {
+					if(value!=null){
+						if (value.length>30) {
+	                    	return '<div style="width:200px;">'+value+'</div>';
+	                    }else{
+	                    	return value;
+	                    }
+					}else{
+						return value;
+					}
+                }
 			},{
-				field:'testout',title:'预期结果',width:250,halign:'center'
+				field:'testout',title:'预期结果',halign:'center',
+				formatter: function (value, row, index) {
+					if(value!=null){
+						if (value.length>30) {
+	                    	return '<div style="width:200px;"><xmp style="margin: auto">'+value+'</xmp></div>';
+	                    }else{
+	                    	return value;
+	                    }
+					}else{
+						return value;
+					}
+                }
 			},{
-				field:'remark',title:'备注',width:100,halign:'center'
+				field:'remark',title:'备注',halign:'center',
+				formatter: function (value, row, index) {
+					if(value!=null){
+						if (value.length>30) {
+	                    	return '<div style="width:200px;">'+value+'</div>';
+	                    }else{
+	                    	return value;
+	                    }
+					}else{
+						return value;
+					}
+                }
 			},{
-				field:'selenium_share_status',title:'selenium公共脚本',width:200,halign:'center',
+				field:'selenium_share_status',title:'selenium公共脚本',halign:'center',
 				formatter: function (value, row, index) {
                     if (value ==0) {
                         return '否';
@@ -179,7 +237,7 @@ var TableInit =function () {
                     }
                 }
 			},{
-				field:'status',title:'状态',width:50,halign:'center',
+				field:'status',title:'状态',halign:'center',
 				formatter: function (value, row, index) {
                     if (value ==1) {
                         return '启用';
@@ -188,13 +246,12 @@ var TableInit =function () {
                     }
                 }
 			},{
-				field:'username',title:'姓名',width:80,halign:'center'
+				field:'username',title:'姓名',halign:'center'
 			},{
-				field:'inserttime',title:'创建日期',width:130,halign:'center'
+				field:'inserttime',title:'创建日期',halign:'center'
 			}, {
 				field : '',
 				title : '操作',
-				width : 50,
 				align : 'center',
 				formatter: function(value,row,index){
 //					if(row.testin==undefined || row.testin==''){
@@ -207,15 +264,15 @@ var TableInit =function () {
 			
 			// 1.点击每行进行函数的触发
 			onClickRow : function(row, tr,flied){
-				if($(tr).find('input').prop("checked")){//check类型的input
-					$(tr).attr('class','');//改变样式
-					$(tr).find('input').prop("checked",false);//改变勾选状态
-					row.ID=false;//改变勾选值
-				}else{
-					$(tr).attr('class','selected');
-					$(tr).find('input').prop("checked",true);
-					row.ID=true;
-				}
+//				if($(tr).find('input').prop("checked")){//check类型的input
+//					$(tr).attr('class','');//改变样式
+//					$(tr).find('input').prop("checked",false);//改变勾选状态
+//					row.ID=false;//改变勾选值
+//				}else{
+//					$(tr).attr('class','selected');
+//					$(tr).find('input').prop("checked",true);
+//					row.ID=true;
+//				}
 			},
 
 			// 2. 点击前面的复选框进行对应的操作
@@ -243,8 +300,10 @@ function table_search(){
 function open_dialog(){
 	//清空表单
 	document.getElementById('dialog_form').reset();
-	$('#modal_dialog #projectid').select2('val','0');
+	$('#modal_dialog #projectid1').select2('val','0');
 	$('#modal_dialog #teamid').select2('val','0');
+	$('#modal_dialog #status').select2('val','1');
+	$('#modal_dialog #selenium_share_status').select2('val','0');
 	
 	//重置表单校验,销毁重构
 	$('#dialog_form').data('bootstrapValidator').destroy();
@@ -262,7 +321,7 @@ function _select2(){
 	var addressprojectgroup = addurl + '/pa/projectgroup';
 
 	//每次点击都要后台取数据
-	$('#modal_dialog #projectid').select2({
+	$('#modal_dialog #projectid1').select2({
 		placeholder: "--请选择--",
 		allowClear: true,
 		dropdownParent: $("#modal_dialog"),//modal默认不显示，解决modal显示后下拉单样式问题
@@ -352,7 +411,7 @@ function _select2(){
 	});
 	//选中team下拉后，初始化project的数据
 	$('#modal_dialog #teamid').on("select2:select", function(e) {
-		$('#modal_dialog #projectid').select2('val','0');
+		$('#modal_dialog #projectid1').select2('val','0');
 	})
 	
 	$("#modal_dialog #status").select2({dropdownParent: $("#modal_dialog"),data:[{id:0,text:'停用'},{id:1,text:'启动'}]});
@@ -430,6 +489,7 @@ function del_data(){
     		testids.push(IdSelections[i].testid);
     	}
     	
+    	parent.onloading();
     	$.ajax({
     		type:"POST",
     		url:deladdress,
@@ -437,6 +497,7 @@ function del_data(){
     		cache:true,
     		data:{testids:testids},
     		success: function(result){
+    			parent.removeload();
     			if(result=='ok'){
     				swal("" ,result,"success");
     				$('#table_data').bootstrapTable('refresh', {url: queryaddress});
@@ -454,7 +515,7 @@ function del_data(){
 function edit_dialog(){
 	//清空表单
 	document.getElementById('dialog_form').reset();
-	$('#modal_dialog #projectid').select2('val','0');
+	$('#modal_dialog #projectid1').select2('val','0');
 	$('#modal_dialog #teamid').select2('val','0');
 	
 	$('#modal_dialog button').show();
@@ -470,7 +531,7 @@ function edit_dialog(){
 	}
 	
 	$('#modal_dialog #testid').val(IdSelections[0].testid);
-	$('#modal_dialog #projectid').html('<option value="' + IdSelections[0].projectid + '">' + IdSelections[0].projectname + '</option>').trigger("change");
+	$('#modal_dialog #projectid1').html('<option value="' + IdSelections[0].projectid + '">' + IdSelections[0].projectname + '</option>').trigger("change");
 	$("#modal_dialog #status").val(IdSelections[0].status).trigger("change");
 	$("#modal_dialog #selenium_share_status").val(IdSelections[0].selenium_share_status).trigger("change");
 	$('#modal_dialog #testname').val(IdSelections[0].testname);
@@ -575,6 +636,7 @@ function create_data(){
 			projectid1:$('#modal_dialog_HIS_data #projectid').select2('val'),
 			match_scheme1:$("#modal_dialog_HIS_data #match_scheme1").val(),
 			createTB1:$("#modal_dialog_HIS_data #createTB1").val(),
+			cleardict1:$("#modal_dialog_HIS_data #cleardict1").val(),
 			passorpa_hisdata1:0},
 			
 		success: function(result){
@@ -592,7 +654,7 @@ function create_data(){
 }
 
 function modal_dialog_HIS_data_change(){
-	$("#modal_dialog_HIS_data #createview1").attr("disabled",true);
+	$("#modal_dialog_HIS_data #createview1").attr("disabled",true);//disabled，禁用组件，不传值
 	$("#modal_dialog_HIS_data #mz1").attr("disabled",true);
 	$("#modal_dialog_HIS_data #zy1").attr("disabled",true);
 	$("#modal_dialog_HIS_data #cy1").attr("disabled",true);
@@ -686,7 +748,7 @@ var TableInit_serverip =function () {
 //			showColumns: true,                  // 是否显示所有的列按钮
 //			showRefresh: true,                  // 是否显示刷新按钮
 			minimumCountColumns: 2,             // 最少允许的列数
-			clickToSelect: false,               // 是否启用点击选中行
+			clickToSelect: true,               // 是否启用点击选中行
 			height: 480,                        //450, 行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
 			uniqueId: "ID",                     // 每一行的唯一标识，一般为主键列
 //			showToggle:true,                    // 是否显示详细视图和列表视图的切换按钮
@@ -709,6 +771,7 @@ var TableInit_serverip =function () {
 			},
 			// 是否显示父子表
 			columns : [ {
+				field : 'select',
 				checkbox : true,
 			} ,{
 				field : 'servername',
@@ -734,15 +797,6 @@ var TableInit_serverip =function () {
 			
 			// 1.点击每行进行函数的触发
 			onClickRow : function(row, tr,flied){
-				if($(tr).find('input').prop("checked")){//check类型的input
-					$(tr).attr('class','');//改变样式
-					$(tr).find('input').prop("checked",false);//改变勾选状态
-					row.ID=false;//改变勾选值
-				}else{
-					$(tr).attr('class','selected');
-					$(tr).find('input').prop("checked",true);
-					row.ID=true;
-				}
 			},
 
 			// 2. 点击前面的复选框进行对应的操作
@@ -868,7 +922,7 @@ function screen_one(){
 	if(IdSelectionsIP.length != 1){
 		swal({
             title: "警告",
-            text: "请选择一条数据进行操作."
+            text: "请选择URL路径."
         });
 		return;
 	}
@@ -975,3 +1029,63 @@ function pa_redis_clear(){
 	});
 }
 
+function anli_copy(){
+	var IdSelections = $('#table_data').bootstrapTable('getSelections');
+	if(IdSelections.length != 1){
+		swal({
+            title: "警告",
+            text: "请至少选择一条数据进行操作."
+        });
+		return;
+	}
+	
+	var testid=IdSelections[0].testid;
+	
+	swal({
+        title: "Are you sure?",
+        text: "You will not be able to recover this imaginary file!",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#DD6B55",
+        confirmButtonText: "Yes, I do!",
+        closeOnConfirm: false
+    }, function () {
+    	$.ajax({
+    		type:"POST",
+    		url:addurl+"/pa/testmng_copy",
+    		async:false,
+    		data:{testid:testid},
+    		cache:true,
+    		success: function(result){
+    			if(result=='ok'){
+    				swal("" ,result,"success");
+    				table_search();
+    			}else{
+    				swal("", result,"error");
+    			}
+    		},
+    		error:function(XMLResponse){
+    			alert(XMLResponse.responseText)
+    		}
+    	});
+    });
+}
+
+function tableheight(){
+//	alert(window.screen.availWidth)
+//	alert(document.body.clientHeight)
+//	alert(document.getElementById("header_path").offsetHeight)
+//	alert(document.getElementById("search_div").offsetHeight)
+//	alert(document.getElementById("toolbar").offsetHeight)
+	
+	var _height = document.body.clientHeight-document.getElementById("header_path").offsetHeight
+	-document.getElementById("search_div").offsetHeight-document.getElementById("toolbar").offsetHeight;
+	
+	if(window.screen.availWidth/160%1==0){
+		_height=_height-10;
+	}else{
+		_height=_height-30;
+	}
+	
+	return _height;
+}

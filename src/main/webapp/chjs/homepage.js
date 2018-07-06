@@ -2,14 +2,30 @@ var addurl = null;
 
 $(document).ready(function() {
 	addurl = $("#addurl").val();
-
+	updateiframe();
 });
 
 function updateiframe(){
-	var height=$("#side-menu").height()-100;
-	if(height>790){
-		$("#iframe_box").attr("style","width:100%; height:"+height+"px");
+//	var height=$("#side-menu").height()-100;
+//	if(height>790){
+//		$("#iframe_box").attr("style","width:100%; height:"+height+"px");
+//	}
+	
+//	alert(window.screen.availWidth)
+//	alert(document.body.clientHeight)
+//	alert(document.getElementById("bookheader").offsetHeight)
+//	alert(document.getElementById("bookcenter").offsetHeight)
+//	alert(document.getElementById("bookfooter").offsetHeight)
+	var iframe_height = document.body.clientHeight-document.getElementById("bookheader").offsetHeight-document.getElementById("bookfooter").offsetHeight;
+//	alert(window.screen.availWidth/160)
+	if(window.screen.availWidth/160%1==0){
+		iframe_height=iframe_height-10;
+	}else{
+		iframe_height=iframe_height-30;
 	}
+	
+	$("#iframe_box").attr("style","width:100%; height:"+iframe_height+"px");
+	
 }
 // 首页目录页面跳转
 function home_graph() {
@@ -61,6 +77,18 @@ function prescription() {
 // 政府项目目录页面跳转
 function zfxm_graph() {
 	$("#iframe_box").attr("src", addurl + "/homepage/zfxm_graph");
+}
+
+function zfxm_team() {
+	$("#iframe_box").attr("src", addurl + "/homepage/zfxm_team");
+}
+
+function zfxm_project() {
+	$("#iframe_box").attr("src", addurl + "/homepage/zfxm_project");
+}
+
+function zfxm_testmng() {
+	$("#iframe_box").attr("src", addurl + "/homepage/zfxm_testmng");
 }
 
 // 学习目录页面跳转

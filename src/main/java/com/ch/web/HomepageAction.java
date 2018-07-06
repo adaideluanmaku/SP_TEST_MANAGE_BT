@@ -72,6 +72,21 @@ public class HomepageAction {
 		return new ModelAndView("zfxm/zfxm_graph");
 	}
 	
+	@RequestMapping("/zfxm_team")
+	public ModelAndView zfxm_team(){
+		return new ModelAndView("zfxm/zfxm_team");
+	}
+	
+	@RequestMapping("/zfxm_project")
+	public ModelAndView zfxm_project(){
+		return new ModelAndView("zfxm/zfxm_project");
+	}
+
+	@RequestMapping("/zfxm_testmng")
+	public ModelAndView zfxm_testmng(){
+		return new ModelAndView("zfxm/zfxm_testmng");
+	}
+	
 	//学习目录
 	@RequestMapping("/learn_graph")
 	public ModelAndView graph_learn(){

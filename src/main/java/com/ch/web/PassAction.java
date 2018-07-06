@@ -247,4 +247,11 @@ public class PassAction {
 	public String screen_win(HttpServletRequest req) throws UnsupportedEncodingException, TimeoutException  {
 		return passbean.screen_win(req);
 	}
+	
+	//复制team列表数据
+	@RequestMapping(value="/testmng_copy", produces = "text/html;charset=UTF-8")
+	@ResponseBody
+	public String testmng_copy(HttpServletRequest req){
+		return passbean.testmng_copy(req);
+	}
 }

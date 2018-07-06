@@ -90,6 +90,14 @@ public class PrescriptionAction {
 			mav.addObject("patientname",req.getParameter("testname"));
 		}
 		
+		if(prescriptiontype==4){
+			String sql="select testin from  zfxm_testmng where testid=? ";
+			String prescription_json=jdbcTemplate.queryForObject(sql,String.class,new Object[]{req.getParameter("testid")});
+			mav.addObject("prescription_json",prescription_json);
+			mav.addObject("pre_id",req.getParameter("testid"));
+			mav.addObject("patientname",req.getParameter("testname"));
+		}
+		
 		mav.addObject("prescriptiontype",prescriptiontype);
 		return mav;
 	}

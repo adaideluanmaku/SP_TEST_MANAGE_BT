@@ -17,6 +17,7 @@ var TableInit =function () {
 	
 	//初始化表格
 	oTableInit.Init = function(){
+		$("#table_data").bootstrapTable('destroy'); // 销毁数据表格,不销毁可能有数据缓存问题
 		$('#table_data').bootstrapTable({
 			url:address,         				// 请求后台的URL（*）
 			method: 'post',                     // 请求方式（*）
@@ -37,8 +38,8 @@ var TableInit =function () {
 //			showColumns: true,                  // 是否显示所有的列按钮
 //			showRefresh: true,                  // 是否显示刷新按钮
 			minimumCountColumns: 2,             // 最少允许的列数
-			clickToSelect: false,               // 是否启用点击选中行
-			height: 480,                        //450, 行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
+			clickToSelect: true,               // 是否启用点击选中行
+			height:  tableheight(),                        //450, 行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
 			uniqueId: "ID",                     // 每一行的唯一标识，一般为主键列
 //			showToggle:true,                    // 是否显示详细视图和列表视图的切换按钮
 //			cardView: false,                    // 是否显示详细视图
@@ -60,7 +61,7 @@ var TableInit =function () {
 			},
 			// 是否显示父子表
 			columns : [ {
-				field : 'ID',
+				field : 'select',
 				checkbox : true
 			} , {
 				field : 'teamid',
@@ -78,15 +79,6 @@ var TableInit =function () {
 			
 			// 1.点击每行进行函数的触发
 			onClickRow : function(row, tr,flied){
-				if($(tr).find('input').prop("checked")){//check类型的input
-					$(tr).attr('class','');//改变样式
-					$(tr).find('input').prop("checked",false);//改变勾选状态
-					row.ID=false;//改变勾选值
-				}else{
-					$(tr).attr('class','selected');
-					$(tr).find('input').prop("checked",true);
-					row.ID=true;
-				}
 			},
 
 			// 2. 点击前面的复选框进行对应的操作
@@ -184,6 +176,7 @@ function del_data(){
     		teamids.push(IdSelections[i].teamid);
     	}
     	
+    	parent.onloading();
     	$.ajax({
     		type:"POST",
     		url:deladdress,
@@ -191,6 +184,7 @@ function del_data(){
     		cache:true,
     		data:{teamids:teamids},
     		success: function(result){
+    			parent.removeload();
     			if(result=='ok'){
     				swal("" ,result,"success");
     				$('#table_data').bootstrapTable('refresh', {url: queryaddress});
@@ -276,4 +270,23 @@ function all_form_validator(){
             } ,
         }  
     });  
+}
+
+function tableheight(){
+//	alert(window.screen.availWidth)
+//	alert(document.body.clientHeight)
+//	alert(document.getElementById("header_path").offsetHeight)
+//	alert(document.getElementById("search_div").offsetHeight)
+//	alert(document.getElementById("toolbar").offsetHeight)
+	
+	var _height = document.body.clientHeight-document.getElementById("header_path").offsetHeight
+	-document.getElementById("search_div").offsetHeight-document.getElementById("toolbar").offsetHeight;
+	
+	if(window.screen.availWidth/160%1==0){
+		_height=_height-10;
+	}else{
+		_height=_height-30;
+	}
+	
+	return _height;
 }

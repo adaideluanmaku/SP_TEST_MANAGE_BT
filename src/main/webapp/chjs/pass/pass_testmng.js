@@ -7,7 +7,7 @@ $(document).ready(function() {
 	//初始化整个页面所有下拉单
 	_select2();
 	
-	//初始化所有表格
+	//初始化所有表格open_dialog
 	var oTable=new TableInit();
 	oTable.Init();
 	
@@ -25,6 +25,13 @@ $(document).ready(function() {
 						+'top:0px;left:0px;background-color: #fff2e8;/*自动换行*/	word-wrap: break-word;' 
 						+'overflow: hidden;text-overflow: ellipsis;'
 						+'border: 1px solid #c0c0c0; z-index:9999; "></div>');
+				
+				if($(this).find('a').length > 0){
+					$('#title').text($(this).find('a').text().substring(0,300));
+				}else{
+					$('#title').text($(this).text().substring(0,300));
+				}
+				
 				$(this).mousemove(function(e) { 
 					var xx = e.originalEvent.x || e.originalEvent.layerX || 0; 
 					var yy = e.originalEvent.y || e.originalEvent.layerY || 0; 
@@ -52,11 +59,6 @@ $(document).ready(function() {
 					$('#title').css('left',newxx+'px');
 					$('#title').css('top',newyy+'px');
 					
-					if($(this).find('a').length > 0){
-						$('#title').text($(this).find('a').text().substring(0,300));
-					}else{
-						$('#title').text($(this).text().substring(0,300));
-					}
 				}); 
 			}
 		}else if(event.type == 'mouseout'){//鼠标离开
@@ -73,6 +75,7 @@ var TableInit =function () {
 	
 	//初始化表格
 	oTableInit.Init = function(){
+		$("#table_div #table_data").bootstrapTable('destroy'); // 销毁数据表格,不销毁可能有数据缓存问题
 		$('#table_div #table_data').bootstrapTable({
 			url:address,         				// 请求后台的URL（*）
 			method: 'post',                     // 请求方式（*）
@@ -94,14 +97,25 @@ var TableInit =function () {
 //			showColumns: true,                  // 是否显示所有的列按钮
 //			showRefresh: true,                  // 是否显示刷新按钮
 			minimumCountColumns: 2,             // 最少允许的列数
-			clickToSelect: false,               // 是否启用点击选中行
-			height: 450,                        //450, 行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
+			clickToSelect: true,               // 是否启用点击选中行
+			height: tableheight(),                        //450, 行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
 			uniqueId: "ID",                     // 每一行的唯一标识，一般为主键列
 //			showToggle:true,                    // 是否显示详细视图和列表视图的切换按钮
 //			cardView: false,                    // 是否显示详细视图
 			detailView: false, 					//是否显示父子表
 //			fixedColumns: true,					//固定列,引入bootstrap-table-fixed-columns.js
 //	        fixedNumber:2,						//固定前两列,引入bootstrap-table-fixed-columns.js
+			
+			showExport: true,  			// 是否显示导出按钮
+			exportDataType: "selected",		// 'basic', 'all', 'selected'.
+		    exportTypes:['excel','xml'],  	// 导出文件类型
+		    exportOptions:{  
+				ignoreColumn: [0],  	// 忽略某一列
+				fileName: '测试案例',  	// 文件名称设置
+				worksheetName: 'sheet1',  // 表格工作区名称
+//				tableName: '测试导出文档',  
+		    },
+		    
 			// 传递参数（*）,组织表格参数和页面查询参数
 			queryParams : function (params) {
 			    var temp = {   // 这里的键的名字和控制器的变量名必须一致，这边改动，控制器也需要改成一样的
@@ -114,15 +128,18 @@ var TableInit =function () {
 					searchdata: $("#searchdata").val(),
 					projectid: $("#table_div #projectid_search").select2('val'),
 					anlitype:$("#table_div #anlitype").select2('val'),
+					moduleid:$("#table_div #moduleid").select2('val'),
 			    };
 			    return temp;
 			},
 			// 是否显示父子表
 			columns : [ {
-				field:'ID',
+				field:'select',
 				checkbox : true
 			},{
 				field:'projectname',title:'项目名称',//width:100,
+			},{
+				field:'testresult',title:'测试',sortable : true//dth:100,
 			},{
 				field:'modulename',title:'模块名称',//width:100,
 			},{
@@ -130,9 +147,58 @@ var TableInit =function () {
 			},{
 				field:'testname',title:'案例名称',//width:150,
 			},{
-				field:'testresult',title:'测试',sortable : true//dth:100,
+				field:'testtext',title:'逻辑描述',halign:'center',
+				formatter: function (value, row, index) {
+					if(value!=null){
+						if (value.length>30) {
+	                    	return '<div style="width:200px;">'+value+'</div>';
+	                    }else{
+	                    	return value;
+	                    }
+					}else{
+						return value;
+					}
+                }
+			},{
+				field:'testin',title:'输入条件',halign:'center',
+				formatter: function (value, row, index) {
+					if(value!=null){
+						if (value.length>30) {
+	                    	return '<div style="width:200px;">'+value+'</div>';
+	                    }else{
+	                    	return value;
+	                    }
+					}else{
+						return value;
+					}
+                }
+			},{
+				field:'testout',title:'预期结果',halign:'center',
+				formatter: function (value, row, index) {
+					if(value!=null){
+						if (value.length>30) {
+	                    	return '<div style="width:200px;"><xmp style="margin: auto">'+value+'</xmp></div>';
+	                    }else{
+	                    	return value;
+	                    }
+					}else{
+						return value;
+					}
+                }
 			},{
 				field:'remark',title:'备注',//width:100,
+				formatter: function (value, row, index) {
+					if(value!=null){
+						if (value.length>30) {
+	                    	return '<div style="width:200px;">'+value+'</div>';
+	                    }else{
+	                    	return value;
+	                    }
+					}else{
+						return value;
+					}
+                    
+                }
 			},{
 				field:'username',title:'用户',//width:100,
 			},{
@@ -143,7 +209,7 @@ var TableInit =function () {
                     return '<a href="'+addurl+'/pass/pass_json?testid='+row.testid+'" target="_blank">打开</a>';
 				}
 			},{
-				field:'status',title:'状态',width:50,
+				field:'status',title:'状态',//width:50,
 				formatter: function (value, row, index) {
                     if (value ==1) {
                         return '启用';
@@ -154,7 +220,6 @@ var TableInit =function () {
 			}, {
 				field : '',
 				title : '操作',
-				width : 50,
 				align : 'center',
 				formatter: function(value,row,index){
 //					if(row.testin==undefined || row.testin==''){
@@ -167,15 +232,6 @@ var TableInit =function () {
 			
 			// 1.点击每行进行函数的触发
 			onClickRow : function(row, tr,flied){
-				if($(tr).find('input').prop("checked")){//check类型的input
-					$(tr).attr('class','');//改变样式
-					$(tr).find('input').prop("checked",false);//改变勾选状态
-					row.ID=false;//改变勾选值
-				}else{
-					$(tr).attr('class','selected');
-					$(tr).find('input').prop("checked",true);
-					row.ID=true;
-				}
 			},
 
 			// 2. 点击前面的复选框进行对应的操作
@@ -207,6 +263,8 @@ function open_dialog(){
 	$('#modal_dialog_add_update #projectidaa').select2('val','0');
 	$('#modal_dialog_add_update #teamidaa').select2('val','0');
 	$('#modal_dialog_add_update #moduleid').select2('val','0');
+	$('#modal_dialog_add_update #status').select2('val','1');
+	$('#modal_dialog_add_update #selenium_share_status').select2('val','0');
 	
 	//重置表单校验,销毁重构
 	$('#modal_dialog_add_update #dialog_form').data('bootstrapValidator').destroy();
@@ -295,6 +353,13 @@ function _select2(){
 //		placeholder: { id: "0", text: "--请选择--" },//默认初始值
 		allowClear: true,
 		dropdownParent: $("#modal_dialog_add_update"),//modal默认不显示，解决modal显示后下拉单样式问题
+		data:modulenamegroupdata
+	});
+	$('#table_div #moduleid').select2({
+		placeholder: "--请选择--",
+//		placeholder: { id: "0", text: "--请选择--" },//默认初始值
+		allowClear: true,
+		dropdownParent: $("#table_div"),//modal默认不显示，解决modal显示后下拉单样式问题
 		data:modulenamegroupdata
 	});
 	
@@ -489,16 +554,16 @@ function add_data(){
 		error:function(XMLResponse){
 			alert(XMLResponse.responseText)
 		},
-		complete : function(XMLHttpRequest, textStatus) {
-			alert(XMLHttpRequest)
-			alert(textStatus)
+//		complete : function(XMLHttpRequest, textStatus) {
+//			alert(XMLHttpRequest)
+//			alert(textStatus)
 //	        var sessionstatus = XMLHttpRequest.getResponseHeader("sessionstatus"); // 通过XMLHttpRequest取得响应头，sessionstatus，
 //	        if (sessionstatus == "timeout") {
 	            // 如果超时就处理 ，指定要跳转的页面
 //	            window.location.replace("login.jsp");
 //	            location.href = "login.jsp";
 //	        }
-	    }
+//	    }
 	});
 }
 
@@ -529,6 +594,7 @@ function del_data(){
     		testids.push(IdSelections[i].testid);
     	}
     	
+    	parent.onloading();
     	$.ajax({
     		type:"POST",
     		url:deladdress,
@@ -536,6 +602,7 @@ function del_data(){
     		cache:true,
     		data:{testids:testids},
     		success: function(result){
+    			parent.removeload();
     			if(result=='ok'){
     				swal("" ,result,"success");
     				$('#table_div #table_data').bootstrapTable('refresh', {url: queryaddress});
@@ -997,4 +1064,66 @@ function sqlserver_data(){
     	return false;
     });
 	
+}
+
+function anli_copy(){
+	var IdSelections = $('#table_data').bootstrapTable('getSelections');
+	if(IdSelections.length != 1){
+		swal({
+            title: "警告",
+            text: "请至少选择一条数据进行操作."
+        });
+		return;
+	}
+	
+	var testid=IdSelections[0].testid;
+	
+	swal({
+        title: "Are you sure?",
+        text: "You will not be able to recover this imaginary file!",
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#DD6B55",
+        confirmButtonText: "Yes, I do!",
+        closeOnConfirm: false
+    }, function () {
+    	$.ajax({
+    		type:"POST",
+    		url:addurl+"/pass/testmng_copy",
+    		async:false,
+    		data:{testid:testid},
+    		cache:true,
+    		success: function(result){
+    			if(result=='ok'){
+    				swal("" ,result,"success");
+    				table_search();
+    			}else{
+    				swal("", result,"error");
+    			}
+    		},
+    		error:function(XMLResponse){
+    			alert(XMLResponse.responseText)
+    		}
+    	});
+    });
+	
+}
+
+function tableheight(){
+//	alert(window.screen.availWidth)
+//	alert(document.body.clientHeight)
+//	alert(document.getElementById("header_path").offsetHeight)
+//	alert(document.getElementById("search_div").offsetHeight)
+//	alert(document.getElementById("toolbar").offsetHeight)
+	
+	var _height = document.body.clientHeight-document.getElementById("header_path").offsetHeight
+	-document.getElementById("search_div").offsetHeight-document.getElementById("toolbar").offsetHeight;
+	
+	if(window.screen.availWidth/160%1==0){
+		_height=_height-10;
+	}else{
+		_height=_height-30;
+	}
+	
+	return _height;
 }

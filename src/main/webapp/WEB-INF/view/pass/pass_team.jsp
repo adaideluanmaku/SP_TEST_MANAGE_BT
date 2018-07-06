@@ -47,7 +47,7 @@
 
 <div id="wrapper" >
 	<div  class="gray-bg">
-		<div class="row wrapper border-bottom white-bg page-heading">
+		<div id="header_path" class="row wrapper border-bottom white-bg page-heading">
 			<div class="col-lg-10">
 				<ol class="breadcrumb">
 					<li><a>home</a></li>
@@ -58,53 +58,53 @@
 			<div class="col-lg-2"></div>
 		</div>
 		<div class="animated fadeInRight">
-			<div id="table_div">
-				<!-- 列表表格-开始制作 -->
-				<div class="panel-body" style="padding-bottom:0px;">
-					<div class="panel panel-default">
-					    <div class="panel-heading">查询条件</div>
-					    <div class="panel-body">
-			                <label class="control-label col-sm-1" for="txt_search_departmentname" style="padding-top:7px">团队名称</label>
-			                <div class="col-sm-3">
+			<!-- 列表表格-开始制作 -->
+			<div id="table_div" class="panel-body" style="padding-bottom:0px;">
+				<div id="search_div" class="panel panel-default">
+				    <div class="panel-heading">查询条件</div>
+				    <div class="panel-body">
+				    	<div class="col-sm-3">
+			                <label class="control-label col-sm-4" for="teamname" style="padding-top:7px">团队名称</label>
+			                <div class="col-sm-8">
 			                    <input type="text" class="form-control" id="teamname">
 			                </div>
-			                <div class="col-sm-2" style="text-align: left;">
-			                    <button type="button" id="btn_query" class="btn btn-primary" onclick="table_search()">查询</button>
-			                </div>
-					    </div>
-					</div>  
-					<div id="toolbar" class="btn-group">
-						<div class="col-sm-12">
-							<button id="btn_add" type="button" class="btn btn-default" onclick="open_dialog()">
-					        	<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增
-						    </button>
-						    <button id="btn_edit" type="button" class="btn btn-default" onclick="edit_dialog()">
-						        <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>修改
-						    </button>
-						    <button id="btn_delete" type="button" class="btn btn-default" onclick="del_data()">
-						        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>删除
-						    </button>
-						    <div  class="btn-group">
-								<button id="dropdownMenu1" type="button"
-									class="btn btn-default dropdown-toggle" data-toggle="dropdown"
-									aria-haspopup="true" aria-expanded="true">
-									<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>工具
-								</button>
-								<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-									<li><a href="#">Action</a></li>
-									<li><a href="#">Another action</a></li>
-									<li><a href="#">Something else here</a></li>
-									<li role="separator" class="divider"></li>
-									<li><a href="#">Separated link</a></li>
-								</ul>
-							</div>
+			    		</div>
+			    		<div class="col-sm-3">
+			                <button type="button" id="btn_query" class="btn btn-primary" onclick="table_search()">查询</button>
+			    		</div>
+				    </div>
+				</div>  
+				<div id="toolbar" class="btn-group">
+					<div class="col-sm-12">
+						<button id="btn_add" type="button" class="btn btn-default" onclick="open_dialog()">
+				        	<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增
+					    </button>
+					    <button id="btn_edit" type="button" class="btn btn-default" onclick="edit_dialog()">
+					        <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>修改
+					    </button>
+					    <button id="btn_delete" type="button" class="btn btn-default" onclick="del_data()">
+					        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>删除
+					    </button>
+					    <div  class="btn-group">
+							<button id="dropdownMenu1" type="button"
+								class="btn btn-default dropdown-toggle" data-toggle="dropdown"
+								aria-haspopup="true" aria-expanded="true">
+								<span class="glyphicon glyphicon-sort-by-attributes" aria-hidden="true"></span>工具
+							</button>
+							<ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+								<li><a href="#">Action</a></li>
+								<li><a href="#">Another action</a></li>
+								<li><a href="#">Something else here</a></li>
+								<li role="separator" class="divider"></li>
+								<li><a href="#">Separated link</a></li>
+							</ul>
 						</div>
 					</div>
-					<!-- 增加表格样式：style="table-layout: fixed"时，设置列宽才能生效 -->
-					<table id="table_data" style="table-layout:fixed; "></table>
 				</div>
-				<!-- 数据表格-结束 -->
+				<!-- 增加表格样式：style="table-layout: fixed"时，设置列宽才能生效 -->
+				<table id="table_data" style="table-layout:fixed; "></table>
 			</div>
+			<!-- 数据表格-结束 -->
 		</div>
 	</div>
 </div>

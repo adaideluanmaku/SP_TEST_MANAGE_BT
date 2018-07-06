@@ -34,12 +34,12 @@ public class LoginAction {
 	
 	@RequestMapping("/login")
 	public ModelAndView Denglu(User user,HttpServletRequest req,HttpServletResponse res){
-		System.out.println(req.getSession().getId());
+		System.out.println("旧的sessionid："+req.getSession().getId());
 		//销毁旧session
 		req.getSession().invalidate();
 		
 		HttpSession session=req.getSession();
-		System.out.println(req.getSession().getId());
+		System.out.println("新的sessionid："+req.getSession().getId());
 		String sessionid=session.getId();
 		
 		//防止页面退出后，通过浏览器后退到登录状态
@@ -58,6 +58,7 @@ public class LoginAction {
 				session.setAttribute("loginname", usermap.get("loginname"));
 				session.setAttribute("userid", usermap.get("userid"));
 				session.setAttribute("sessionid", sessionid);
+				System.out.println("登录："+usermap.get("loginname"));
 				
 				mverr= new ModelAndView("homepage");
 				mverr.addObject("loginname", usermap.get("loginname"));

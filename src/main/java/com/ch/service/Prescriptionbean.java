@@ -156,6 +156,21 @@ public class Prescriptionbean {
 			jdbcTemplate.update(sql,new Object[]{prescription_json,testid});
 		}
 		
+		if(prescriptiontype==4){
+			int testid=0;
+			String prescription_json=""; 
+			if(StringUtils.isBlank(req.getParameter("pre_id"))){
+				return "testid不能为空";
+			}else{
+				testid=Integer.parseInt(req.getParameter("pre_id").toString());
+			}
+			if(StringUtils.isNotBlank(req.getParameter("prescription_json"))){
+				prescription_json=req.getParameter("prescription_json"); 
+			}
+			
+			String sql="update zfxm_testmng set testin=? where testid=? ";
+			jdbcTemplate.update(sql,new Object[]{prescription_json,testid});
+		}
 		return "ok";
 	}
 }

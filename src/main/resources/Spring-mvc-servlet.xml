@@ -137,6 +137,38 @@
  		<property name="dataSource" ref="dataSource_oracle" /> 
  	</bean>
 	
+ 	<!-- HTML方式读取资源文件，数据源配置, 改为druid数据库连接池 oracle-->
+	<bean id="dataSource_sqlserver" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+		<property name="url" value="${jdbc.sqlserverurl}" />
+		<property name="username" value="${jdbc.sqlserverusername}" />
+		<property name="password" value="${jdbc.sqlserverpassword}" />
+		<property name="initialSize" value="1" />
+		<property name="minIdle" value="10" />
+		<property name="maxActive" value="20" />
+		<property name="maxWait" value="60000" />
+		<property name="timeBetweenEvictionRunsMillis" value="60000" />
+		<property name="minEvictableIdleTimeMillis" value="300000" />
+
+		<property name="validationQuery" value="SELECT 9527" />
+		<property name="testWhileIdle" value="true" />
+		<property name="testOnBorrow" value="false" />
+		<property name="testOnReturn" value="false" />
+
+		<property name="poolPreparedStatements" value="true" />
+		<property name="maxPoolPreparedStatementPerConnectionSize" value="20" />
+
+		<property name="removeAbandoned" value="true" />
+		<property name="removeAbandonedTimeout" value="1800" />
+		<property name="logAbandoned" value="true" />
+
+		<property name="filters" value="stat" />
+	</bean>
+	
+  	<!-- jdbc template for import -->
+ 	<bean id="jdbcTemplate_sqlserver" class="org.springframework.jdbc.core.JdbcTemplate">
+ 		<property name="dataSource" ref="dataSource_sqlserver" /> 
+ 	</bean>
+ 	
 	 <!-- HTML方式读取资源文件，数据源配置, 改为druid数据库连接池 mysql-passpa2db-->
 	<!-- <bean id="dataSource_anli" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
 		<property name="url" value="${jdbc.anliurl}" />

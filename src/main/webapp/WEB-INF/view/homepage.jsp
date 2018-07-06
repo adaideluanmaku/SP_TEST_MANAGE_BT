@@ -101,14 +101,14 @@
 				</ul></li>
 			<li><a href=""javascript:void(0)> 
 					<i class="fa fa-th-large"></i>
-					<span class="nav-label">政府项目测试管理</span> 
+					<span class="nav-label">其他项目测试管理</span> 
 					<span class="fa arrow"></span>
 				</a>
 				<ul class="nav nav-second-level collapse">
-					<li><a href="javascript:void(0);" onclick="zfxm_graph()">政府项目统计</a></li>
-					<li><a href="javascript:alert(1)">团队管理</a></li>
-					<li><a href="javascript:alert(1)">项目管理</a></li>
-					<li><a href="javascript:alert(1)">案例管理</a></li>
+					<li><a href="javascript: void(0);" onclick="zfxm_graph()">项目统计</a></li>
+					<li><a href="javascript: void(0)" onclick="zfxm_team()">团队管理</a></li>
+					<li><a href="javascript: void(0)" onclick="zfxm_project()">项目管理</a></li>
+					<li><a href="javascript: void(0)" onclick="zfxm_testmng()">案例管理</a></li>
 				</ul></li>
 			<li><a href="javascript:void(0)"> 
 					<i class="fa fa-th-large"></i>
@@ -156,7 +156,7 @@
 	</nav>
 	
 	<div id="page-wrapper" class="gray-bg">
-		<div class="row border-bottom">
+		<div class="row border-bottom" id="bookheader">
 			<nav class="navbar navbar-static-top" role="navigation" style="margin-bottom: 0">
 				<div class="navbar-header">
 					<a class="navbar-minimalize minimalize-styl-2 btn btn-primary " href="#"><i class="fa fa-bars"></i> </a>
@@ -174,11 +174,11 @@
 			</nav>
 		</div>
 
-		<div class="row  border-bottom white-bg dashboard-header">
+		<div class="row  border-bottom white-bg dashboard-header"  id="bookcenter">
 			<iframe id="iframe_box" src="${pageContext.request.contextPath}/homepage/home_graph" frameborder="0" scrolling="yes"
-				style="width: 100%; min-height: 690px;"></iframe>
+				></iframe>
 		</div>
-		<div class="footer navbar-fixed-bottom">
+		<div class="footer navbar-fixed-bottom" id="bookfooter">
 			<div class="pull-right"> 10GB of <strong>250GB</strong> Free. </div>
 			<div>
 				<strong>Copyright</strong> Example Company &copy; 2014-2015
