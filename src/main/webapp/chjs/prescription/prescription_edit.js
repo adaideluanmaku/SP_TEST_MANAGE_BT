@@ -4983,7 +4983,7 @@ function _select2(){
 		}
 	});
 	
-	$('#dict_drug_data_modal #hiscode').select2({
+	$('#dict_drug_data_modal #hiscode1').select2({
 		placeholder: "--请选择--",
 		allowClear: true,
 		dropdownParent: $("#dict_drug_data_modal"),//modal默认不显示，解决modal显示后下拉单样式问题
@@ -4999,70 +4999,63 @@ function _select2(){
 //		}
 	});
 	
-	$('#dict_route_data_modal #hiscode').select2({
+	$('#dict_route_data_modal #hiscode2').select2({
 		placeholder: "--请选择--",
 		allowClear: true,
 		dropdownParent: $("#dict_route_data_modal"),//modal默认不显示，解决modal显示后下拉单样式问题
 		data :hospital
 	});
 	
-	$('#dict_fre_data_modal #hiscode').select2({
+	$('#dict_fre_data_modal #hiscode3').select2({
 		placeholder: "--请选择--",
 		allowClear: true,
 		dropdownParent: $("#dict_fre_data_modal"),//modal默认不显示，解决modal显示后下拉单样式问题
 		data :hospital
 	});
 	
-	$('#dict_dept_data_modal #hiscode').select2({
+	$('#dict_dept_data_modal #hiscode4').select2({
 		placeholder: "--请选择--",
 		allowClear: true,
 		dropdownParent: $("#dict_dept_data_modal"),//modal默认不显示，解决modal显示后下拉单样式问题
 		data :hospital
 	});
 	
-	$('#dict_route_data_modal #hiscode').select2({
-		placeholder: "--请选择--",
-		allowClear: true,
-		dropdownParent: $("#dict_route_data_modal"),//modal默认不显示，解决modal显示后下拉单样式问题
-		data :hospital
-	});
-	
-	$('#dict_doctor_data_modal #hiscode').select2({
+	$('#dict_doctor_data_modal #hiscode5').select2({
 		placeholder: "--请选择--",
 		allowClear: true,
 		dropdownParent: $("#dict_doctor_data_modal"),//modal默认不显示，解决modal显示后下拉单样式问题
 		data :hospital
 	});
 	
-	$('#dict_allergen_data_modal #hiscode').select2({
+	$('#dict_allergen_data_modal #hiscode6').select2({
 		placeholder: "--请选择--",
 		allowClear: true,
 		dropdownParent: $("#dict_allergen_data_modal"),//modal默认不显示，解决modal显示后下拉单样式问题
 		data :hospital
 	});
 	
-	$('#dict_disease_data_modal #hiscode').select2({
+	$('#dict_disease_data_modal #hiscode7').select2({
 		placeholder: "--请选择--",
 		allowClear: true,
 		dropdownParent: $("#dict_disease_data_modal"),//modal默认不显示，解决modal显示后下拉单样式问题
 		data :hospital
 	});
 	
-	$('#dict_operation_data_modal #hiscode').select2({
+	$('#dict_operation_data_modal #hiscode8').select2({
 		placeholder: "--请选择--",
 		allowClear: true,
 		dropdownParent: $("#dict_operation_data_modal"),//modal默认不显示，解决modal显示后下拉单样式问题
 		data :hospital
 	});
 	
-	$('#dict_exam_data_modal #hiscode').select2({
+	$('#dict_exam_data_modal #hiscode9').select2({
 		placeholder: "--请选择--",
 		allowClear: true,
 		dropdownParent: $("#dict_exam_data_modal"),//modal默认不显示，解决modal显示后下拉单样式问题
 		data :hospital
 	});
 	
-	$('#dict_lab_data_modal #hiscode').select2({
+	$('#dict_lab_data_modal #hiscode10').select2({
 		placeholder: "--请选择--",
 		allowClear: true,
 		dropdownParent: $("#dict_lab_data_modal"),//modal默认不显示，解决modal显示后下拉单样式问题

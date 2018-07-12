@@ -439,6 +439,9 @@ public class Pabean {
 		
 		String testname="";
 		String testno="";
+		String testin="";
+		String testtext="";
+		String testout="";
 		int projectid=0;
 		String sql1=null;
 		String sql2=null;
@@ -458,6 +461,9 @@ public class Pabean {
 		if(StringUtils.isNotBlank(req.getParameter("searchdata"))){
 			testname=req.getParameter("searchdata");
 			testno=req.getParameter("searchdata");
+			testin=req.getParameter("searchdata");
+			testtext=req.getParameter("searchdata");
+			testout=req.getParameter("searchdata");
 		}
 		if(StringUtils.isNotBlank(req.getParameter("projectid"))){
 			projectid=Integer.parseInt(req.getParameter("projectid"));
@@ -471,16 +477,22 @@ public class Pabean {
 		//拼接where
 		List wherelist=new ArrayList();
 		if(projectid>0){
-			sql1=sql1+" and (a.testname like ? or a.testno like ?) and a.projectid=? ";
-			sql2=sql2+" and (a.testname like ? or a.testno like ?) and a.projectid=? ";
+			sql1=sql1+" and (a.testname like ? or a.testno like ? or a.testin like ? or a.testtext like ? or a.testout like ?) and a.projectid=? ";
+			sql2=sql2+" and (a.testname like ? or a.testno like ? or a.testin like ? or a.testtext like ? or a.testout like ?) and a.projectid=? ";
 			wherelist.add("%"+testname+"%");
 			wherelist.add("%"+testno+"%");
+			wherelist.add("%"+testin+"%");
+			wherelist.add("%"+testtext+"%");
+			wherelist.add("%"+testout+"%");
 			wherelist.add(projectid);
 		}else{
-			sql1=sql1+" and a.testname like ? or a.testno like ? ";
-			sql2=sql2+" and a.testname like ? or a.testno like ? ";
+			sql1=sql1+" and a.testname like ? or a.testno like ?  or a.testin like ? or a.testtext like ? or a.testout like ?";
+			sql2=sql2+" and a.testname like ? or a.testno like ?  or a.testin like ? or a.testtext like ? or a.testout like ?";
 			wherelist.add("%"+testname+"%");
 			wherelist.add("%"+testno+"%");
+			wherelist.add("%"+testin+"%");
+			wherelist.add("%"+testtext+"%");
+			wherelist.add("%"+testout+"%");
 		}
 		
 		//拼接order

@@ -945,9 +945,9 @@
 			<div class="modal-body" style="height:400px;overflow:auto">
 				<form class="form-horizontal" role="form" id="dialog_form">
 					<div class="form-group">
-			            <label for="hiscode" class="col-sm-2 control-label">机构名称</label>
+			            <label for="hiscode1" class="col-sm-2 control-label">机构名称</label>
 			            <div class="col-sm-4">
-			            	<select id="hiscode" name="hiscode" class="js-data-example-ajax" style="width:100%"></select>
+			            	<select id="hiscode1" name="hiscode" class="js-data-example-ajax" style="width:100%"></select>
 			            </div>
 			        </div>
 			        <div class="form-group">
@@ -1014,9 +1014,9 @@
 			<div class="modal-body" style="height:400px;overflow:auto">
 				<form class="form-horizontal" role="form" id="dialog_form">
 					<div class="form-group">
-			            <label for="hiscode" class="col-sm-2 control-label">机构名称</label>
+			            <label for="hiscode2" class="col-sm-2 control-label">机构名称</label>
 			            <div class="col-sm-4">
-			            	<select id="hiscode" name="hiscode" class="js-data-example-ajax" style="width:100%"></select>
+			            	<select id="hiscode2" name="hiscode" class="js-data-example-ajax" style="width:100%"></select>
 			            </div>
 			        </div>
 			        <div class="form-group">
@@ -1053,9 +1053,9 @@
 			<div class="modal-body" style="height:400px;overflow:auto">
 				<form class="form-horizontal" role="form" id="dialog_form">
 					<div class="form-group">
-			            <label for="hiscode" class="col-sm-2 control-label">机构名称</label>
+			            <label for="hiscode3" class="col-sm-2 control-label">机构名称</label>
 			            <div class="col-sm-4">
-			            	<select id="hiscode" name="hiscode" class="js-data-example-ajax" style="width:100%"></select>
+			            	<select id="hiscode3" name="hiscode" class="js-data-example-ajax" style="width:100%"></select>
 			            </div>
 			        </div>
 			        <div class="form-group">
@@ -1086,9 +1086,9 @@
 			<div class="modal-body" style="height:400px;overflow:auto">
 				<form class="form-horizontal" role="form" id="dialog_form">
 					<div class="form-group">
-			            <label for="hiscode" class="col-sm-2 control-label">机构名称</label>
+			            <label for="hiscode4" class="col-sm-2 control-label">机构名称</label>
 			            <div class="col-sm-4">
-			            	<select id="hiscode" name="hiscode" class="js-data-example-ajax" style="width:100%"></select>
+			            	<select id="hiscode4" name="hiscode" class="js-data-example-ajax" style="width:100%"></select>
 			            </div>
 			        </div>
 			        <div class="form-group">
@@ -1125,9 +1125,9 @@
 			<div class="modal-body" style="height:400px;overflow:auto">
 				<form class="form-horizontal" role="form" id="dialog_form">
 					<div class="form-group">
-			            <label for="hiscode" class="col-sm-2 control-label">机构名称</label>
+			            <label for="hiscode5" class="col-sm-2 control-label">机构名称</label>
 			            <div class="col-sm-4">
-			            	<select id="hiscode" name="hiscode" class="js-data-example-ajax" style="width:100%"></select>
+			            	<select id="hiscode5" name="hiscode" class="js-data-example-ajax" style="width:100%"></select>
 			            </div>
 			        </div>
 			        <div class="form-group">
@@ -1164,9 +1164,9 @@
 			<div class="modal-body" style="height:400px;overflow:auto">
 				<form class="form-horizontal" role="form" id="dialog_form">
 					<div class="form-group">
-			            <label for="hiscode" class="col-sm-2 control-label">机构名称</label>
+			            <label for="hiscode6" class="col-sm-2 control-label">机构名称</label>
 			            <div class="col-sm-4">
-			            	<select id="hiscode" name="hiscode" class="js-data-example-ajax" style="width:100%"></select>
+			            	<select id="hiscode6" name="hiscode" class="js-data-example-ajax" style="width:100%"></select>
 			            </div>
 			        </div>
 			        <div class="form-group">
@@ -1203,9 +1203,9 @@
 			<div class="modal-body" style="height:400px;overflow:auto">
 				<form class="form-horizontal" role="form" id="dialog_form">
 					<div class="form-group">
-			            <label for="hiscode" class="col-sm-2 control-label">机构名称</label>
+			            <label for="hiscode7" class="col-sm-2 control-label">机构名称</label>
 			            <div class="col-sm-4">
-			            	<select id="hiscode" name="hiscode" class="js-data-example-ajax" style="width:100%"></select>
+			            	<select id="hiscode7" name="hiscode" class="js-data-example-ajax" style="width:100%"></select>
 			            </div>
 			        </div>
 			        <div class="form-group">
@@ -1242,9 +1242,9 @@
 			<div class="modal-body" style="height:400px;overflow:auto">
 				<form class="form-horizontal" role="form" id="dialog_form">
 					<div class="form-group">
-			            <label for="hiscode" class="col-sm-2 control-label">机构名称</label>
+			            <label for="hiscode8" class="col-sm-2 control-label">机构名称</label>
 			            <div class="col-sm-4">
-			            	<select id="hiscode" name="hiscode" class="js-data-example-ajax" style="width:100%"></select>
+			            	<select id="hiscode8" name="hiscode" class="js-data-example-ajax" style="width:100%"></select>
 			            </div>
 			        </div>
 			        <div class="form-group">
@@ -1281,9 +1281,9 @@
 			<div class="modal-body" style="height:400px;overflow:auto">
 				<form class="form-horizontal" role="form" id="dialog_form">
 					<div class="form-group">
-			            <label for="hiscode" class="col-sm-2 control-label">机构名称</label>
+			            <label for="hiscode9" class="col-sm-2 control-label">机构名称</label>
 			            <div class="col-sm-4">
-			            	<select id="hiscode" name="hiscode" class="js-data-example-ajax" style="width:100%"></select>
+			            	<select id="hiscode9" name="hiscode" class="js-data-example-ajax" style="width:100%"></select>
 			            </div>
 			        </div>
 			        <div class="form-group">
@@ -1320,9 +1320,9 @@
 			<div class="modal-body" style="height:400px;overflow:auto">
 				<form class="form-horizontal" role="form" id="dialog_form">
 					<div class="form-group">
-			            <label for="hiscode" class="col-sm-2 control-label">机构名称</label>
+			            <label for="hiscode10" class="col-sm-2 control-label">机构名称</label>
 			            <div class="col-sm-4">
-			            	<select id="hiscode" name="hiscode" class="js-data-example-ajax" style="width:100%"></select>
+			            	<select id="hiscode10" name="hiscode" class="js-data-example-ajax" style="width:100%"></select>
 			            </div>
 			        </div>
 			        <div class="form-group">

@@ -79,7 +79,7 @@
 				    <div class="panel-body">
 				    	<div class="row" style="margin-bottom:15px">
 				    		<div class="col-sm-3">
-				    			<label  for="searchdata"class="control-label col-sm-4" style="padding-top:7px">案例名称</label>
+				    			<label  for="searchdata"class="control-label col-sm-4" style="padding-top:7px">关键字</label>
 				                <div class="col-sm-8">
 				                    <input id="searchdata" type="text" class="form-control">
 				                </div>
