@@ -1,0 +1,5 @@
+172.18.5.149 - - [13/Dec/2018:11:05:07 +0800] "GET /favicon.ico HTTP/1.1" 404 - http-bio-8095-exec-1 0
+172.18.5.149 - - [13/Dec/2018:11:05:25 +0800] "GET /SP_TEST_MANAGE_BT/login.jsp HTTP/1.1" 200 2299 http-bio-8095-exec-2 160
+172.18.5.149 - - [13/Dec/2018:11:05:26 +0800] "GET /favicon.ico HTTP/1.1" 404 - http-bio-8095-exec-8 0
+172.18.5.149 - - [13/Dec/2018:11:52:16 +0800] "GET /favicon.ico HTTP/1.1" 404 - http-bio-8095-exec-10 0
+172.18.5.149 - - [13/Dec/2018:12:59:11 +0800] "GET /favicon.ico HTTP/1.1" 404 - http-bio-8095-exec-2 0

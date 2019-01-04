@@ -1,0 +1,1880 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+	pageEncoding="UTF-8" isELIgnored="false"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>INSPINIA | prescription</title>
+<!-- SYS CSS -->
+<link href="${pageContext.request.contextPath}/bootstrap_home/css/bootstrap.min.css" rel="stylesheet">
+<link href="${pageContext.request.contextPath}/bootstrap_home/css/style.css" rel="stylesheet">
+
+<!-- SYS JS -->
+<!-- 引入 Bootstrap -->
+<!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+<script type="text/javascript" src="${pageContext.request.contextPath}/bootstrap_home/js/jquery-2.1.1.js"></script>
+<!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+<script type="text/javascript" src="${pageContext.request.contextPath}/bootstrap_home/bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+
+<script src="${pageContext.request.contextPath}/bootstrap_home/bootstrap-table/bootstrap-table.js"></script>
+<link href="${pageContext.request.contextPath}/bootstrap_home/bootstrap-table/bootstrap-table.css" rel="stylesheet" />
+<script src="${pageContext.request.contextPath}/bootstrap_home/bootstrap-table/bootstrap-table-zh-CN.js"></script>
+
+<script src="${pageContext.request.contextPath}/bootstrap_home/bootstrap3-editable/js/bootstrap-editable.js"></script>
+<link href="${pageContext.request.contextPath}/bootstrap_home/bootstrap3-editable/css/bootstrap-editable.css" rel="stylesheet" />
+<script src="${pageContext.request.contextPath}/bootstrap_home/bootstrap3-editable/js/bootstrap-table-editable.js"></script>
+
+<link href="${pageContext.request.contextPath}/bootstrap_home/bootstrap-dialog/bootstrap-dialog.min.css" rel="stylesheet" >
+<script src="${pageContext.request.contextPath}/bootstrap_home/bootstrap-dialog/bootstrap-dialog.min.js"></script>
+    
+<!-- bootstrap-datetimepicker -->
+<link href="${pageContext.request.contextPath}/bootstrap_home/bootstrap-datetimepicker/css/bootstrap-datetimepicker.min.css" rel="stylesheet" />  
+<script src="${pageContext.request.contextPath}/bootstrap_home/moment/min/moment-with-locales.min.js"></script>  
+<script src="${pageContext.request.contextPath}/bootstrap_home/bootstrap-datetimepicker/js/bootstrap-datetimepicker.min.js"></script>  
+
+<!-- Sweet alert -->
+<link href="${pageContext.request.contextPath}/bootstrap_home/css/sweetalert.css" rel="stylesheet">
+<script src="${pageContext.request.contextPath}/bootstrap_home/js/plugins/sweetalert/sweetalert.min.js"></script>
+<!-- 等待效果 -->
+<script src="${pageContext.request.contextPath}/bootstrap_home/js/plugins/pace/pace.min.js"></script>
+
+<!-- select2 -->
+<link href="${pageContext.request.contextPath}/bootstrap_home/bootstrap-select2/css/select2.css" rel="stylesheet" />
+<script src="${pageContext.request.contextPath}/bootstrap_home/bootstrap-select2/js/select2.js"></script>
+<script src="${pageContext.request.contextPath}/bootstrap_home/bootstrap-select2/js/i18n/zh-CN.js"></script>
+
+<!-- PASSJS1809前 
+<link href="${pageContext.request.contextPath}/PassJs1703/McCssAll.css" rel="stylesheet">
+<script type="text/javascript" src="${pageContext.request.contextPath}/PassJs1703/McConfig.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/PassJs1703/McJsAll.js"></script>-->
+<!-- PASSJS1809后 ,1809的所有js、css文件通过mcloader下载到本地-->
+<script type="text/javascript" src="${pageContext.request.contextPath}/PassJs1809/McLoader.js"></script>
+
+<!-- MY JS -->
+<link href="${pageContext.request.contextPath}/chcss/prescription/prescription_edit.css" rel="stylesheet">
+<script type="text/javascript" src="${pageContext.request.contextPath}/chjs/prescription/prescription_edit.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/chjs/prescription/passjs_screen.js"></script>
+<script type="text/javascript" src="${pageContext.request.contextPath}/chjs/bootstrap-loading.js"></script>
+
+<style type="text/css">
+.dropdown-menu{z-index:1000;}
+.mcDivWindow{z-index:100;}
+</style>
+
+</head>
+<body style="background-color: #f3f3f4">
+
+<!-- BODY内容可全部一次性复制和替换 -->
+
+<input id="addurl" type="hidden" value="${pageContext.request.contextPath}">
+<input id="prescription_json" type="hidden" value="${fn:escapeXml(prescription_json)}">
+<input id="pre_id" type="hidden" value="${pre_id}">
+<input id="patientname" type="hidden" value="${patientname}">
+<input id="prescriptiontype" type="hidden" value="${prescriptiontype}">
+<div id="wrapper" >
+	<div class="panel panel-default">
+	    <div class="panel-heading">处方操作：调用PASS嵌入端</div>
+	    <div class="panel-body">
+	    	<div class="col-sm-4">
+	    		<div class="row">
+	    			<div class="col-sm-6">
+				      	<div class="input-group">
+				            <span class="input-group-addon">机构编码</span>
+				            <input type="text" class="form-control" id="HospID" name="HospID">
+				        </div>
+	        		</div>
+	        		<!-- 演示程序时隐藏 -->
+	        		<div class="col-sm-6">
+				        <button type="button" id="prescription_save" class="btn btn-primary" onclick="json_hebing()">保存</button>
+	        		</div>
+	        	</div>
+	        </div>
+	        <div class="col-sm-8">
+	        	<div class="row">
+	        		<div class="col-sm-1">
+			            <button type="button" class="btn btn-primary" onclick="js_screen()">审查</button>
+			        </div>
+			        <div class="col-sm-2">
+			        	<div  class="btn-group">
+							<button id="dropdownMenu1" type="button"
+								class="btn btn-default dropdown-toggle" data-toggle="dropdown"
+								aria-haspopup="true" aria-expanded="true">
+								<span class="glyphicon glyphicon-sort-by-attributes" aria-hidden="true"></span>多功能下拉单
+							</button>
+							<ul class="dropdown-menu" aria-labelledby="dropdownMenu1" >
+								<li><a href="#" onclick="js_shuomingshu()">说明书</a></li>
+								<li><a href="#" onclick="js_fudongchuangkou()">浮动窗口</a></li>
+								<li><a href="#" onclick="js_zhongyaocaizhuanluan()">中药材专论查询</a></li>
+								<li><a href="#" onclick="js_yongyaozhidaodan()">用药指导单查询</a></li>
+								<li><a href="#" onclick="js_youjiancaidan()">右键菜单</a></li>
+							</ul>
+						</div>
+			        </div>
+			        <div class="col-sm-6">
+			            <input class="col-sm-5" id="f_upload" type="file" style="margin-top:5px" onchange="files_sub()" />
+						<div class="col-sm-7">
+							<label for="unicode" class="col-sm-4 control-label" style="padding-top:7px">字符集:</label>
+							<select class="form-control m-b" name="unicode" id="unicode" style="width:120px">
+								<option value="utf-8" selected="selected"><font
+										style="vertical-align: inherit;">utf-8</font></option>
+								<option value="GB2312"><font
+										style="vertical-align: inherit;">GB2312</font></option>
+							</select>
+						</div>
+					</div>
+	        	</div>
+	        </div>
+	    </div>
+	</div>  
+	<div class="panel">
+    	<div  class="gray-bg" style="background-color: #ffffff">
+			<div class="nav nav-tabs" style="overflow-x:auto" id="tags">
+				<ul class="nav nav-tabs nav-justified">
+			      <li role="presentation" class="active"><a href="#aa" data-toggle="tab"  style="height:58px">病人基本信息</a></li>
+			      <li role="presentation"><a href="#bb" data-toggle="tab" style="height:58px">药品信息</a></li>
+			      <li role="presentation"><a href="#cc" data-toggle="tab" style="height:58px">过敏原</a></li>
+			      <li role="presentation"><a href="#dd" data-toggle="tab" style="height:58px">疾病</a></li>
+			      <li role="presentation"><a href="#ee" data-toggle="tab" style="height:58px">手术</a></li>
+			     <!--  <li role="presentation"><a href="#ff" data-toggle="tab" style="height:58px">检验</a></li>
+			      <li role="presentation"><a href="#gg" data-toggle="tab" style="height:58px">检查</a></li> -->
+			      <li role="presentation"><a href="#hh" data-toggle="tab"  style="height:58px">附加-信息类型</a></li>
+			      <li role="presentation"><a href="#ii" data-toggle="tab" style="height:58px">附加-任务类型</a></li>
+			      <li role="presentation"><a href="#jj" data-toggle="tab" style="height:58px">附加-补充药品</a></li>
+			      <li role="presentation"><a href="#kk" data-toggle="tab" style="height:58px">附加-补充诊断</a></li>
+			      <li role="presentation"><a href="#ll" data-toggle="tab" style="height:58px">附加-补充历史医嘱</a></li>
+			      <li role="presentation"><a href="#mm" data-toggle="tab" style="height:58px">附加-补充检查</a></li>
+			      <li role="presentation"><a href="#nn" data-toggle="tab" style="height:58px">附加-补充检验</a></li>
+			      <!-- 演示程序时隐藏 -->
+			      <li role="presentation"><a href="#oo" data-toggle="tab" style="height:58px">基础数据维护</a></li>
+			    </ul>
+			</div>
+    	</div>
+	</div>  
+	
+	<!-- 下列标签页面 -->
+	<div class="tab-content">
+		<div class="tab-pane fade in active" id="aa">
+			<div class="container-fluid" id="patientmessage">
+				<div class="row" style="margin-bottom : 15px">
+					<div class="col-sm-3">
+				      	<div class="input-group">
+				            <span class="input-group-addon">门诊/住院唯一标识</span>
+				            <input type="text" class="form-control" id="VisitCode" name="VisitCode">
+				        </div>
+				    </div>
+					<div class="col-sm-2">
+				      	<div class="input-group">
+				            <span class="input-group-addon">病人号</span>
+				            <input type="text" class="form-control" id="PatCode" name="PatCode">
+				        </div>
+				    </div>
+				    <div class="col-sm-2">
+				      	<div class="input-group">
+				            <span class="input-group-addon">门诊/住院号</span>
+				            <input type="text" class="form-control" id="InHospNo" name="InHospNo">
+				        </div>
+				    </div>
+				    <div class="col-sm-2">
+				      	<div class="input-group">
+				            <span class="input-group-addon">费别</span>
+				            <input type="text" class="form-control" id="PayClass" name="PayClass" >
+				        </div>
+				    </div>
+				    <div class="col-sm-2">
+				      	<div class="input-group">
+				            <span class="input-group-addon">病人状态</span>
+				            <select class="form-control m-b" name="PatStatus" id="PatStatus">
+	                            <option value="1" selected="selected"><font style="vertical-align: inherit;">住院</font></option>
+	                            <option value="2"><font style="vertical-align: inherit;">门诊</font></option>
+	                            <option value="3"><font style="vertical-align: inherit;">急诊</font></option>
+	                            <option value="0"><font style="vertical-align: inherit;">出院</font></option>
+	                        </select>
+				        </div>
+				    </div>
+				</div>
+				<div class="row" style="margin-bottom : 15px">
+					<div class="col-sm-3">
+				      	<div class="input-group">
+				            <span class="input-group-addon">姓名</span>
+				            <input type="text" class="form-control" id="Name" name="Name">
+				        </div>
+				    </div>
+				    <div class="col-sm-2">
+				      	<div class="input-group">
+				            <span class="input-group-addon">性别</span>
+				            <select class="form-control m-b" name="Sex" id="Sex">
+		                            <option value="" selected="selected"><font style="vertical-align: inherit;">无</font></option>
+		                            <option value="男"><font style="vertical-align: inherit;">男</font></option>
+		                            <option value="女"><font style="vertical-align: inherit;">女</font></option>
+		                            <option value="male"><font style="vertical-align: inherit;">male</font></option>
+		                            <option value="female"><font style="vertical-align: inherit;">female</font></option>
+		                            <option value="m"><font style="vertical-align: inherit;">m</font></option>
+		                            <option value="f"><font style="vertical-align: inherit;">f</font></option>
+		                        </select>
+				        </div>
+				    </div>
+				    <div class="col-sm-2">
+				      	<div class="input-group">
+				            <span class="input-group-addon">身份证</span>
+				            <input type="text" class="form-control" id="IDCard" name="IDCard">
+				        </div>
+				    </div>
+				    <div class="col-sm-2">
+				      	<div class="input-group">
+				            <span class="input-group-addon">联系方式</span>
+				            <input type="text" class="form-control" id="Telephone" name="Telephone">
+				        </div>
+				    </div>
+				    <div class="col-sm-2">
+				      	<div class="input-group">
+				            <span class="input-group-addon">年龄</span>
+				            <input type="text" class="form-control" id="Age" name="Age">
+				        </div>
+				    </div>
+				</div>
+				<div class="row" style="margin-bottom : 15px">
+					<div class="col-sm-3">
+				      	<div class="input-group">
+				            <span class="input-group-addon">出生日期</span>
+				            <div class="input-group date" id="Birthday" name="Birthday">  
+				                <input type="text" class="form-control" />  
+				                <span class="input-group-addon">  
+				                    <span class="glyphicon glyphicon-calendar"></span>  
+				                </span>  
+				            </div>
+				        </div>
+				    </div>
+				    <div class="col-sm-2">
+				      	<div class="input-group">
+				            <span class="input-group-addon">身高cm</span>
+				            <input type="text" class="form-control" id="HeightCM" name="HeightCM">
+				        </div>
+				    </div>
+				     <div class="col-sm-2">
+				      	<div class="input-group">
+				            <span class="input-group-addon">体重kg</span>
+				            <input type="text" class="form-control" id="WeighKG" name="WeighKG">
+				        </div>
+				    </div>
+				    <div class="col-sm-2">
+				      	<div class="input-group">
+				            <span class="input-group-addon">病原学检查</span>
+				            <select class="form-control m-b" name="IsTestEtiology" id="IsTestEtiology">
+		                            <option value="0" selected="selected"><font style="vertical-align: inherit;">未做过</font></option>
+		                            <option value="1"><font style="vertical-align: inherit;">做过</font></option>
+		                        </select>
+				        </div>
+				    </div>
+				</div>
+				<div class="row" style="margin-bottom : 15px">
+					<div class="col-sm-3">
+				      	<div class="input-group">
+				            <span class="input-group-addon">妊娠开始时间</span>
+				        	<!--指定 date标记-->  
+				            <div class="input-group date" id="PregStartDate" name="PregStartDate">  
+				                <input type="text" class="form-control" />  
+				                <span class="input-group-addon">  
+				                    <span class="glyphicon glyphicon-calendar"></span>  
+				                </span>  
+				            </div>  
+				        </div>
+				    </div>
+				    <div class="col-sm-2">
+				      	<div class="input-group">
+				            <span class="input-group-addon">是否妊娠</span>
+				            <select class="form-control m-b" name="IsPregnancy" id="IsPregnancy">
+		                            <option value="-1" selected="selected"><font style="vertical-align: inherit;">无法获取妊娠状态</font></option>
+		                            <option value="0"><font style="vertical-align: inherit;">不是</font></option>
+		                            <option value="1"><font style="vertical-align: inherit;">是</font></option>
+		                        </select>
+				        </div>
+				    </div>
+					<div class="col-sm-2">
+				      	<div class="input-group">
+				            <span class="input-group-addon">是否哺乳</span>
+				            <select class="form-control m-b" name="IsLactation" id="IsLactation">
+		                            <option value="-1" selected="selected"><font style="vertical-align: inherit;">无法获取哺乳状态</font></option>
+		                            <option value="0"><font style="vertical-align: inherit;">不是</font></option>
+		                            <option value="1"><font style="vertical-align: inherit;">是</font></option>
+		                        </select>
+				        </div>
+				    </div>
+				    <div class="col-sm-2">
+				      	<div class="input-group">
+				            <span class="input-group-addon">肝损害程度</span>
+				            <select class="form-control m-b" name="HepDamageDegree" id="HepDamageDegree">
+		                            <option value="-1" selected="selected"><font style="vertical-align: inherit;">无法获取肝损害状态</font></option>
+		                            <option value="0"><font style="vertical-align: inherit;">无肝损害</font></option>
+		                            <option value="1"><font style="vertical-align: inherit;">存在肝损害，但损害程度不明确</font></option>
+		                            <option value="2"><font style="vertical-align: inherit;">轻度肝损害</font></option>
+		                            <option value="3"><font style="vertical-align: inherit;">中度肝损害</font></option>
+		                            <option value="4"><font style="vertical-align: inherit;">重度肝损害</font></option>
+		                        </select>
+				        </div>
+				    </div>
+				    <div class="col-sm-2">
+				      	<div class="input-group">
+				            <span class="input-group-addon">肝损害程度</span>
+				            <select class="form-control m-b" name="RenDamageDegree" id="RenDamageDegree">
+		                            <option value="-1" selected="selected"><font style="vertical-align: inherit;">无法获取肾损害状态</font></option>
+		                            <option value="0"><font style="vertical-align: inherit;">无肾损害</font></option>
+		                            <option value="1"><font style="vertical-align: inherit;">存在肾损害，但损害程度不明确</font></option>
+		                            <option value="2"><font style="vertical-align: inherit;">轻度肾损害</font></option>
+		                            <option value="3"><font style="vertical-align: inherit;">中度肾损害</font></option>
+		                            <option value="4"><font style="vertical-align: inherit;">重度肾损害</font></option>
+		                        </select>
+				        </div>
+				    </div>
+				</div>
+				<div class="row" style="margin-bottom : 15px">
+					<div class="col-sm-2">
+				      	<div class="input-group">
+				            <span class="input-group-addon">科室编号</span>
+				            <input type="text" class="form-control" id="DeptCode" name="DeptCode">
+				        </div>
+				    </div>
+				    <div class="col-sm-2">
+				      	<div class="input-group">
+				            <span class="input-group-addon">科室名称</span>
+				            <input type="text" class="form-control" id="DeptName" name="DeptName" ondblclick="dict_dept_modal_open('patientmessage',-1)">
+				        </div>
+				    </div>
+				     <div class="col-sm-2">
+				      	<div class="input-group">
+				            <span class="input-group-addon">医生编号</span>
+				            <input type="text" class="form-control" id="DoctorCode" name="DoctorCode">
+				        </div>
+				    </div>
+				    <div class="col-sm-2">
+				      	<div class="input-group">
+				            <span class="input-group-addon">医生姓名</span>
+				            <input type="text" class="form-control" id="DoctorName" name="DoctorName" ondblclick="dict_doctor_modal_open('patientmessage',-1)">
+				        </div>
+				    </div>
+				    <div class="col-sm-2">
+				      	<div class="input-group">
+				            <span class="input-group-addon">采集</span>
+				            <select class="form-control m-b" name="IsDoSave" id="IsDoSave">
+	                            <option value="1" selected="selected"><font style="vertical-align: inherit;">是</font></option>
+	                            <option value="2"><font style="vertical-align: inherit;">否</font></option>
+	                        </select>
+				        </div>
+				    </div>
+				</div>
+				<div class="row" style="margin-bottom : 15px">
+					<div class="col-sm-3">
+				      	<div class="input-group">
+				            <span class="input-group-addon">住院时间</span>
+				            <div class="input-group date" id="InHospDate" name="InHospDate">  
+				                <input type="text" class="form-control" />  
+				                <span class="input-group-addon">  
+				                    <span class="glyphicon glyphicon-calendar"></span>  
+				                </span>  
+				            </div>  
+				        </div>
+				    </div>
+				    <div class="col-sm-3">
+				      	<div class="input-group">
+				            <span class="input-group-addon">出院时间</span>
+				            <div class="input-group date" id="OutHospDate" name="OutHospDate">  
+				                <input type="text" class="form-control" />  
+				                <span class="input-group-addon">  
+				                    <span class="glyphicon glyphicon-calendar"></span>  
+				                </span>  
+				            </div>  
+				        </div>
+				    </div>
+				    <div class="col-sm-3">
+				      	<div class="input-group">
+				            <span class="input-group-addon">审查时间</span>
+				            <div class="input-group date" id="UseTime" name="UseTime">  
+				                <input type="text" class="form-control" />  
+				                <span class="input-group-addon">  
+				                    <span class="glyphicon glyphicon-calendar"></span>  
+				                </span>  
+				            </div>  
+				        </div>
+				    </div>
+				    <div class="col-sm-2">
+				      	<div class="input-group">
+				            <span class="input-group-addon">审查模式</span>
+				            <input type="text" class="form-control" id="CheckMode" name="CheckMode">
+				        </div>
+				    </div>
+				</div>
+			</div>
+		</div>
+		
+		<div class="tab-pane fade" id="bb">
+			<div class="container-fluid" id="drugsmessage" style="background-color: #f3f3f4 ">
+				<div id="toolbar" class="btn-group">
+					<div class="col-sm-12">
+						<button id="btn_add" type="button" class="btn btn-default" onclick="drug_append()">
+				        	<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增
+					    </button>
+					    <button id="btn_delete" type="button" class="btn btn-default" onclick="drug_del();">
+					        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>删除
+					    </button>
+					    <!-- <button id="btn_dict_drug" type="button" class="btn btn-default" data-toggle="modal" onclick="dict_drug_modal_open()">
+					        <span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span>药品字典表维护
+					    </button>
+					    <button id="btn_dict_route" type="button" class="btn btn-default" data-toggle="modal" onclick="dict_route_modal_open()">
+					        <span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span>给药途径字典表维护
+					    </button>
+					     <button id="btn_dict_fre" type="button" class="btn btn-default" data-toggle="modal" onclick="dict_fre_modal_open()">
+					        <span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span>频次字典表维护
+					    </button>
+					    <button id="btn_dict_dept" type="button" class="btn btn-default" data-toggle="modal" onclick="dict_dept_modal_open()">
+					        <span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span>科室字典表维护
+					    </button>
+					    <button id="btn_dict_doctor" type="button" class="btn btn-default" data-toggle="modal" onclick="dict_doctor_modal_open()">
+					        <span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span>医生字典表维护
+					    </button> -->
+					</div>
+				</div>
+				<!-- 信息表格 -->
+		        <table id="json_table" style="table-layout:fixed; "></table>
+			</div>
+			
+		</div>
+		
+		<div class="tab-pane fade" id="cc">
+			<div class="container-fluid" id="allergenmessage" style="background-color: #f3f3f4 ">
+				<div id="toolbar" class="btn-group">
+					<div class="col-sm-12">
+						<button id="btn_add" type="button" class="btn btn-default" onclick="allergen_append()">
+				        	<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增
+					    </button>
+					    <button id="btn_delete" type="button" class="btn btn-default" onclick="allergen_del()">
+					        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>删除
+					    </button>
+					    <!-- <button id="btn_dict_doctor" type="button" class="btn btn-default" data-toggle="modal" onclick="dict_allergen_modal_open()">
+					        <span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span>过敏原字典表维护
+					    </button> -->
+					</div>
+				</div>
+				<!-- 信息表格 -->
+		        <table id="json_table" style="table-layout:fixed; "></table>
+			</div>
+		</div>
+		
+		<div class="tab-pane fade" id="dd">
+			<div class="container-fluid" id="diseasemessage" style="background-color: #f3f3f4 ">
+				<div id="toolbar" class="btn-group">
+					<div class="col-sm-12">
+						<button id="btn_add" type="button" class="btn btn-default" onclick="disease_append()">
+				        	<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增
+					    </button>
+					    <button id="btn_delete" type="button" class="btn btn-default" onclick="disease_del()">
+					        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>删除
+					    </button>
+					    <!-- <button id="btn_dict_doctor" type="button" class="btn btn-default" data-toggle="modal" onclick="dict_disease_modal_open()">
+					        <span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span>疾病字典表维护
+					    </button> -->
+					</div>
+				</div>
+				<!-- 信息表格 -->
+		        <table id="json_table" style="table-layout:fixed; "></table>
+			</div>
+		</div>
+		
+		<div class="tab-pane fade" id="ee">
+			<div class="container-fluid" id="operationmessage" style="background-color: #f3f3f4 ">
+				<div id="toolbar" class="btn-group">
+					<div class="col-sm-12">
+						<button id="btn_add" type="button" class="btn btn-default"  onclick="operation_append()">
+				        	<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增
+					    </button>
+					    <button id="btn_delete" type="button" class="btn btn-default" onclick="operation_del()">
+					        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>删除
+					    </button>
+					    <!-- <button id="btn_dict_doctor" type="button" class="btn btn-default" data-toggle="modal" onclick="dict_operation_modal_open()">
+					        <span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span>手术字典表维护
+					    </button> -->
+					</div>
+				</div>
+				<!-- 信息表格 -->
+		        <table id="json_table" style="table-layout:fixed; "></table>
+			</div>
+		</div>
+		
+		<div class="tab-pane fade" id="ff">
+			<div class="container-fluid" id="jianyanmessage" style="background-color: #f3f3f4 ">
+				<div class="row">
+					<div class="col-sm-2">无用</div>
+				</div>
+			</div>
+		</div>
+		
+		<div class="tab-pane fade" id="gg">
+			<div class="container-fluid" id="jianchamessage" style="background-color: #f3f3f4 ">
+				<div class="row">
+					<div class="col-sm-2">无用</div>
+				</div>
+			</div>
+		</div>
+		
+		<div class="tab-pane fade" id="hh">
+			<div class="container-fluid" id="fujiamessage" style="background-color: #f3f3f4 ">
+				<div class="row">
+					<div class="col-sm-2">
+				      	<div class="input-group">
+				            <span class="input-group-addon">信息类型</span>
+				            <select class="form-control m-b" name="jsontype" id="jsontype" style="width:200px">
+	                            <option value="1" selected="selected"><font style="vertical-align: inherit;">补充信息</font></option>
+	                            <option value="2"><font style="vertical-align: inherit; ">完整的审查输入信息</font></option>
+	                        </select>
+				        </div>
+				    </div>
+				</div>
+			</div>
+		</div>
+		
+		<div class="tab-pane fade" id="ii">
+			<div class="container-fluid" id="fujiatask" style="background-color: #f3f3f4 ">
+				<div class="row">
+					<div class="col-sm-2">
+				      	<div class="input-group">
+				            <span class="input-group-addon">任务类型</span>
+				            <select class="form-control m-b" name="prtasktype" id="prtasktype">
+	                            <option value="0" selected="selected"><font style="vertical-align: inherit;">普通</font></option>
+	                            <option value="1"><font style="vertical-align: inherit; ">加急</font></option>
+	                        </select>
+				        </div>
+				    </div>
+				</div>
+			</div>
+		</div>
+		
+		<div class="tab-pane fade" id="jj">
+			<div class="container-fluid" id="fujiadrug" style="background-color: #f3f3f4 ">
+				<div id="toolbar" class="btn-group">
+					<div class="col-sm-12">
+						<button id="btn_add" type="button" class="btn btn-default" onclick="fujia_drug_append()">
+				        	<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增
+					    </button>
+					    <button id="btn_delete" type="button" class="btn btn-default" onclick="fujia_drug_del()">
+					        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>删除
+					    </button>
+					</div>
+				</div>
+				<!-- 信息表格 -->
+		        <table id="json_table" style="table-layout:fixed; "></table>
+			</div>
+		</div>
+		
+		<div class="tab-pane fade" id="kk">
+			<div class="container-fluid" id="fujiadisease" style="background-color: #f3f3f4 ">
+				<div id="toolbar" class="btn-group">
+					<div class="col-sm-12">
+						<button id="btn_add" type="button" class="btn btn-default" onclick="fujia_disease_append()">
+				        	<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增
+					    </button>
+					    <button id="btn_delete" type="button" class="btn btn-default" onclick="fujia_disease_del()">
+					        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>删除
+					    </button>
+					</div>
+				</div>
+				<!-- 信息表格 -->
+		        <table id="json_table" style="table-layout:fixed; "></table>
+			</div>
+		</div>
+		
+		<div class="tab-pane fade" id="ll">
+			<div class="container-fluid" id="fujiaotherrecip" style="background-color: #f3f3f4 ">
+				<div id="toolbar" class="btn-group">
+					<div class="col-sm-12">
+						<button id="btn_add" type="button" class="btn btn-default" onclick="fujia_otherrecip_append()">
+				        	<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增
+					    </button>
+					    <button id="btn_delete" type="button" class="btn btn-default" onclick="fujia_otherrecip_del()">
+					        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>删除
+					    </button>
+					</div>
+				</div>
+				<!-- 信息表格 -->
+		        <table id="json_table" style="table-layout:fixed; "></table>
+			</div>
+		</div>
+		
+		<div class="tab-pane fade" id="mm">
+			<div class="container-fluid" id="fujiaexaminfo" style="background-color: #f3f3f4 ">
+				<div id="toolbar" class="btn-group">
+					<div class="col-sm-12">
+						<button id="btn_add" type="button" class="btn btn-default" onclick="fujia_examinfo_append()">
+				        	<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增
+					    </button>
+					    <button id="btn_delete" type="button" class="btn btn-default" onclick="fujia_examinfo_del()">
+					        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>删除
+					    </button>
+					    <!-- <button id="btn_dict_exam" type="button" class="btn btn-default" data-toggle="modal" onclick="dict_exam_modal_open()">
+					        <span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span>检查字典表维护
+					    </button> -->
+					</div>
+				</div>
+				<!-- 信息表格 -->
+		        <table id="json_table" style="table-layout:fixed; "></table>
+			</div>
+		</div>
+		
+		<div class="tab-pane fade" id="nn">
+			<div class="container-fluid" id="fujialabinfo" style="background-color: #f3f3f4 ">
+				<div id="toolbar" class="btn-group">
+					<div class="col-sm-12">
+						<button id="btn_add" type="button" class="btn btn-default" onclick="fujia_labinfo_append()">
+				        	<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增
+					    </button>
+					    <button id="btn_delete" type="button" class="btn btn-default" onclick="fujia_labinfo_del()">
+					        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>删除
+					    </button>
+					    <!-- <button id="btn_dict_lab" type="button" class="btn btn-default" data-toggle="modal" onclick="dict_lab_modal_open()">
+					        <span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span>检验字典表维护
+					    </button> -->
+					</div>
+				</div>
+				<!-- 信息表格 -->
+		        <table id="json_table" style="table-layout:fixed; "></table>
+			</div>
+		</div>
+		<!-- 演示程序时隐藏 -->
+		<div class="tab-pane fade" id="oo">
+			<div class="container-fluid" id="jichushujuweihu" style="background-color: #f3f3f4 ">
+				<div class="row" >
+					<div class="col-sm-3">
+				        <div class="form-group">
+				            <label for="tongbuDatabase" class="col-sm-4 control-label" style="padding-top:7px">选择目标库</label>
+				            <div class="col-sm-7">
+				            	<select id="tongbuDatabase" name="tongbuDatabase" class="js-data-example-ajax" style="width:100%"></select>
+				            </div>
+				        </div>
+			        </div>
+			       <div class="col-sm-4">
+						<div class="form-group">
+				            <label for="tongbuTable" class="col-sm-3 control-label" style="padding-top:7px">选择目标表</label>
+				            <div class="col-sm-7">
+				            	<select id="tongbuTable" name="tongbuTable" class="js-data-example-ajax" style="width:100%"></select>
+				            </div>
+				        </div>
+			        </div>
+			        <div class="col-sm-4">
+						<div class="form-group">
+				            <label for="tongbuHiscode" class="col-sm-3 control-label" style="padding-top:7px">选择机构</label>
+				            <div class="col-sm-7">
+				            	<select id="tongbuHiscode" name="tongbuHiscode" class="js-data-example-ajax" style="width:100%"></select>
+				            </div>
+				        </div>
+			        </div>
+				</div>
+				<hr style="height:3px;border:none;border-top:3px solid #2f9217;" >
+				<div class="row">
+					<div class="col-sm-5">
+						<label for="teamid_search" class="control-label  col-sm-4" style="padding-top:7px">从案例库导入到目标库:</label>
+	    				<div class="col-sm-2">
+	    					<button type="button" class="btn btn-primary" onclick="yijiandaoru_a()">一键导入</button>
+	    				</div>
+			        </div>
+			        <div class="col-sm-5">
+						<label for="teamid_search" class="control-label  col-sm-4" style="padding-top:7px">从目标库导入到案例库:</label>
+	    				<div class="col-sm-2">
+	    					<button type="button" class="btn btn-primary" onclick="yijiandaoru_b()">一键导入</button>
+	    				</div>
+			        </div>
+				</div>
+				<hr style="height:3px;border:none;border-top:3px solid #2f9217;" >
+				<div class="row">
+					<div class="col-sm-2">
+						<button id="btn_database" type="button" class="btn btn-default" data-toggle="modal" onclick="database_modal_open()">
+					        <span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span>数据库维护
+					    </button>
+					</div>
+					<div class="col-sm-2">
+						<button id="btn_mc_hospital" type="button" class="btn btn-default" data-toggle="modal" onclick="mc_hospital_modal_open()">
+					        <span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span>机构维护
+					    </button>
+					</div>
+				</div>
+				<h1></h1>
+				<div class="row">
+					<div class="col-sm-2">
+						<button id="btn_dict_drug" type="button" class="btn btn-default" data-toggle="modal" onclick="dict_drug_modal_open()">
+					        <span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span>药品字典表维护
+					    </button>
+					</div>
+					<div class="col-sm-2">
+						<button id="btn_dict_route" type="button" class="btn btn-default" data-toggle="modal" onclick="dict_route_modal_open()">
+					        <span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span>给药途径字典表维护
+					    </button>
+					</div>
+					<div class="col-sm-2">
+						<button id="btn_dict_fre" type="button" class="btn btn-default" data-toggle="modal" onclick="dict_fre_modal_open()">
+					        <span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span>频次字典表维护
+					    </button>
+					</div>
+					<div class="col-sm-2">
+						<button id="btn_dict_dept" type="button" class="btn btn-default" data-toggle="modal" onclick="dict_dept_modal_open()">
+					        <span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span>科室字典表维护
+					    </button>
+					</div>
+					<div class="col-sm-2">
+						<button id="btn_dict_doctor" type="button" class="btn btn-default" data-toggle="modal" onclick="dict_doctor_modal_open()">
+					        <span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span>医生字典表维护
+					    </button>
+					</div>
+				</div>
+				<h1></h1>
+				<div class="row">
+					<div class="col-sm-2">
+						<button id="btn_dict_doctor" type="button" class="btn btn-default" data-toggle="modal" onclick="dict_allergen_modal_open()">
+					        <span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span>过敏原字典表维护
+					    </button>
+					</div>
+					<div class="col-sm-2">
+						<button id="btn_dict_doctor" type="button" class="btn btn-default" data-toggle="modal" onclick="dict_disease_modal_open()">
+					        <span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span>疾病字典表维护
+					    </button>
+					</div>
+					<div class="col-sm-2">
+						 <button id="btn_dict_doctor" type="button" class="btn btn-default" data-toggle="modal" onclick="dict_operation_modal_open()">
+					        <span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span>手术字典表维护
+					    </button>
+					</div>
+					<div class="col-sm-2">
+						<button id="btn_dict_exam" type="button" class="btn btn-default" data-toggle="modal" onclick="dict_exam_modal_open()">
+					        <span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span>检查字典表维护
+					    </button>
+					</div>
+					<div class="col-sm-2">
+						<button id="btn_dict_lab" type="button" class="btn btn-default" data-toggle="modal" onclick="dict_lab_modal_open()">
+					        <span class="glyphicon glyphicon-align-justify" aria-hidden="true"></span>检验字典表维护
+					    </button>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+	</div>
+</div>
+
+<!-- 模态框（Modal）字典表 -->
+<div class="modal fade" id="database_modal" tabindex="-1" data-backdrop="static" data-keyboard="false" role="dialog"  aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title">目标库表</h4>
+			</div>
+			<div class="modal-body">
+				<div id="toolbar" class="btn-group">
+					<div class="col-sm-12">
+						<button id="btn_add" type="button" class="btn btn-default" onclick="database_open(1)">
+				        	<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增
+					    </button>
+					    <button id="btn_add" type="button" class="btn btn-default" onclick="database_open(2)">
+				        	<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>修改
+					    </button>
+					    <button id="btn_delete" type="button" class="btn btn-default" onclick="database_data(3)">
+					        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>删除
+					    </button>
+					</div>
+				</div>
+				<table id="dict_table" style="table-layout:fixed;"></table>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal -->
+</div>
+
+<!-- 模态框（Modal）字典表 -->
+<div class="modal fade" id="mc_hospital_modal" tabindex="-1" data-backdrop="static" data-keyboard="false" role="dialog"  aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title">机构表</h4>
+			</div>
+			<div class="modal-body">
+				<div id="toolbar" class="btn-group">
+					<div class="col-sm-12">
+						<button id="btn_add" type="button" class="btn btn-default" onclick="mc_hospital_open(1)">
+				        	<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增
+					    </button>
+					    <button id="btn_add" type="button" class="btn btn-default" onclick="mc_hospital_open(2)">
+				        	<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>修改
+					    </button>
+					    <button id="btn_delete" type="button" class="btn btn-default" onclick="mc_hospital_data(3)">
+					        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>删除
+					    </button>
+					</div>
+				</div>
+				<table id="dict_table" style="table-layout:fixed;"></table>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal -->
+</div>
+
+<!-- 模态框（Modal）字典表 -->
+<div class="modal fade" id="dict_drug_modal" tabindex="-1" data-backdrop="static" data-keyboard="false" role="dialog"  aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title">药品字典表</h4>
+			</div>
+			<div class="modal-body">
+				<div class="row">
+					<div class="form-group">
+			            <label for="mhiscode1" class="col-sm-3 control-label" style="padding-top:7px">选择机构</label>
+			            <div class="col-sm-7">
+			            	<select id="mhiscode1" name="mhiscode1" class="js-data-example-ajax" style="width:100%"></select>
+			            </div>
+			        </div>
+				</div>  
+				<div class="row">
+					<div id="toolbar" class="btn-group">
+						<div class="col-sm-12">
+							<button id="btn_add" type="button" class="btn btn-default" onclick="dict_drug_open(1)">
+					        	<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增
+						    </button>
+						    <button id="btn_add" type="button" class="btn btn-default" onclick="dict_drug_open(2)">
+					        	<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>修改
+						    </button>
+						    <button id="btn_delete" type="button" class="btn btn-default" onclick="dict_drug_data(3)">
+						        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>删除
+						    </button>
+						</div>
+					</div>
+					<table id="dict_table" style="table-layout:fixed;"></table>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<input type="hidden" id="pagelabel" value="-1"/>
+				<input type="hidden" id="rowid" value="-1"/>
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+				<button id="queren" type="button" class="btn btn-primary" onclick="dict_drug_modal_yes()">确认</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal -->
+</div>
+
+<!-- 模态框（Modal）字典表 -->
+<div class="modal fade" id="dict_route_modal" tabindex="-1" role="dialog"  aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title">给药途径字典表</h4>
+			</div>
+			<div class="modal-body">
+				<div class="row">
+					<div class="form-group">
+			            <label for="mhiscode2" class="col-sm-3 control-label" style="padding-top:7px">选择机构</label>
+			            <div class="col-sm-7">
+			            	<select id="mhiscode2" name="mhiscode2" class="js-data-example-ajax" style="width:100%"></select>
+			            </div>
+			        </div>
+				</div>  
+				<div class="row">
+					<div id="toolbar" class="btn-group">
+						<div class="col-sm-12">
+							<button id="btn_add" type="button" class="btn btn-default" onclick="dict_route_open(1)">
+					        	<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增
+						    </button>
+						    <button id="btn_add" type="button" class="btn btn-default" onclick="dict_route_open(2)">
+					        	<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>修改
+						    </button>
+						    <button id="btn_delete" type="button" class="btn btn-default" onclick="dict_route_data(3)">
+						        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>删除
+						    </button>
+						</div>
+					</div>
+					<table id="dict_table" style="table-layout:fixed;"></table>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<input type="hidden" id="pagelabel" value="-1"/>
+				<input type="hidden" id="rowid" value="-1"/>
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+				<button id="queren" type="button" class="btn btn-primary" onclick="dict_route_modal_yes()">确认</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal -->
+</div>
+
+<!-- 模态框（Modal）字典表 -->
+<div class="modal fade" id="dict_fre_modal" tabindex="-1" data-backdrop="static" data-keyboard="false" role="dialog"  aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title">频次字典表</h4>
+			</div>
+			<div class="modal-body">
+				<div class="row">
+					<div class="form-group">
+			            <label for="mhiscode3" class="col-sm-3 control-label" style="padding-top:7px">选择机构</label>
+			            <div class="col-sm-7">
+			            	<select id="mhiscode3" name="mhiscode3" class="js-data-example-ajax" style="width:100%"></select>
+			            </div>
+			        </div>
+				</div>  
+				<div class="row">
+					<div id="toolbar" class="btn-group">
+						<div class="col-sm-12">
+							<button id="btn_add" type="button" class="btn btn-default" onclick="dict_fre_open(1)">
+					        	<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增
+						    </button>
+						    <!-- <button id="btn_add" type="button" class="btn btn-default" onclick="dict_fre_open(2)">
+					        	<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>修改
+						    </button> -->
+						    <button id="btn_delete" type="button" class="btn btn-default" onclick="dict_fre_data(3)">
+						        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>删除
+						    </button>
+						</div>
+					</div>
+					<table id="dict_table" style="table-layout:fixed;"></table>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<input type="hidden" id="pagelabel" value="-1"/>
+				<input type="hidden" id="rowid" value="-1"/>
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+				<button id="queren" type="button" class="btn btn-primary" onclick="dict_fre_modal_yes()">确认</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal -->
+</div>
+
+<!-- 模态框（Modal）字典表 -->
+<div class="modal fade" id="dict_dept_modal" tabindex="-1" data-backdrop="static" data-keyboard="false" role="dialog"  aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title">科室字典表</h4>
+			</div>
+			<div class="modal-body">
+				<div class="row">
+					<div class="form-group">
+			            <label for="mhiscode4" class="col-sm-3 control-label" style="padding-top:7px">选择机构</label>
+			            <div class="col-sm-7">
+			            	<select id="mhiscode4" name="mhiscode4" class="js-data-example-ajax" style="width:100%"></select>
+			            </div>
+			        </div>
+				</div>  
+				<div class="row">
+					<div id="toolbar" class="btn-group">
+						<div class="col-sm-12">
+							<button id="btn_add" type="button" class="btn btn-default" onclick="dict_dept_open(1)">
+					        	<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增
+						    </button>
+						    <button id="btn_update" type="button" class="btn btn-default" onclick="dict_dept_open(2)">
+					        	<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>修改
+						    </button>
+						    <button id="btn_delete" type="button" class="btn btn-default" onclick="dict_dept_data(3)">
+						        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>删除
+						    </button>
+						</div>
+					</div>
+					<table id="dict_table" style="table-layout:fixed;"></table>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<input type="hidden" id="pagelabel" value="-1"/>
+				<input type="hidden" id="rowid" value="-1"/>
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+				<button id="queren" type="button" class="btn btn-primary" onclick="dict_dept_modal_yes()">确认</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal -->
+</div>
+
+<!-- 模态框（Modal）字典表 -->
+<div class="modal fade" id="dict_doctor_modal" tabindex="-1" data-backdrop="static" data-keyboard="false" role="dialog"  aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title">医生字典表</h4>
+			</div>
+			<div class="modal-body">
+				<div class="row">
+					<div class="form-group">
+			            <label for="mhiscode5" class="col-sm-3 control-label" style="padding-top:7px">选择机构</label>
+			            <div class="col-sm-7">
+			            	<select id="mhiscode5" name="mhiscode5" class="js-data-example-ajax" style="width:100%"></select>
+			            </div>
+			        </div>
+				</div>  
+				<div class="row">
+					<div id="toolbar" class="btn-group">
+						<div class="col-sm-12">
+							<button id="btn_add" type="button" class="btn btn-default" onclick="dict_doctor_open(1)">
+					        	<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增
+						    </button>
+						    <button id="btn_add" type="button" class="btn btn-default" onclick="dict_doctor_open(2)">
+					        	<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>修改
+						    </button>
+						    <button id="btn_delete" type="button" class="btn btn-default" onclick="dict_doctor_data(3)">
+						        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>删除
+						    </button>
+						</div>
+					</div>
+					<table id="dict_table" style="table-layout:fixed;"></table>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<input type="hidden" id="pagelabel" value="-1"/>
+				<input type="hidden" id="rowid" value="-1"/>
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+				<button id="queren" type="button" class="btn btn-primary" onclick="dict_doctor_modal_yes()">确认</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal -->
+</div>
+<!-- 模态框（Modal）字典表 -->
+<div class="modal fade" id="dict_allergen_modal" tabindex="-1" data-backdrop="static" data-keyboard="false" role="dialog"  aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title">过敏原字典表</h4>
+			</div>
+			<div class="modal-body">
+				<div class="row">
+					<div class="form-group">
+			            <label for="mhiscode6" class="col-sm-3 control-label" style="padding-top:7px">选择机构</label>
+			            <div class="col-sm-7">
+			            	<select id="mhiscode6" name="mhiscode6" class="js-data-example-ajax" style="width:100%"></select>
+			            </div>
+			        </div>
+				</div>  
+				<div class="row">
+					<div id="toolbar" class="btn-group">
+						<div class="col-sm-12">
+							<button id="btn_add" type="button" class="btn btn-default" onclick="dict_allergen_open(1)">
+					        	<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增
+						    </button>
+						    <button id="btn_add" type="button" class="btn btn-default" onclick="dict_allergen_open(2)">
+					        	<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>修改
+						    </button>
+						    <button id="btn_delete" type="button" class="btn btn-default" onclick="dict_allergen_data(3)">
+						        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>删除
+						    </button>
+						</div>
+					</div>
+					<table id="dict_table" style="table-layout:fixed;"></table>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<input type="hidden" id="pagelabel" value="-1"/>
+				<input type="hidden" id="rowid" value="-1"/>
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+				<button id="queren" type="button" class="btn btn-primary" onclick="dict_allergen_modal_yes()">确认</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal -->
+</div>
+<!-- 模态框（Modal）字典表 -->
+<div class="modal fade" id="dict_disease_modal" tabindex="-1"  data-backdrop="static" data-keyboard="false" role="dialog"  aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title">疾病字典表</h4>
+			</div>
+			<div class="modal-body">
+				<div class="row">
+					<div class="form-group">
+			            <label for="mhiscode7" class="col-sm-3 control-label" style="padding-top:7px">选择机构</label>
+			            <div class="col-sm-7">
+			            	<select id="mhiscode7" name="mhiscode7" class="js-data-example-ajax" style="width:100%"></select>
+			            </div>
+			        </div>
+				</div>  
+				<div class="row">
+					<div id="toolbar" class="btn-group">
+						<div class="col-sm-12">
+							<button id="btn_add" type="button" class="btn btn-default" onclick="dict_disease_open(1)">
+					        	<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增
+						    </button>
+						    <button id="btn_add" type="button" class="btn btn-default" onclick="dict_disease_open(2)">
+					        	<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>修改
+						    </button>
+						    <button id="btn_delete" type="button" class="btn btn-default" onclick="dict_disease_data(3)">
+						        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>删除
+						    </button>
+						</div>
+					</div>
+					<table id="dict_table" style="table-layout:fixed;"></table>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<input type="hidden" id="pagelabel" value="-1"/>
+				<input type="hidden" id="rowid" value="-1"/>
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+				<button id="queren" type="button" class="btn btn-primary" onclick="dict_disease_modal_yes()">确认</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal -->
+</div>
+<!-- 模态框（Modal）字典表 -->
+<div class="modal fade" id="dict_operation_modal" tabindex="-1" data-backdrop="static" data-keyboard="false" role="dialog"  aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title">手术字典表</h4>
+			</div>
+			<div class="modal-body">
+				<div class="row">
+					<div class="form-group">
+			            <label for="mhiscode8" class="col-sm-3 control-label" style="padding-top:7px">选择机构</label>
+			            <div class="col-sm-7">
+			            	<select id="mhiscode8" name="mhiscode8" class="js-data-example-ajax" style="width:100%"></select>
+			            </div>
+			        </div>
+				</div>  
+				<div class="row">
+					<div id="toolbar" class="btn-group">
+						<div class="col-sm-12">
+							<button id="btn_add" type="button" class="btn btn-default" onclick="dict_operation_open(1)">
+					        	<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增
+						    </button>
+						    <button id="btn_add" type="button" class="btn btn-default" onclick="dict_operation_open(2)">
+					        	<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>修改
+						    </button>
+						    <button id="btn_delete" type="button" class="btn btn-default" onclick="dict_operation_data(3)">
+						        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>删除
+						    </button>
+						</div>
+					</div>
+					<table id="dict_table" style="table-layout:fixed;"></table>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<input type="hidden" id="pagelabel" value="-1"/>
+				<input type="hidden" id="rowid" value="-1"/>
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+				<button id="queren" type="button" class="btn btn-primary" onclick="dict_operation_modal_yes()">确认</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal -->
+</div>
+<!-- 模态框（Modal）字典表 -->
+<div class="modal fade" id="dict_exam_modal" tabindex="-1" data-backdrop="static" data-keyboard="false" role="dialog"  aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title">检查字典表</h4>
+			</div>
+			<div class="modal-body">
+				<div class="row">
+					<div class="form-group">
+			            <label for="mhiscode9" class="col-sm-3 control-label" style="padding-top:7px">选择机构</label>
+			            <div class="col-sm-7">
+			            	<select id="mhiscode9" name="mhiscode9" class="js-data-example-ajax" style="width:100%"></select>
+			            </div>
+			        </div>
+				</div>  
+				<div class="row">
+					<div id="toolbar" class="btn-group">
+						<div class="col-sm-12">
+							<button id="btn_add" type="button" class="btn btn-default" onclick="dict_exam_open(1)">
+					        	<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增
+						    </button>
+						    <button id="btn_add" type="button" class="btn btn-default" onclick="dict_exam_open(2)">
+					        	<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>修改
+						    </button>
+						    <button id="btn_delete" type="button" class="btn btn-default" onclick="dict_exam_data(3)">
+						        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>删除
+						    </button>
+						</div>
+					</div>
+					<table id="dict_table" style="table-layout:fixed;"></table>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<input type="hidden" id="pagelabel" value="-1"/>
+				<input type="hidden" id="rowid" value="-1"/>
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+				<button id="queren" type="button" class="btn btn-primary" onclick="dict_exam_modal_yes()">确认</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal -->
+</div>
+<!-- 模态框（Modal）字典表 -->
+<div class="modal fade" id="dict_lab_modal" tabindex="-1" data-backdrop="static" data-keyboard="false" role="dialog"  aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title">检验字典表</h4>
+			</div>
+			<div class="modal-body">
+				<div class="row">
+					<div class="form-group">
+			            <label for="mhiscode10" class="col-sm-3 control-label" style="padding-top:7px">选择机构</label>
+			            <div class="col-sm-7">
+			            	<select id="mhiscode10" name="mhiscode10" class="js-data-example-ajax" style="width:100%"></select>
+			            </div>
+			        </div>
+				</div>  
+				<div class="row">
+					<div id="toolbar" class="btn-group">
+						<div class="col-sm-12">
+							<button id="btn_add" type="button" class="btn btn-default" onclick="dict_lab_open(1)">
+					        	<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>新增
+						    </button>
+						    <button id="btn_add" type="button" class="btn btn-default" onclick="dict_lab_open(2)">
+					        	<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>修改
+						    </button>
+						    <button id="btn_delete" type="button" class="btn btn-default" onclick="dict_lab_data(3)">
+						        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>删除
+						    </button>
+						</div>
+					</div>
+					<table id="dict_table" style="table-layout:fixed;"></table>
+				</div>
+			</div>
+			<div class="modal-footer">
+				<input type="hidden" id="pagelabel" value="-1"/>
+				<input type="hidden" id="rowid" value="-1"/>
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+				<button id="queren" type="button" class="btn btn-primary" onclick="dict_lab_modal_yes()">确认</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal -->
+	</div>
+</div>
+<!-- 字典表维护，新增数据编辑框 -->
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="database_data_modal" tabindex="-1" data-backdrop="static" data-keyboard="false" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" height="600px">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title">新增机构</h4>
+			</div>
+			<div class="modal-body" style="height:400px;overflow:auto">
+				<form class="form-horizontal" role="form" id="dialog_form">
+					<input type="hidden" id="databaseid" name="databaseid" value="">
+					<div class="form-group">
+			            <label for="databasetype" class="col-sm-4 control-label">数据库类型</label>
+			            <div class="col-sm-4">
+					        <select class="form-control m-b" name="databasetype" id="databasetype">
+	                            <option value="MYSQL" selected="selected"><font style="vertical-align: inherit;">MYSQL</font></option>
+	                            <option value="MSSQL"><font style="vertical-align: inherit;">MSSQL</font></option>
+	                            <option value="ORACLE"><font style="vertical-align: inherit;">ORACLE</font></option>
+	                        </select>
+			            </div>
+			        </div>
+			        <div class="form-group">
+						<label for="name" class="col-sm-4 control-label">名称</label>
+						<div class="col-sm-6">
+							<input type="text" class="form-control" id="name"  name="name">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="kettle_Database_two" class="col-sm-4 control-label">kettle数据库配置名称</label>
+						<div class="col-sm-6">
+							<input type="text" class="form-control" id="kettle_Database_two"  name="kettle_Database_two" value="pass_sqlserver">
+						</div>
+					</div>
+			        <div class="form-group">
+						<label for="databasename" class="col-sm-4 control-label">databasename</label>
+						<div class="col-sm-6">
+							<input type="text" class="form-control" id="databasename"  name="databasename">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="ip" class="col-sm-4 control-label">ip</label>
+						<div class="col-sm-6">
+							<input type="text" class="form-control" id="ip"  name="ip">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="username" class="col-sm-4 control-label">username</label>
+						<div class="col-sm-6">
+							<input type="text" class="form-control" id="username"  name="username">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="password" class="col-sm-4 control-label">password</label>
+						<div class="col-sm-6">
+							<input type="text" class="form-control" id="password"  name="password">
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+				<button type="button" class="btn btn-primary" id="btn_add" onclick="database_data(1)">确定</button>
+				<button type="button" class="btn btn-primary" id="btn_update" onclick="database_data(2)">更新</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal -->
+</div>
+
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="mc_hospital_data_modal" tabindex="-1" data-backdrop="static" data-keyboard="false" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" height="600px">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title">新增机构</h4>
+			</div>
+			<div class="modal-body" style="height:400px;overflow:auto">
+				<form class="form-horizontal" role="form" id="dialog_form">
+					<div class="form-group">
+			            <label for="mhiscode" class="col-sm-4 control-label">mhiscode</label>
+			            <div class="col-sm-4">
+			            	<input type="text" class="form-control" id="mhiscode"  name="mhiscode">
+			            </div>
+			        </div>
+			        <div class="form-group">
+						<label for="hiscode" class="col-sm-4 control-label">hiscode</label>
+						<div class="col-sm-6">
+							<input type="text" class="form-control" id="hiscode"  name="hiscode">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="hisname" class="col-sm-4 control-label">hisname</label>
+						<div class="col-sm-6">
+							<input type="text" class="form-control" id="hisname"  name="hisname">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="doctorgroupmatch_scheme" class="col-sm-4 control-label">doctorgroupmatch_scheme</label>
+						<div class="col-sm-6">
+							<input type="text" class="form-control" id="doctorgroupmatch_scheme"  name="doctorgroupmatch_scheme">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="wardmatch_scheme" class="col-sm-4 control-label">wardmatch_scheme</label>
+						<div class="col-sm-6">
+							<input type="text" class="form-control" id="wardmatch_scheme"  name="wardmatch_scheme">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="drugmatch_scheme" class="col-sm-4 control-label">drugmatch_scheme</label>
+						<div class="col-sm-6">
+							<input type="text" class="form-control" id="drugmatch_scheme"  name="drugmatch_scheme">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="allermatch_scheme" class="col-sm-4 control-label">allermatch_scheme</label>
+						<div class="col-sm-6">
+							<input type="text" class="form-control" id="allermatch_scheme"  name="allermatch_scheme">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="dismatch_scheme" class="col-sm-4 control-label">dismatch_scheme</label>
+						<div class="col-sm-6">
+							<input type="text" class="form-control" id="dismatch_scheme"  name="dismatch_scheme">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="freqmatch_scheme" class="col-sm-4 control-label">freqmatch_scheme</label>
+						<div class="col-sm-6">
+							<input type="text" class="form-control" id="freqmatch_scheme"  name="freqmatch_scheme">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="routematch_scheme" class="col-sm-4 control-label">routematch_scheme</label>
+						<div class="col-sm-6">
+							<input type="text" class="form-control" id="routematch_scheme"  name="routematch_scheme">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="doctormatch_scheme" class="col-sm-4 control-label">doctormatch_scheme</label>
+						<div class="col-sm-6">
+							<input type="text" class="form-control" id="doctormatch_scheme"  name="doctormatch_scheme">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="oprmatch_scheme" class="col-sm-4 control-label">oprmatch_scheme</label>
+						<div class="col-sm-6">
+							<input type="text" class="form-control" id="oprmatch_scheme"  name="oprmatch_scheme">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="costitemmatch_scheme" class="col-sm-4 control-label">costitemmatch_scheme</label>
+						<div class="col-sm-6">
+							<input type="text" class="form-control" id="costitemmatch_scheme"  name="costitemmatch_scheme">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="deptmatch_scheme" class="col-sm-4 control-label">deptmatch_scheme</label>
+						<div class="col-sm-6">
+							<input type="text" class="form-control" id="deptmatch_scheme"  name="deptmatch_scheme">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="exammatch_scheme" class="col-sm-4 control-label">exammatch_scheme</label>
+						<div class="col-sm-6">
+							<input type="text" class="form-control" id="exammatch_scheme"  name="exammatch_scheme">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="labmatch_scheme" class="col-sm-4 control-label">labmatch_scheme</label>
+						<div class="col-sm-6">
+							<input type="text" class="form-control" id="labmatch_scheme"  name="labmatch_scheme">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="labsubmatch_scheme" class="col-sm-4 control-label">labsubmatch_scheme</label>
+						<div class="col-sm-6">
+							<input type="text" class="form-control" id="labsubmatch_scheme"  name="labsubmatch_scheme">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="hiscode_user" class="col-sm-4 control-label">hiscode_user</label>
+						<div class="col-sm-6">
+							<input type="text" class="form-control" id="hiscode_user"  name="hiscode_user">
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+				<button type="button" class="btn btn-primary" id="btn_add" onclick="mc_hospital_data(1)">确定</button>
+				<button type="button" class="btn btn-primary" id="btn_update" onclick="mc_hospital_data(2)">更新</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal -->
+</div>
+
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="dict_drug_data_modal" tabindex="-1" data-backdrop="static" data-keyboard="false" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" height="600px">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title">新增药品</h4>
+			</div>
+			<div class="modal-body" style="height:400px;overflow:auto">
+				<form class="form-horizontal" role="form" id="dialog_form">
+					<div class="form-group">
+			            <label for="hiscode1" class="col-sm-2 control-label">机构名称</label>
+			            <div class="col-sm-4">
+			            	<select id="hiscode1" name="hiscode" class="js-data-example-ajax" style="width:100%"></select>
+			            </div>
+			        </div>
+			        <div class="form-group">
+						<label for="drugcode" class="col-sm-2 control-label">药品编码</label>
+						<div class="col-sm-6">
+							<input type="text" class="form-control" id="drugcode"  name="drugcode">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="drug_unique_code" class="col-sm-2 control-label">唯一码</label>
+						<div class="col-sm-6">
+							<input type="text" class="form-control" id="drug_unique_code"  name="drug_unique_code">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="drugname" class="col-sm-2 control-label">药品名称</label>
+						<div class="col-sm-6">
+							<input type="text" class="form-control" id="drugname"  name="drugname">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="drugform" class="col-sm-2 control-label">剂型</label>
+						<div class="col-sm-6">
+							<input type="text" class="form-control" id="drugform"  name="drugform">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="drugspec" class="col-sm-2 control-label">规格</label>
+						<div class="col-sm-6">
+							<input type="text" class="form-control" id="drugspec"  name="drugspec">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="comp_name" class="col-sm-2 control-label">厂家</label>
+						<div class="col-sm-6">
+							<input type="text" class="form-control" id="comp_name"  name="comp_name">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="doseunit" class="col-sm-2 control-label">给药单位</label>
+						<div class="col-sm-6">
+							<input type="text" class="form-control" id="doseunit"  name="doseunit">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="costunit" class="col-sm-2 control-label">划价单位</label>
+						<div class="col-sm-6">
+							<input type="text" class="form-control" id="costunit"  name="costunit">
+						</div>
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+				<button type="button" class="btn btn-primary" id="btn_add" onclick="dict_drug_data(1)">确定</button>
+				<button type="button" class="btn btn-primary" id="btn_update" onclick="dict_drug_data(2)">更新</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal -->
+</div>
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="dict_route_data_modal" tabindex="-1" data-backdrop="static" data-keyboard="false" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" height="600px">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title">新增给药途径</h4>
+			</div>
+			<div class="modal-body" style="height:400px;overflow:auto">
+				<form class="form-horizontal" role="form" id="dialog_form">
+					<div class="form-group">
+			            <label for="hiscode2" class="col-sm-2 control-label">机构名称</label>
+			            <div class="col-sm-4">
+			            	<select id="hiscode2" name="hiscode" class="js-data-example-ajax" style="width:100%"></select>
+			            </div>
+			        </div>
+			        <div class="form-group">
+						<label for="routecode" class="col-sm-2 control-label">给药途径编码</label>
+						<div class="col-sm-6">
+							<input type="text" class="form-control" id="routecode"  name="routecode">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="routename" class="col-sm-2 control-label">给药途径名称</label>
+						<div class="col-sm-6">
+							<input type="text" class="form-control" id="routename"  name="routename">
+						</div>
+					</div>
+					
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+				<button type="button" class="btn btn-primary" id="btn_add" onclick="dict_route_data(1)">确定</button>
+				<button type="button" class="btn btn-primary" id="btn_update" onclick="dict_route_data(2)">更新</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal -->
+</div>
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="dict_fre_data_modal" tabindex="-1" data-backdrop="static" data-keyboard="false" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" height="600px">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title">新增频次</h4>
+			</div>
+			<div class="modal-body" style="height:400px;overflow:auto">
+				<form class="form-horizontal" role="form" id="dialog_form">
+					<div class="form-group">
+			            <label for="hiscode3" class="col-sm-2 control-label">机构名称</label>
+			            <div class="col-sm-4">
+			            	<select id="hiscode3" name="hiscode" class="js-data-example-ajax" style="width:100%"></select>
+			            </div>
+			        </div>
+			        <div class="form-group">
+						<label for="frequency" class="col-sm-2 control-label">频次</label>
+						<div class="col-sm-6">
+							<input type="text" class="form-control" id="frequency"  name="frequency">
+						</div>
+					</div>
+					
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+				<button type="button" class="btn btn-primary" id="btn_add" onclick="dict_fre_data(1)">确定</button>
+				<button type="button" class="btn btn-primary" id="btn_update" onclick="dict_fre_data(2)">更新</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal -->
+</div>
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="dict_dept_data_modal" tabindex="-1" data-backdrop="static" data-keyboard="false" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" height="600px">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title">新增科室</h4>
+			</div>
+			<div class="modal-body" style="height:400px;overflow:auto">
+				<form class="form-horizontal" role="form" id="dialog_form">
+					<div class="form-group">
+			            <label for="hiscode4" class="col-sm-2 control-label">机构名称</label>
+			            <div class="col-sm-4">
+			            	<select id="hiscode4" name="hiscode" class="js-data-example-ajax" style="width:100%"></select>
+			            </div>
+			        </div>
+			        <div class="form-group">
+						<label for="deptcode" class="col-sm-2 control-label">科室编号</label>
+						<div class="col-sm-6">
+							<input type="text" class="form-control" id="deptcode"  name="deptcode">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="deptname" class="col-sm-2 control-label">科室名称</label>
+						<div class="col-sm-6">
+							<input type="text" class="form-control" id="deptname"  name="deptname">
+						</div>
+					</div>
+					
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+				<button type="button" class="btn btn-primary" id="btn_add" onclick="dict_dept_data(1)">确定</button>
+				<button type="button" class="btn btn-primary" id="btn_update" onclick="dict_dept_data(2)">更新</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal -->
+</div>
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="dict_doctor_data_modal" tabindex="-1" data-backdrop="static" data-keyboard="false" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" height="600px">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title">新增科室</h4>
+			</div>
+			<div class="modal-body" style="height:400px;overflow:auto">
+				<form class="form-horizontal" role="form" id="dialog_form">
+					<div class="form-group">
+			            <label for="hiscode5" class="col-sm-2 control-label">机构名称</label>
+			            <div class="col-sm-4">
+			            	<select id="hiscode5" name="hiscode" class="js-data-example-ajax" style="width:100%"></select>
+			            </div>
+			        </div>
+			        <div class="form-group">
+						<label for="doctorcode" class="col-sm-2 control-label">医生编号</label>
+						<div class="col-sm-6">
+							<input type="text" class="form-control" id="doctorcode"  name="doctorcode">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="doctorname" class="col-sm-2 control-label">医生名称</label>
+						<div class="col-sm-6">
+							<input type="text" class="form-control" id="doctorname"  name="doctorname">
+						</div>
+					</div>
+					
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+				<button type="button" class="btn btn-primary" id="btn_add" onclick="dict_doctor_data(1)">确定</button>
+				<button type="button" class="btn btn-primary" id="btn_update" onclick="dict_doctor_data(2)">更新</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal -->
+</div>
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="dict_allergen_data_modal" tabindex="-1" data-backdrop="static" data-keyboard="false" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" height="600px">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title">新增过敏原</h4>
+			</div>
+			<div class="modal-body" style="height:400px;overflow:auto">
+				<form class="form-horizontal" role="form" id="dialog_form">
+					<div class="form-group">
+			            <label for="hiscode6" class="col-sm-2 control-label">机构名称</label>
+			            <div class="col-sm-4">
+			            	<select id="hiscode6" name="hiscode" class="js-data-example-ajax" style="width:100%"></select>
+			            </div>
+			        </div>
+			        <div class="form-group">
+						<label for="allercode" class="col-sm-2 control-label">过敏原编号</label>
+						<div class="col-sm-6">
+							<input type="text" class="form-control" id="allercode"  name="allercode">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="allername" class="col-sm-2 control-label">过敏原名称</label>
+						<div class="col-sm-6">
+							<input type="text" class="form-control" id="allername"  name="allername">
+						</div>
+					</div>
+					
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+				<button type="button" class="btn btn-primary" id="btn_add" onclick="dict_allergen_data(1)">确定</button>
+				<button type="button" class="btn btn-primary" id="btn_update" onclick="dict_allergen_data(2)">更新</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal -->
+</div>
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="dict_disease_data_modal" tabindex="-1" data-backdrop="static" data-keyboard="false" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" height="600px">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title">新增科室</h4>
+			</div>
+			<div class="modal-body" style="height:400px;overflow:auto">
+				<form class="form-horizontal" role="form" id="dialog_form">
+					<div class="form-group">
+			            <label for="hiscode7" class="col-sm-2 control-label">机构名称</label>
+			            <div class="col-sm-4">
+			            	<select id="hiscode7" name="hiscode" class="js-data-example-ajax" style="width:100%"></select>
+			            </div>
+			        </div>
+			        <div class="form-group">
+						<label for="discode" class="col-sm-2 control-label">疾病编号</label>
+						<div class="col-sm-6">
+							<input type="text" class="form-control" id="discode"  name="discode">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="disname" class="col-sm-2 control-label">疾病名称</label>
+						<div class="col-sm-6">
+							<input type="text" class="form-control" id="disname"  name="disname">
+						</div>
+					</div>
+					
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+				<button type="button" class="btn btn-primary" id="btn_add" onclick="dict_disease_data(1)">确定</button>
+				<button type="button" class="btn btn-primary" id="btn_update" onclick="dict_disease_data(2)">更新</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal -->
+</div>
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="dict_operation_data_modal" tabindex="-1" data-backdrop="static" data-keyboard="false" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" height="600px">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title">新增科室</h4>
+			</div>
+			<div class="modal-body" style="height:400px;overflow:auto">
+				<form class="form-horizontal" role="form" id="dialog_form">
+					<div class="form-group">
+			            <label for="hiscode8" class="col-sm-2 control-label">机构名称</label>
+			            <div class="col-sm-4">
+			            	<select id="hiscode8" name="hiscode" class="js-data-example-ajax" style="width:100%"></select>
+			            </div>
+			        </div>
+			        <div class="form-group">
+						<label for="operationcode" class="col-sm-2 control-label">手术编号</label>
+						<div class="col-sm-6">
+							<input type="text" class="form-control" id="operationcode"  name="operationcode">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="operationname" class="col-sm-2 control-label">手术名称</label>
+						<div class="col-sm-6">
+							<input type="text" class="form-control" id="operationname"  name="operationname">
+						</div>
+					</div>
+					
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+				<button type="button" class="btn btn-primary" id="btn_add" onclick="dict_operation_data(1)">确定</button>
+				<button type="button" class="btn btn-primary" id="btn_update" onclick="dict_operation_data(2)">更新</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal -->
+</div>
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="dict_exam_data_modal" tabindex="-1" data-backdrop="static" data-keyboard="false" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" height="600px">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title">新增检查</h4>
+			</div>
+			<div class="modal-body" style="height:400px;overflow:auto">
+				<form class="form-horizontal" role="form" id="dialog_form">
+					<div class="form-group">
+			            <label for="hiscode9" class="col-sm-2 control-label">机构名称</label>
+			            <div class="col-sm-4">
+			            	<select id="hiscode9" name="hiscode" class="js-data-example-ajax" style="width:100%"></select>
+			            </div>
+			        </div>
+			        <div class="form-group">
+						<label for="examcode" class="col-sm-2 control-label">检查编号</label>
+						<div class="col-sm-6">
+							<input type="text" class="form-control" id="examcode"  name="examcode">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="examname" class="col-sm-2 control-label">检查编号</label>
+						<div class="col-sm-6">
+							<input type="text" class="form-control" id="examname"  name="examname">
+						</div>
+					</div>
+					
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+				<button type="button" class="btn btn-primary" id="btn_add" onclick="dict_exam_data(1)">确定</button>
+				<button type="button" class="btn btn-primary" id="btn_update" onclick="dict_exam_data(2)">更新</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal -->
+</div>
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="dict_lab_data_modal" tabindex="-1" data-backdrop="static" data-keyboard="false" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" height="600px">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title">新增检验</h4>
+			</div>
+			<div class="modal-body" style="height:400px;overflow:auto">
+				<form class="form-horizontal" role="form" id="dialog_form">
+					<div class="form-group">
+			            <label for="hiscode10" class="col-sm-2 control-label">机构名称</label>
+			            <div class="col-sm-4">
+			            	<select id="hiscode10" name="hiscode" class="js-data-example-ajax" style="width:100%"></select>
+			            </div>
+			        </div>
+			        <div class="form-group">
+						<label for="labcode" class="col-sm-2 control-label">检验编号</label>
+						<div class="col-sm-6">
+							<input type="text" class="form-control" id="labcode"  name="labcode">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="labname" class="col-sm-2 control-label">检验名称</label>
+						<div class="col-sm-6">
+							<input type="text" class="form-control" id="labname"  name="labname">
+						</div>
+					</div>
+					
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+				<button type="button" class="btn btn-primary" id="btn_add" onclick="dict_lab_data(1)">确定</button>
+				<button type="button" class="btn btn-primary" id="btn_update" onclick="dict_lab_data(2)">更新</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal -->
+</div>
+
+</body>
+</html>
+
