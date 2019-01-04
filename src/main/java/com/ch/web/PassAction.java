@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +13,7 @@ import java.util.concurrent.TimeoutException;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.dom4j.DocumentException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -68,11 +71,11 @@ public class PassAction {
 	}
 	
 	//获取team下拉单
-	@RequestMapping("/teamgroup")
-	@ResponseBody
-	public List teamgroup(HttpServletRequest req){
-		return passbean.teamgroup(req);
-	}
+//	@RequestMapping("/teamgroup")
+//	@ResponseBody
+//	public List teamgroup(HttpServletRequest req){
+//		return passbean.teamgroup(req);
+//	}
 	
 	@ResponseBody
 	@RequestMapping(value="/project_add",produces = "text/html;charset=UTF-8")
@@ -100,18 +103,18 @@ public class PassAction {
 	}
 	
 	//获取project下拉单
-	@RequestMapping("/projectgroup")
-	@ResponseBody
-	public List projectgroup(HttpServletRequest req){
-		return passbean.projectgroup(req);
-	}
+//	@RequestMapping("/projectgroup")
+//	@ResponseBody
+//	public List projectgroup(HttpServletRequest req){
+//		return passbean.projectgroup(req);
+//	}
 
 	//获取team下拉单
-	@RequestMapping("/modulenamegroup")
-	@ResponseBody
-	public List modulenamegroup(HttpServletRequest req){
-		return passbean.modulenamegroup(req);
-	}
+//	@RequestMapping("/modulenamegroup")
+//	@ResponseBody
+//	public List modulenamegroup(HttpServletRequest req){
+//		return passbean.modulenamegroup(req);
+//	}
 	
 	@ResponseBody
 	@RequestMapping(value="/testmng_add",produces = "text/html;charset=UTF-8")
@@ -169,8 +172,32 @@ public class PassAction {
 	@ResponseBody
 	public List _select2(HttpServletRequest req){
 		List list=new ArrayList();
+		String sql =null; 
+		String searchstr="";
+		int teamid=0;
+		if(StringUtils.isNotBlank(req.getParameter("searchstr"))){
+			searchstr=req.getParameter("searchstr");
+		}
 		
-		String[] jsonversions={"1609","1712"};
+		sql="select teamid as id,teamname as text from pass_team where teamname like ? ";
+		List teamlist=jdbcTemplate.queryForList(sql,new Object[]{"%"+searchstr+"%"});
+		
+		if(StringUtils.isNotBlank(req.getParameter("teamid"))){
+			teamid=Integer.parseInt(req.getParameter("teamid"));
+		}
+		
+		List projectlist=null;
+		if(teamid>0){
+			sql="select a.projectid as id , a.projectname as text from pass_project a, pass_team b where "
+					+ " a.teamid=b.teamid and b.teamid=? and projectname like ? order by a.projectname asc";
+			projectlist=jdbcTemplate.queryForList(sql,new Object[]{teamid,"%"+searchstr+"%"});
+		}else{
+			sql="select projectid as id ,projectname as text from pass_project where projectname like ? order by projectname asc";
+			projectlist=jdbcTemplate.queryForList(sql,new Object[]{"%"+searchstr+"%"});
+		}
+		
+//		String[] jsonversions={"1609","1703","1712"};
+		String[] jsonversions={"1609","1712","1809"};
 		List jsonversionslist=new ArrayList();
 		for(int i=0;i<jsonversions.length;i++){
 			Map map= new HashMap();
@@ -178,6 +205,9 @@ public class PassAction {
 			map.put("text", jsonversions[i]);
 			jsonversionslist.add(map);
 		}
+		
+		sql="select CONCAT(moduletype,'-',moduleid) as id ,CONCAT(CASE  moduletype when 1 then '审查_' when 2 then '查询_' else '其他_' end, modulename ) as text from mc_modulename where modulename like ? order by moduleid asc";
+		List modulelist=jdbcTemplate.queryForList(sql,new Object[]{"%"+searchstr+"%"});
 		
 		String[][] jsontypes={{"1","Screen"},{"2","Detail"},{"3","Query"},{"4","Module"},{"5","其他"}};
 		List jsontypeslist=new ArrayList();
@@ -189,41 +219,56 @@ public class PassAction {
 			jsontypeslist.add(map);
 		}
 	
-		String[][] anlitypes={{"1","自动案例"},{"2","手动案例"},{"3","说明书"},{"4","浮动窗口"},{"5","详细信息"},
-				{"6","用药理由"},{"7","右键菜单"},{"8","模块菜单"},{"9","自由自定义"},{"10","中药材专论"},{"11","用药指导单"},{"999","未定位"}};
+//		String[][] anlitypes={{"1","自动案例"},{"2","手动案例"},{"3","说明书"},{"4","浮动窗口"},{"5","详细信息"},
+//				{"6","用药理由"},{"7","右键菜单"},{"8","模块菜单"},{"9","自由自定义"},{"10","中药材专论"},{"11","用药指导单"},{"999","未定位"}};
+		String[][] anlitypes={{"1","自动案例"},{"2","手动案例"},{"3","其他(暂时无用)"},{"5","详细信息接口"},{"6","用药理由接口"},{"7","右键菜单接口"},{"12","查询接口"},{"999","无法定位"}};
+//		String[][] anlitypes={{"1","自动案例"},{"2","手动案例"},{"999","无法定位"}};
 		List anlitypeslist=new ArrayList();
 		for(int i=0;i<anlitypes.length;i++){
 			String[] anlitype=anlitypes[i];
-			Map map= new HashMap();
-			map.put("id", anlitype[0]);
-			map.put("text", anlitype[1]);
-			anlitypeslist.add(map);
+			if(anlitype[1].contains(searchstr)){
+				Map map= new HashMap();
+				map.put("id", anlitype[0]);
+				map.put("text", anlitype[1]);
+				anlitypeslist.add(map);
+			}
 		}
+		
 		
 //		String[][] daoshujus={{"100","不导"},{"112","模糊导"},{"111","全导"},{"1","自动案例"},{"2","手动案例"},{"3","说明书"},{"4","浮动窗口"},{"5","详细信息"},
 //				{"6","用药理由"},{"7","右键菜单"},{"8","模块菜单"},{"10","自由自定义"}};
-		String[][] daoshujus={{"100","不导"},{"111","全导"},{"1","自动案例"},{"2","手动案例"},{"3","说明书"},{"4","浮动窗口"},{"5","详细信息"},
-				{"6","用药理由"},{"7","右键菜单"},{"8","模块列表"},{"9","自由自定义"},{"10","中药材专论"},{"11","用药指导单"}};
-		
+//		String[][] daoshujus={{"100","不导"},{"111","全导"},{"1","自动案例"},{"2","手动案例"},{"3","说明书"},{"4","浮动窗口"},{"5","详细信息"},
+//				{"6","用药理由"},{"7","右键菜单"},{"8","模块列表"},{"9","自由自定义"},{"10","中药材专论"},{"11","用药指导单"}};
+		String[][] daoshujus={{"100","不导"},{"111","全导"}};
 		List daoshujuslist=new ArrayList();
 		for(int i=0;i<daoshujus.length;i++){
 			String[] daoshuju=daoshujus[i];
-			Map map= new HashMap();
-			map.put("id", daoshuju[0]);
-			map.put("text", daoshuju[1]);
-			daoshujuslist.add(map);
+			if(daoshuju[1].contains(searchstr)){
+				Map map= new HashMap();
+				map.put("id", daoshuju[0]);
+				map.put("text", daoshuju[1]);
+				daoshujuslist.add(map);
+			}
+			
 		}
+		daoshujuslist.addAll(modulelist);
 		
-		String sql = "select serverid as id,servername as text from serverip order by servername asc";
-		List serveriplist=jdbcTemplate.queryForList(sql);
+		sql = "select serverid as id,servername as text from serverip where servername like ? order by servername asc";
+		List serveriplist=jdbcTemplate.queryForList(sql,new Object[]{"%"+searchstr+"%"});
 		
+		sql = "select databaseid as id,name as text from sys_database where name like ? order by name asc";
+		List database=jdbcTemplate.queryForList(sql,new Object[]{"%"+searchstr+"%"});
 		
 		Map map= new HashMap();
+		map.put("projectlist", projectlist);
+		map.put("teamlist", teamlist);
 		map.put("jsontyles", jsontypeslist);
 		map.put("jsonversions", jsonversionslist);
 		map.put("anlitypes", anlitypeslist);
 		map.put("daoshujus", daoshujuslist);
 		map.put("serverips", serveriplist);
+		map.put("modules", modulelist);
+		map.put("database", database);
 		list.add(map);
 		return list;
 	}

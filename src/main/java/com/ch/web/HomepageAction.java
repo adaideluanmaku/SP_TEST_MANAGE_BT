@@ -99,6 +99,21 @@ public class HomepageAction {
 		return new ModelAndView("works/works_graph");
 	}
 	
+	@RequestMapping("/works_jihuaguanli")
+	public ModelAndView works_jihuaguanli(){
+		return new ModelAndView("works/works_jihuaguanli");
+	}
+	
+	@RequestMapping("/works_zhouhuibao")
+	public ModelAndView works_zhouhuibao(){
+		return new ModelAndView("works/works_zhouhuibao");
+	}
+	
+	@RequestMapping("/works_yuehuibao")
+	public ModelAndView works_yuehuibao(){
+		return new ModelAndView("works/works_yuehuibao");
+	}
+	
 	//系统设置
 	@RequestMapping("/sysmanage_serverip")
 	public ModelAndView sysmanage_serverip(){
@@ -108,5 +123,10 @@ public class HomepageAction {
 	@RequestMapping("/sysmanage_users")
 	public ModelAndView sysmanage_users(){
 		return new ModelAndView("sysmanage/users");
+	}
+	
+	@RequestMapping("/sysmanage_database")
+	public ModelAndView sysmanage_database(){
+		return new ModelAndView("sysmanage/database");
 	}
 }

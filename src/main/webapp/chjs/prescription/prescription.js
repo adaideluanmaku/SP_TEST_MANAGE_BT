@@ -116,17 +116,6 @@ var TableInit =function () {
 				field : 'select',
 				checkbox : true,
 			} , {
-				field : 'patientname',
-				title : '病人名称',
-				width : 100,
-				align : 'center'
-				
-			}, {
-				field : 'prescription_json',
-				title : '处方数据',
-				width : 500,
-				align : 'center',
-			}, {
 				field : '',
 				title : '操作',
 				width : 50,
@@ -138,15 +127,21 @@ var TableInit =function () {
 					
                     return '<a href="'+addurl+'/prescription/prescription_edit?prescriptiontype=1&pre_id='+row.pre_id+'&patientname='+row.patientname+'" target="_blank">打开</a>';
 				}
+			}, {
+				field : 'patientname',
+				title : '病人名称',
+				width : 100,
+				align : 'center'
+				
+			}, {
+				field : 'prescription_json',
+				title : '处方数据',
+				width : 500,
+				align : 'center',
 			}],
-			
-			// 1.点击每行进行函数的触发
-			onDblClickRow : function(row, $element ,field){
-//				alert(row);
-			},
-			
 			// 1.点击每行进行函数的触发
 			onClickRow : function(row, tr,flied){
+				$('#table_data').bootstrapTable('uncheckAll');//取消选中所有行
 			},
 
 			// 2. 点击前面的复选框进行对应的操作
@@ -181,6 +176,8 @@ function open_prescription_dialog(){
 	$("#prescription_dialog_form").data('bootstrapValidator').destroy();
     $('#prescription_dialog_form').data('bootstrapValidator', null);
     all_form_validator();
+    
+    $('#prescription_dialog #patientname').attr("readonly",false);
     
 	$('#prescription_dialog button').show();
 	$('#prescription_dialog #btn_update').hide();
@@ -220,6 +217,15 @@ function add_prescription_data(){
 }
 
 function del_prescription_data(){
+	var Selections = $('#table_data').bootstrapTable('getSelections');
+	if(Selections.length < 1){
+		swal({
+            title: "警告",
+            text: "请至少选择一条数据进行操作."
+        });
+		return;
+	}
+	
 	swal({
         title: "Are you sure?",
         text: "You will not be able to recover this imaginary file!",
@@ -231,7 +237,7 @@ function del_prescription_data(){
     }, function () {
     	var queryaddress=addurl+'/prescription/query';
     	var deladdress=addurl+'/prescription/del';
-    	var Selections = $('#table_data').bootstrapTable('getSelections');
+    	
     	var pre_ids=new Array();
     	for(var i=0;i<Selections.length;i++){
     		pre_ids.push(Selections[i].pre_id);
@@ -262,6 +268,7 @@ function del_prescription_data(){
 function edit_prescription_dialog(){
 	$('#prescription_dialog button').show();
 	$('#prescription_dialog #btn_add').hide();
+	$('#prescription_dialog #patientname').attr("readonly",true);
 	
 	var IdSelections = $('#table_data').bootstrapTable('getSelections');
 	if(IdSelections.length != 1){

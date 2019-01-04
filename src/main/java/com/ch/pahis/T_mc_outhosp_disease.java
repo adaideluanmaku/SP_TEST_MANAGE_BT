@@ -14,22 +14,38 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
+
+import com.ch.dao.DataBaseType;
+import com.ch.dao.SpringJdbc_oracle_his;
+import com.ch.dao.SpringJdbc_sqlserver_his;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 @Service
 public class T_mc_outhosp_disease {
+	private static Logger log = Logger.getLogger(T_mc_outhosp_disease.class);
+	JdbcTemplate jdbcTemplate_dataBase=null;
 	@Autowired
-	JdbcTemplate jdbcTemplate_oracle;
+	DataBaseType dataBaseType;
 	
 	@Autowired
 	Sys_pa sys_pa;
-	public void outhosp_disease(int trunca, int count, int sum_date,List anlilist,String hiscode,String ienddate){
+	@Value("${data.insertdatacount}")
+    private String insertdatacount;
+	public void outhosp_disease(int trunca, int count, int sum_date,List anlilist,String hiscode,
+			String ienddate, int database1){
+		jdbcTemplate_dataBase=dataBaseType.getJdbcTemplate(database1);
+		if(jdbcTemplate_dataBase==null){
+			log.info("数据库连接失败");
+			return;
+		}
 		try {
 			String sql=null;
 			List listbatch=new ArrayList();
@@ -41,6 +57,11 @@ public class T_mc_outhosp_disease {
 //			int b=0;
 			int iid=0;
 			String ienddate1=ienddate;
+			JSONObject json=null;
+			JSONObject PassClient=null;
+			JSONObject Patient=null;
+			JSONObject ScreenMedCondList=null;
+			JSONArray ScreenMedConds=null;
 			for(int i=0;i<count;i++){
 				//数据分割，增加时间
 				if(i%(count/sum_date)==0 && i>0){
@@ -48,11 +69,11 @@ public class T_mc_outhosp_disease {
 				}
 				for(int j=0;j<anlilist.size();j++){
 					iid=iid+1;
-					JSONObject json=JSONObject.fromObject(anlilist.get(j));
-					JSONObject PassClient=json.getJSONObject("PassClient");
-					JSONObject Patient=json.getJSONObject("Patient");
-					JSONObject ScreenMedCondList=json.getJSONObject("ScreenMedCondList");
-					JSONArray ScreenMedConds=ScreenMedCondList.getJSONArray("ScreenMedConds");
+					json=JSONObject.fromObject(anlilist.get(j));
+					PassClient=json.getJSONObject("PassClient");
+					Patient=json.getJSONObject("Patient");
+					ScreenMedCondList=json.getJSONObject("ScreenMedCondList");
+					ScreenMedConds=ScreenMedCondList.getJSONArray("ScreenMedConds");
 					Patient.put("PatCode", hiscode+ienddate1+i+"_"+j+"_cy");
 //					Patient.put("InHospNo",hiscode+ienddate1+i+"_"+j);
 					Patient.put("InHospNo",hiscode+"_出院_"+Patient.getString("InHospNo"));
@@ -64,9 +85,6 @@ public class T_mc_outhosp_disease {
 							continue;
 						}
 						a=a+1;
-						if(a%2000==0){
-							System.out.println("t_mc_outhosp_disease --"+a);
-						}
 						
 						Map map=new HashMap();
 						map.put("ScreenMedCond", ScreenMedCond);
@@ -77,8 +95,9 @@ public class T_mc_outhosp_disease {
 						map.put("iid", iid);
 						listbatch.add(map);
 						
-						if(a%500==0){
+						if(a%Integer.parseInt(insertdatacount)==0){
 							batchInsertRows(sql,listbatch);
+							log.info("======>t_mc_outhosp_disease :"+a);
 							listbatch.clear();
 						} 
 						
@@ -104,10 +123,10 @@ public class T_mc_outhosp_disease {
 				batchInsertRows(sql,listbatch);
 				listbatch.clear();
 			}
-			System.out.println("t_mc_outhosp_disease总数："+a+"-->有效数据："+a);
+			log.info("======>t_mc_outhosp_disease 总数  ："+a+"-->有效数据："+a);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			System.out.println("t_mc_outhosp_disease制造数据异常");
+			log.debug("调试==>t_mc_outhosp_disease 制造数据异常 ："+e);
 		}
 	}
 	
@@ -133,8 +152,8 @@ public class T_mc_outhosp_disease {
 					pst.setInt(9,1);//is_main
 					pst.setString(10,caseid);//caseid]
 				}catch (Exception e){
-					System.out.println("出现异常的数据:"+map);
-					System.out.println(e);
+					log.debug("调试==>t_mc_outhosp_disease 插表异常 ："+map);
+					log.debug("调试==>"+e);
 				}
 			}
 			@Override
@@ -143,6 +162,6 @@ public class T_mc_outhosp_disease {
 				return listbatch.size();
 			}
 		};
-		jdbcTemplate_oracle.batchUpdate(sql, setter);
+		jdbcTemplate_dataBase.batchUpdate(sql, setter);
 	}
 }

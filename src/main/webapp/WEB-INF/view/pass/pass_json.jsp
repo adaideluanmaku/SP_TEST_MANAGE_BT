@@ -67,7 +67,7 @@
 	<div class="row">
 		<div class="col-sm-6">
 			<div class="panel panel-default">
-			    <div class="panel-heading">win审查结果</div>
+			    <div class="panel-heading">预期审查结果</div>
 			    <div class="panel-body">
 			    	<div class="row" style="margin-bottom:15px" id="_win">
 			    		<div class="col-sm-2">
@@ -88,7 +88,7 @@
 		</div>
 		<div class="col-sm-6">
 			<div class="panel panel-default">
-			    <div class="panel-heading">java审查结果</div>
+			    <div class="panel-heading">实际审查结果</div>
 			    <div class="panel-body">
 			    	<div class="row" style="margin-bottom:15px" id="_java">
 			    		<div class="col-sm-2">
@@ -125,7 +125,7 @@
 						<div class="col-sm-3">
 		    				<div class="form-group">
 					            <label for="jsonversion" class="col-sm-5 control-label" style="padding-top:7px">JSON版本类型</label>
-					            <div class="col-sm-4">
+					            <div class="col-sm-5">
 					            	<select id='jsonversion' name="jsonversion" class="js-example-responsive" style="width:100%"></select>
 					            </div>
 					        </div>

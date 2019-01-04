@@ -14,11 +14,16 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import com.ch.dao.DataBaseType;
+import com.ch.dao.SpringJdbc_oracle_his;
+import com.ch.dao.SpringJdbc_sqlserver_his;
 import com.ch.sysuntils.Strisnull;
 
 import net.sf.json.JSONArray;
@@ -26,20 +31,28 @@ import net.sf.json.JSONObject;
 
 @Service
 public class T_mc_clinic_cost {
-	@Autowired
-	JdbcTemplate jdbcTemplate_oracle;
+	private static Logger log = Logger.getLogger(T_mc_clinic_cost.class);
 	@Autowired
 	JdbcTemplate jdbcTemplate;
+	
+	JdbcTemplate jdbcTemplate_dataBase=null;
+	@Autowired
+	DataBaseType dataBaseType;
 	
 	@Autowired
 	Sys_pa sys_pa;
 	
 	@Autowired
 	Strisnull strisnull;
-	
+	@Value("${data.insertdatacount}")
+    private String insertdatacount;
 	public void clinic_cost(int trunca, int count, int sum_date,List anlilist,String hiscode,String ienddate,
-			String costtime){
-		
+			String costtime,int database1){
+		jdbcTemplate_dataBase=dataBaseType.getJdbcTemplate(database1);
+		if(jdbcTemplate_dataBase==null){
+			log.info("数据库连接失败");
+			return;
+		}
 		try {
 			List list=null;
 			List prescnolist=new ArrayList();
@@ -56,6 +69,21 @@ public class T_mc_clinic_cost {
 			int iid=0;
 			String ienddate1=ienddate;
 			String costtime1=costtime;
+			JSONObject json=null;
+			JSONObject PassClient=null;
+			JSONObject Patient=null;
+			JSONObject ScreenDrugList=null;
+			JSONArray ScreenDrugs=null;
+			String caseid=null;
+			int IsTestEtiology=0;
+			JSONObject ScreenDrug=null;
+			String itemcode="";
+			String itemname="";
+			
+			String sql1="select CONCAT(b.hiscode_user,',',a.is_byx) as hii,a.itemcode,a.itemname from mc_dict_costitem a ,mc_hospital_match_relation b where "
+					+ "a.match_scheme=b.costitemmatch_scheme order by a.itemcode asc";
+			List list_byx=jdbcTemplate.queryForList(sql1);
+			
 			for(int i=0;i<count;i++){
 				//数据分割，增加时间
 				if(i%(count/sum_date)==0 && i>0){
@@ -68,35 +96,45 @@ public class T_mc_clinic_cost {
 //						System.out.println("t_mc_clinic_cost 非药--"+a);
 //					}
 					iid=iid+1;
-					JSONObject json=JSONObject.fromObject(anlilist.get(j));
-					JSONObject PassClient=json.getJSONObject("PassClient");
-					JSONObject Patient=json.getJSONObject("Patient");
-					JSONObject ScreenDrugList=json.getJSONObject("ScreenDrugList");
-					JSONArray ScreenDrugs=ScreenDrugList.getJSONArray("ScreenDrugs");
+					json=JSONObject.fromObject(anlilist.get(j));
+					PassClient=json.getJSONObject("PassClient");
+					Patient=json.getJSONObject("Patient");
+					ScreenDrugList=json.getJSONObject("ScreenDrugList");
+					ScreenDrugs=ScreenDrugList.getJSONArray("ScreenDrugs");
 					Patient.put("PatCode", hiscode+ienddate1+i+"_"+j+"_mz");
 //					Patient.put("InHospNo",hiscode+ienddate1+i+"_"+j);
 					Patient.put("InHospNo",hiscode+"_门诊_"+Patient.getString("InHospNo"));
 					//门诊caseid：Mz门诊号+“＿”＋病人编号
-					String caseid="Mz"+Patient.getString("PatCode");
+					caseid="Mz"+Patient.getString("PatCode");
 				
 					//病原学检测
-					String itemcode=null;
-					String itemname=null;
-					List list_byx=null;
-					int IsTestEtiology=0;
+					itemcode="";
+					itemname="";
+//					list_byx=null;
+					IsTestEtiology=0;
 					if(Integer.parseInt(Patient.get("IsTestEtiology").toString())==1){
 						IsTestEtiology=3;
 					}
-					String sql1="select a.itemcode,a.itemname from mc_dict_costitem a ,mc_hospital_match_relation b where "
-							+ "a.match_scheme=b.costitemmatch_scheme and a.is_byx=? and b.hiscode_user=? order by a.itemcode asc";
-					list_byx=jdbcTemplate.queryForList(sql1,new Object[]{IsTestEtiology,hiscode});
-					Map byx=(Map)list_byx.get(0);
-					itemcode=byx.get("itemcode").toString();
-					itemname=byx.get("itemname").toString();
+//					sql1="select a.itemcode,a.itemname from mc_dict_costitem a ,mc_hospital_match_relation b where "
+//							+ "a.match_scheme=b.costitemmatch_scheme and a.is_byx=? and b.hiscode_user=? order by a.itemcode asc";
+//					list_byx=jdbcTemplate.queryForList(sql1,new Object[]{IsTestEtiology,hiscode});
+//					if(list_byx.size()>0){
+//						Map byx=(Map)list_byx.get(0);
+//						itemcode=byx.get("itemcode").toString();
+//						itemname=byx.get("itemname").toString();
+//					}
+					for(int k=0;k<list_byx.size();k++){
+						Map byx=(Map)list_byx.get(k);
+						if(byx.get("hii").toString().equals(hiscode+","+IsTestEtiology)){
+							itemcode=byx.get("itemcode").toString();
+							itemname=byx.get("itemname").toString();
+							break;
+						}
+					}
 					
 					//得到一个病人的所有的处方号，来制作非药品
 					for(int k=0;k<ScreenDrugs.size();k++){
-						JSONObject ScreenDrug=ScreenDrugs.getJSONObject(k);
+						ScreenDrug=ScreenDrugs.getJSONObject(k);
 						if(prescnolist.size()>0){
 							boolean rig=false;
 							for(int k1=0;k1<prescnolist.size();k1++){
@@ -116,9 +154,6 @@ public class T_mc_clinic_cost {
 					if(prescnolist.size()>0){
 						for(int k1=0;k1<prescnolist.size();k1++){
 							a=a+1;
-							if(a%2000==0){
-								System.out.println("t_mc_clinic_cost 非药--"+a);
-							}
 							String prescnostr=prescnolist.get(k1).toString();
 							Map map=new HashMap();
 							map.put("iid", iid);
@@ -131,8 +166,9 @@ public class T_mc_clinic_cost {
 							map.put("itemname",itemname);
 							listbatch.add(map);
 							
-							if(a%500==0){
+							if(a%Integer.parseInt(insertdatacount)==0){
 								batchInsertRows(sql,listbatch);
+								log.info("======>t_mc_clinic_cost 非药:"+a);
 								listbatch.clear();
 							}
 							
@@ -162,7 +198,7 @@ public class T_mc_clinic_cost {
 				batchInsertRows(sql,listbatch);
 				listbatch.clear();
 			}
-			System.out.println("t_mc_clinic_cost 非药总数："+a+"-->有效数据："+a);
+			log.info("======>t_mc_clinic_cost 非药总数："+a+"-->有效数据："+a);
 			
 			//-------插入药品费用
 			sql="insert into t_mc_clinic_cost (doctorname, clinicno, iid, itemcode, is_use, drugform, pharmacists, "
@@ -174,6 +210,18 @@ public class T_mc_clinic_cost {
 			iid=0;
 			costtime1=costtime;
 			ienddate1=ienddate;
+			String drugspec="";
+			String drugform="";
+			String comp_name="";
+			String doseunit="";
+			String drugcode="";
+			String drugname="";
+			String hdd="";
+			sql1="select CONCAT(b.hiscode_user,',',a.drug_unique_code,',',a.doseunit) as hdd ,a.drugname,a.drugcode, "
+					+ "a.drugspec,a.drugform,a.comp_name,a.doseunit from mc_dict_drug_pass a, "
+					+ "mc_hospital_match_relation b where  a.match_scheme= b.drugmatch_scheme " ;
+			List list_drug_pass=jdbcTemplate.queryForList(sql1);
+			
 			for(int i=0;i<count;i++){
 				//数据分割，增加时间
 				if(i%(count/sum_date)==0 && i>0){
@@ -182,65 +230,63 @@ public class T_mc_clinic_cost {
 				}
 				for(int j=0;j<anlilist.size();j++){
 					iid=iid+1;
-					JSONObject json=JSONObject.fromObject(anlilist.get(j));
-					JSONObject PassClient=json.getJSONObject("PassClient");
-					JSONObject Patient=json.getJSONObject("Patient");
-					JSONObject ScreenDrugList=json.getJSONObject("ScreenDrugList");
-					JSONArray ScreenDrugs=ScreenDrugList.getJSONArray("ScreenDrugs");
+					json=JSONObject.fromObject(anlilist.get(j));
+					PassClient=json.getJSONObject("PassClient");
+					Patient=json.getJSONObject("Patient");
+					ScreenDrugList=json.getJSONObject("ScreenDrugList");
+					ScreenDrugs=ScreenDrugList.getJSONArray("ScreenDrugs");
 					Patient.put("PatCode", hiscode+ienddate1+i+"_"+j+"_mz");
 //					Patient.put("InHospNo",hiscode+ienddate1+i+"_"+j);
 					Patient.put("InHospNo",hiscode+"_门诊_"+Patient.getString("InHospNo"));
 					
 					//门诊caseid：Mz门诊号+“＿”＋病人编号
-					String caseid="Mz"+Patient.getString("PatCode");
+					caseid="Mz"+Patient.getString("PatCode");
 					for(int k=0;k<ScreenDrugs.size();k++){
 						//字典表找数据
-						JSONObject ScreenDrug=ScreenDrugs.getJSONObject(k);
-						String sql1="select drugname,drugcode,drugspec,drugform,comp_name,doseunit from "
-								+ "mc_dict_drug_pass where drug_unique_code=? and match_scheme= "
-								+ "(select drugmatch_scheme from mc_hospital_match_relation where  hiscode_user=? ) "
-								+ "and doseunit=?";
-						List list_drug_pass=jdbcTemplate.queryForList(sql1,new Object[]{
-								ScreenDrug.getString("DrugUniqueCode"),hiscode,ScreenDrug.getString("DoseUnit")});
-						String drugspec="";
-						String drugform="";
-						String comp_name="";
-						String doseunit="";
-						String drugcode="";
-						String drugname="";
+						ScreenDrug=ScreenDrugs.getJSONObject(k);
+						hdd=hiscode+","+ScreenDrug.getString("DrugUniqueCode")+","+ScreenDrug.getString("DoseUnit");
+//						sql1="select b.hiscode_user,a.drugname,a.drugcode,a.drugspec,a.drugform,a.comp_name,a.doseunit from " + 
+//								"mc_dict_drug_pass a,mc_hospital_match_relation b where  a.match_scheme= b.drugmatch_scheme " + 
+//								"and a.drug_unique_code=? and b.hiscode_user=? and a.doseunit=? ";
+//						List list_drug_pass=jdbcTemplate.queryForList(sql1,new Object[]{
+//								ScreenDrug.getString("DrugUniqueCode"),hiscode,ScreenDrug.getString("DoseUnit")});
+						drugspec="";
+						drugform="";
+						comp_name="";
+						doseunit="";
+						drugcode="";
+						drugname="";
 						for(int k1=0;k1<list_drug_pass.size();k1++){
 							if(StringUtils.isNotBlank(drugcode)){
 								break;
 							}
 							Map map=(Map)list_drug_pass.get(k1);
-							if(map.get("drugname")!=null){
-								drugname=map.get("drugname").toString();
-							}
-							if(map.get("drugcode")!=null){
-								drugcode=map.get("drugcode").toString();
-							}
-							if(map.get("drugspec")!=null){
-								drugspec=map.get("drugspec").toString();
-							}
-							if(map.get("drugform")!=null){
-								drugform=map.get("drugform").toString();
-							}
-							if(map.get("comp_name")!=null){
-								comp_name=map.get("comp_name").toString();
-							}
-							if(map.get("doseunit")!=null){
-								doseunit=map.get("doseunit").toString();
+							if(map.get("hdd").equals(hdd)){
+								if(map.get("drugname")!=null){
+									drugname=map.get("drugname").toString();
+								}
+								if(map.get("drugcode")!=null){
+									drugcode=map.get("drugcode").toString();
+								}
+								if(map.get("drugspec")!=null){
+									drugspec=map.get("drugspec").toString();
+								}
+								if(map.get("drugform")!=null){
+									drugform=map.get("drugform").toString();
+								}
+								if(map.get("comp_name")!=null){
+									comp_name=map.get("comp_name").toString();
+								}
+								if(map.get("doseunit")!=null){
+									doseunit=map.get("doseunit").toString();
+								}
 							}
 						}
 						if(StringUtils.isBlank(drugcode)){
-							System.out.println("未找到字典表药品数据,病人姓名："+Patient.get("Name"));
+							log.info("======>未找到字典表药品数据,病人姓名：:"+Patient.get("Name"));
 							continue;
 						}
 						a=a+1;
-						if(a%2000==0){
-							System.out.println("t_mc_clinic_cost 药品--"+a);
-						}
-						
 						
 						Map map=new HashMap();
 						map.put("drugname", drugname);
@@ -257,8 +303,9 @@ public class T_mc_clinic_cost {
 						map.put("PassClient", PassClient);
 						listbatch.add(map);
 						
-						if(a%500==0){
+						if(a%Integer.parseInt(insertdatacount)==0){
 							batchInsertRows1(sql,listbatch);
+							log.info("======>t_mc_clinic_cost 药品:"+a);
 							listbatch.clear();
 						} 
 //						if(a-50000>=0){
@@ -284,10 +331,10 @@ public class T_mc_clinic_cost {
 				batchInsertRows1(sql,listbatch);
 				listbatch.clear();
 			}
-			System.out.println("t_mc_clinic_cost 药品总数："+a+"-->有效数据："+a);
+			log.info("======>t_mc_clinic_cost 药品总数："+a+"-->有效数据："+a);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			System.out.println("t_mc_clinic_cost制造数据异常"+e);
+			log.debug("调试==>t_mc_clinic_cost制造数据异常："+e);
 		}
 	}
 	
@@ -302,8 +349,8 @@ public class T_mc_clinic_cost {
 				String caseid=map.get("caseid").toString();
 				String costtime1=map.get("costtime1").toString();
 				String prescnostr=map.get("prescnostr").toString();
-				String itemcode=map.get("itemcode").toString();
-				String itemname=map.get("itemname").toString();
+				String itemcode=strisnull.isnull(map.get("itemcode"));
+				String itemname=strisnull.isnull(map.get("itemname"));
 				try{
 					pst.setString(1,Patient.getString("DoctorName"));
 					pst.setString(2,Patient.getString("InHospNo"));//门诊/住院号
@@ -337,8 +384,8 @@ public class T_mc_clinic_cost {
 					pst.setString(26,"");//itemunit
 					pst.setInt(27,3);//costtype
 				}catch (Exception e){
-					System.out.println("T_mc_clinic_cost出现异常的数据:"+map);
-					System.out.println(e);
+					log.debug("调试==>t_mc_clinic_cost插表异常："+map);
+					log.debug("调试==>"+e);
 				}
 			}
 			@Override
@@ -347,7 +394,8 @@ public class T_mc_clinic_cost {
 				return listbatch.size();
 			}
 		};
-		jdbcTemplate_oracle.batchUpdate(sql, setter);
+		jdbcTemplate_dataBase.batchUpdate(sql, setter);
+		
 	}
 	
 	public void batchInsertRows1(String sql, final List listbatch) throws Exception {
@@ -410,8 +458,8 @@ public class T_mc_clinic_cost {
 					pst.setString(26,doseunit);//itemunit
 					pst.setInt(27,1);//costtype
 				}catch (Exception e){
-					System.out.println("T_mc_clinic_cost出现异常的数据:"+map);
-					System.out.println(e);
+					log.debug("调试==>t_mc_clinic_cost插表异常："+map);
+					log.debug("调试==>"+e);
 				}
 			}
 			@Override
@@ -420,7 +468,7 @@ public class T_mc_clinic_cost {
 				return listbatch.size();
 			}
 		};
-		jdbcTemplate_oracle.batchUpdate(sql, setter);
+		jdbcTemplate_dataBase.batchUpdate(sql, setter);
 	}
 	
 }

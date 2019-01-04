@@ -132,7 +132,7 @@
 			        </div>
 					<div class="form-group">
 						<label for="projectname" class="col-sm-2 control-label">项目名称</label>
-						<div class="col-sm-4">
+						<div class="col-sm-6">
 							<input type="text" class="form-control" id="projectname"  name="projectname">
 						</div>
 					</div>

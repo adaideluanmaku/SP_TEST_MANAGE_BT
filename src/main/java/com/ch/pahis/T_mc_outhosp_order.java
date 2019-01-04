@@ -15,26 +15,44 @@ import java.util.Map;
 import java.util.Random;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
+
+import com.ch.dao.DataBaseType;
+import com.ch.dao.SpringJdbc_oracle_his;
+import com.ch.dao.SpringJdbc_sqlserver_his;
+import com.ch.sysuntils.Strisnull;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 @Service
 public class T_mc_outhosp_order {
-	@Autowired
-	JdbcTemplate jdbcTemplate_oracle;
+	private static Logger log = Logger.getLogger(T_mc_outhosp_order.class);
 	@Autowired
 	JdbcTemplate jdbcTemplate;
+	JdbcTemplate jdbcTemplate_dataBase=null;
+	@Autowired
+	DataBaseType dataBaseType;
 	
 	@Autowired
+	Strisnull strisnull;
+	@Autowired
 	Sys_pa sys_pa;
-	public int outhosp_order(int cidin,int trunca, int count, int sum_date,List anlilist,String hiscode,String ienddate,
-			String startdate){
-		int cid=cidin;
+	@Value("${data.insertdatacount}")
+    private String insertdatacount;
+	public void outhosp_order(int trunca, int count, int sum_date,List anlilist,String hiscode,String ienddate,
+			String startdate,int database1){
+		jdbcTemplate_dataBase=dataBaseType.getJdbcTemplate(database1);
+		if(jdbcTemplate_dataBase==null){
+			log.info("数据库连接失败");
+			return;
+		}
+//		int cid=cidin;
 		try {
 			String sql=null;
 			List listbatch=new ArrayList();
@@ -50,51 +68,69 @@ public class T_mc_outhosp_order {
 			int a=0;
 //			int b=0;
 			int iid=0;
-//			int cid=0;
+			String cid="";
+			int cidno=0;
 			String ienddate1=ienddate;
 			String startdate1=startdate;
+			JSONObject json=null;
+			JSONObject PassClient=null;
+			JSONObject Patient=null;
+			JSONObject ScreenDrugList=null;
+			JSONArray ScreenDrugs=null;
+			String caseid=null;
+			int IsTestEtiology=0;
+			JSONObject ScreenDrug=null;
+			String costtime1="";
+			String itemcode="";
+			String itemname="";
+			
+			String sql1="select CONCAT(b.hiscode_user,',',a.is_byx,',',a.itemcode) as hii,a.itemname from mc_dict_costitem a ,mc_hospital_match_relation b where "
+					+ "a.match_scheme=b.costitemmatch_scheme order by a.itemcode asc";
+			List list_byx=jdbcTemplate.queryForList(sql1);
 			for(int i=0;i<count;i++){
 				//数据分割，增加时间
 				if(i%(count/sum_date)==0 && i>0){
 					ienddate1=sys_pa.date1(ienddate1, "yyyyMMdd");
-					startdate1=sys_pa.date2(startdate, "yyyy-MM-dd HH:mm:ss",i,sum_date);
+					startdate1=sys_pa.date2(startdate1, "yyyy-MM-dd HH:mm:ss",i,sum_date);
 				}
+				cid=hiscode+"_cy_"+"0"+ienddate1;
 				for(int j=0;j<anlilist.size();j++){
 					iid=iid+1;
-					JSONObject json=JSONObject.fromObject(anlilist.get(j));
-					JSONObject PassClient=json.getJSONObject("PassClient");
-					JSONObject Patient=json.getJSONObject("Patient");
-					JSONObject ScreenDrugList=json.getJSONObject("ScreenDrugList");
-					JSONArray ScreenDrugs=ScreenDrugList.getJSONArray("ScreenDrugs");
+					json=JSONObject.fromObject(anlilist.get(j));
+					PassClient=json.getJSONObject("PassClient");
+					Patient=json.getJSONObject("Patient");
+					ScreenDrugList=json.getJSONObject("ScreenDrugList");
+					ScreenDrugs=ScreenDrugList.getJSONArray("ScreenDrugs");
 					Patient.put("PatCode", hiscode+ienddate1+i+"_"+j+"_cy");
 //					Patient.put("InHospNo",hiscode+ienddate1+i+"_"+j);
 					Patient.put("InHospNo",hiscode+"_出院_"+Patient.getString("InHospNo"));
 					//门诊caseid：Mz门诊号+“＿”＋病人编号
-					String caseid="Cy"+Patient.getString("PatCode");
+					caseid="Cy"+Patient.getString("PatCode");
 					
 					//设置数据时间偏移量
-					String costtime1="";
+					costtime1="";
 					//设置非药开出时间为出院前7天
 					costtime1 = sys_pa.date4(startdate1.substring(0,10), "yyyy-MM-dd", -7)+" "+startdate1.substring(11, 19);
 					
 					//病原学检测
-					String itemcode=null;
-					String itemname=null;
-					List list_byx=null;
-					int IsTestEtiology=0;
+					itemcode="";
+					itemname="";
+					IsTestEtiology=0;
 					if(Integer.parseInt(Patient.get("IsTestEtiology").toString())==1){
 						IsTestEtiology=3;
 					}
-					String sql1="select a.itemcode,a.itemname from mc_dict_costitem a ,mc_hospital_match_relation b where "
-							+ "a.match_scheme=b.costitemmatch_scheme and a.is_byx=? and b.hiscode_user=? order by a.itemcode asc";
-					list_byx=jdbcTemplate.queryForList(sql1,new Object[]{IsTestEtiology,hiscode});
-					Map byx=(Map)list_byx.get(0);
-					itemcode=byx.get("itemcode").toString();
-					itemname=byx.get("itemname").toString();
+					for(int k=0;k<list_byx.size();k++){
+						Map byx=(Map)list_byx.get(k);
+						if(byx.get("hii").toString().contains(hiscode+","+IsTestEtiology)){
+							itemcode=byx.get("hii").toString().split(",")[2];
+							itemname=byx.get("itemname").toString();
+							break;
+						}
+					}
 					
 					//得到一个病人的所有的处方号，来制作非药品
 					for(int k=0;k<ScreenDrugs.size();k++){
-						JSONObject ScreenDrug=ScreenDrugs.getJSONObject(k);
+						ScreenDrug=ScreenDrugs.getJSONObject(k);
 						if(prescnolist.size()>0){
 							boolean rig=false;
 							for(int k1=0;k1<prescnolist.size();k1++){
@@ -113,15 +149,13 @@ public class T_mc_outhosp_order {
 					
 					if(prescnolist.size()>0){
 						for(int k1=0;k1<prescnolist.size();k1++){
-							cid=cid+1;
+//							cid=cid+1;
+							cidno=cidno+1;
 							a=a+1;
-							if(a%2000==0){
-								System.out.println("t_mc_inhosp_order 非药--"+a);
-							}
 							String prescnostr=prescnolist.get(k1).toString();
 							Map map=new HashMap();
 							map.put("iid", iid);
-							map.put("cid",cid);
+							map.put("cid",cid+cidno);
 							map.put("Patient", Patient);
 							map.put("HospID", PassClient.getString("HospID"));
 							map.put("costtime1", costtime1);
@@ -131,8 +165,9 @@ public class T_mc_outhosp_order {
 							map.put("itemname",itemname);
 							listbatch.add(map);
 							
-							if(a%500==0){
+							if(a%Integer.parseInt(insertdatacount)==0){
 								batchInsertRows(sql,listbatch);
+								log.info("======>t_mc_inhosp_order 非药 :"+a);
 								listbatch.clear();
 							}
 							
@@ -147,7 +182,7 @@ public class T_mc_outhosp_order {
 				batchInsertRows(sql,listbatch);
 				listbatch.clear();
 			}
-			System.out.println("t_mc_outhosp_order非药总数："+a+"-->有效数据："+a);
+			log.info("======>t_mc_inhosp_order 非药总数  ："+a+"-->有效数据："+a);
 			
 			//插入药品数据
 			sql="insert into t_mc_outhosp_order (grouptag, orderstatus, doctorname, is_temp, remark, pa_enddatetime, "
@@ -162,34 +197,52 @@ public class T_mc_outhosp_order {
 //			cid=0;
 			ienddate1=ienddate;
 			startdate1=startdate;
+			String starttimeaa="";
+			String starttimebb="";
+			int timesum=0;
+			String starttime=null;
+			String endTime=null;
+			String executeTime=null;
+			String drugspec="";
+			String drugform="";
+			String comp_name="";
+			String doseunit="";
+			String drugcode="";
+			String hdd=
+			//字典表找数据
+			sql1="select CONCAT(b.hiscode_user,',',a.drug_unique_code,',',a.doseunit) as hdd ,a.drugname,a.drugcode, "
+					+ "a.drugspec,a.drugform,a.comp_name,a.doseunit from mc_dict_drug_pass a, "
+					+ "mc_hospital_match_relation b where  a.match_scheme= b.drugmatch_scheme " ;
+			List list_drug_pass=jdbcTemplate.queryForList(sql1);
 			for(int i=0;i<count;i++){
 				//数据分割，增加时间
 				if(i%(count/sum_date)==0 && i>0){
 					ienddate1=sys_pa.date1(ienddate1, "yyyyMMdd");
-					startdate1=sys_pa.date2(startdate, "yyyy-MM-dd HH:mm:ss",i,sum_date);
+					startdate1=sys_pa.date2(startdate1, "yyyy-MM-dd HH:mm:ss",i,sum_date);
 				}
+				cid=hiscode+"_cy_"+"1"+ienddate1;
 				for(int j=0;j<anlilist.size();j++){
 					iid=iid+1;
-					JSONObject json=JSONObject.fromObject(anlilist.get(j));
-					JSONObject PassClient=json.getJSONObject("PassClient");
-					JSONObject Patient=json.getJSONObject("Patient");
-					JSONObject ScreenDrugList=json.getJSONObject("ScreenDrugList");
-					JSONArray ScreenDrugs=ScreenDrugList.getJSONArray("ScreenDrugs");
+					json=JSONObject.fromObject(anlilist.get(j));
+					PassClient=json.getJSONObject("PassClient");
+					Patient=json.getJSONObject("Patient");
+					ScreenDrugList=json.getJSONObject("ScreenDrugList");
+					ScreenDrugs=ScreenDrugList.getJSONArray("ScreenDrugs");
 					Patient.put("PatCode", hiscode+ienddate1+i+"_"+j+"_cy");
 //					Patient.put("InHospNo",hiscode+ienddate1+i+"_"+j);
 					Patient.put("InHospNo",hiscode+"_出院_"+Patient.getString("InHospNo"));
 					//门诊caseid：Mz门诊号+“＿”＋病人编号
-					String caseid="Cy"+Patient.getString("PatCode");
+					caseid="Cy"+Patient.getString("PatCode");
 					
 					//设置数据时间偏移量
-					String starttimeaa="";
-					String starttimebb="";
-					int timesum=0;
+					starttimeaa="";
+					starttimebb="";
+					timesum=0;
 					//设置开药时间为出院前7天
 					starttimeaa = sys_pa.date4(startdate1.substring(0,10), "yyyy-MM-dd", -7);
 					for(int i1=0;i1<ScreenDrugs.size();i1++){
 						//字典表找数据
-						JSONObject ScreenDrug=ScreenDrugs.getJSONObject(i1);
+						ScreenDrug=ScreenDrugs.getJSONObject(i1);
 						if(StringUtils.isBlank(ScreenDrug.getString("StartTime"))){
 							continue;
 						}else{
@@ -203,40 +256,36 @@ public class T_mc_outhosp_order {
 					}
 					
 					for(int k=0;k<ScreenDrugs.size();k++){
-						cid=cid+1;
+						cidno=cidno+1;
 						//字典表找数据
-						JSONObject ScreenDrug=ScreenDrugs.getJSONObject(k);
-						String sql1="select drugname,drugcode,drugspec,drugform,comp_name,doseunit from "
-								+ "mc_dict_drug_pass where drug_unique_code=? and match_scheme= "
-								+ "(select drugmatch_scheme from mc_hospital_match_relation where  hiscode_user=? ) "
-								+ "and doseunit=?";
-						List list_drug_pass=jdbcTemplate.queryForList(sql1,new Object[]{
-								ScreenDrug.getString("DrugUniqueCode"),hiscode,ScreenDrug.getString("DoseUnit")});
-						String drugspec="";
-						String drugform="";
-						String comp_name="";
-						String doseunit="";
-						String drugcode="";
+						ScreenDrug=ScreenDrugs.getJSONObject(k);
+						hdd=hiscode+","+ScreenDrug.getString("DrugUniqueCode")+","+ScreenDrug.getString("DoseUnit");
+						drugspec="";
+						drugform="";
+						comp_name="";
+						doseunit="";
+						drugcode="";
 						for(int k1=0;k1<list_drug_pass.size();k1++){
 							if(StringUtils.isNotBlank(drugcode)){
-//								cid=cid+1;
 								break;
 							}
 							Map map=(Map)list_drug_pass.get(k1);
-							if(map.get("drugspec")!=null){
-								drugspec=map.get("drugspec").toString();
-							}
-							if(map.get("drugform")!=null){
-								drugform=map.get("drugform").toString();
-							}
-							if(map.get("comp_name")!=null){
-								comp_name=map.get("comp_name").toString();
-							}
-							if(map.get("doseunit")!=null){
-								doseunit=map.get("doseunit").toString();
-							}
-							if(map.get("drugcode")!=null){
-								drugcode=map.get("drugcode").toString();
+							if(map.get("hdd").equals(hdd)){
+								if(map.get("drugcode")!=null){
+									drugcode=map.get("drugcode").toString();
+								}
+								if(map.get("drugspec")!=null){
+									drugspec=map.get("drugspec").toString();
+								}
+								if(map.get("drugform")!=null){
+									drugform=map.get("drugform").toString();
+								}
+								if(map.get("comp_name")!=null){
+									comp_name=map.get("comp_name").toString();
+								}
+								if(map.get("doseunit")!=null){
+									doseunit=map.get("doseunit").toString();
+								}
 							}
 						}
 						if(StringUtils.isBlank(drugcode)){
@@ -244,18 +293,15 @@ public class T_mc_outhosp_order {
 							continue;
 						}
 						a=a+1;
-						if(a%2000==0){
-							System.out.println("t_mc_outhosp_order --"+a);
-						}
 						
 						//因为调整了T_mc_outhosp_patient表病人住院时间，所以需要调整病人医嘱时间到出院前7天开药
-						String starttime=ScreenDrug.getString("StartTime");
-						String endTime=ScreenDrug.getString("EndTime");
-						String executeTime=ScreenDrug.getString("ExecuteTime");
+						starttime=ScreenDrug.getString("StartTime");
+						endTime=ScreenDrug.getString("EndTime");
+						executeTime=ScreenDrug.getString("ExecuteTime");
 						
 						if(StringUtils.isNotBlank(starttime)){
 							if(starttime.length()<19){
-								starttime=starttime+" 01:01:01";
+								starttime=starttime.substring(0,10)+" 01:01:01";
 							}
 							
 							//设置开药时间为出院前7天
@@ -266,7 +312,7 @@ public class T_mc_outhosp_order {
 						
 						if(StringUtils.isNotBlank(endTime)){
 							if(endTime.length()<19){
-								endTime=endTime+" 01:01:01";
+								endTime=endTime.substring(0,10)+" 01:01:01";
 							}
 							//结束时间加上固定间隔时间
 							ScreenDrug.put("EndTime", sys_pa.date4(endTime, "yyyy-MM-dd", timesum)+" "+endTime.substring(11, 19));
@@ -274,7 +320,7 @@ public class T_mc_outhosp_order {
 						
 						if(StringUtils.isNotBlank(executeTime)){
 							if(executeTime.length()<19){
-								executeTime=executeTime+" 01:01:01";
+								executeTime=executeTime.substring(0,10)+" 01:01:01";
 							}
 							//执行时间加上固定间隔时间
 							ScreenDrug.put("ExecuteTime", sys_pa.date4(executeTime, "yyyy-MM-dd", timesum)+" "+executeTime.substring(11, 19));
@@ -291,12 +337,13 @@ public class T_mc_outhosp_order {
 						map.put("caseid", caseid);
 						map.put("PassClient", PassClient);
 						map.put("iid", iid);
-						map.put("cid", cid);
+						map.put("cid",  cid+cidno);
 						map.put("startdate1", startdate1);
 						listbatch.add(map);
 						
-						if(a%500==0){
+						if(a%Integer.parseInt(insertdatacount)==0){
 							batchInsertRows1(sql,listbatch);
+							log.info("======>t_mc_outhosp_order 药品 :"+a);
 							listbatch.clear();
 						} 
 //						if(a-50000>=0){
@@ -321,13 +368,11 @@ public class T_mc_outhosp_order {
 				batchInsertRows1(sql,listbatch);
 				listbatch.clear();
 			}
-			System.out.println("t_mc_outhosp_order药品总数："+a+"-->有效数据："+a);
+			log.info("======>t_mc_outhosp_order 药品总数  ："+a+"-->有效数据："+a);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			System.out.println("t_mc_outhosp_order制造数据异常"+e);
+			log.debug("调试==>t_mc_outhosp_order 制造数据异常 ："+e);
 		}
-		
-		return cid;
 	}
 	
 	public void batchInsertRows(String sql, final List listbatch) throws Exception {
@@ -339,12 +384,12 @@ public class T_mc_outhosp_order {
 				JSONObject Patient=JSONObject.fromObject(map.get("Patient"));
 				String HospID=map.get("HospID").toString();
 				int iid=Integer.parseInt(map.get("iid").toString());
-				int cid=Integer.parseInt(map.get("cid").toString());
+				String cid=map.get("cid").toString();
 				String caseid=map.get("caseid").toString();
 				String costtime1=map.get("costtime1").toString();
 				String prescnostr=map.get("prescnostr").toString();
-				String itemcode=map.get("itemcode").toString();
-				String itemname=map.get("itemname").toString();
+				String itemcode=strisnull.isnull(map.get("itemcode"));
+				String itemname=strisnull.isnull(map.get("itemname"));
 				
 				try{
 					pst.setString(1,"");//[grouptag
@@ -353,7 +398,7 @@ public class T_mc_outhosp_order {
 					pst.setInt(4,1);//is_temp
 					pst.setString(5,"");//remark
 					pst.setString(6,"");//pa_enddatetime ,放startdate1
-					pst.setInt(7,cid);//orderno
+					pst.setString(7,cid);//orderno
 					pst.setString(8,Patient.getString("DeptCode"));//wardcode
 					pst.setInt(9,0);//purpose
 					pst.setString(10,"");//singledose
@@ -374,7 +419,7 @@ public class T_mc_outhosp_order {
 					pst.setInt(25,3);//ordertype
 					pst.setString(26,"");//routename
 					pst.setString(27,costtime1);//enddatetime
-					pst.setInt(28,cid);//cid
+					pst.setString(28,cid);//cid
 					pst.setString(29,"");//drugspec
 					pst.setString(30,"");//executetime
 					pst.setString(31,"");//wardname
@@ -385,8 +430,8 @@ public class T_mc_outhosp_order {
 					pst.setString(36,"");//doseunit
 					pst.setInt(37,1);//is_allow]
 				}catch (Exception e){
-					System.out.println("出现异常的数据:"+map);
-					System.out.println(e);
+					log.debug("调试==>t_mc_outhosp_order 非药插表异常 ："+map);
+					log.debug("调试==>"+e);
 				}
 			}
 			@Override
@@ -395,7 +440,7 @@ public class T_mc_outhosp_order {
 				return listbatch.size();
 			}
 		};
-		jdbcTemplate_oracle.batchUpdate(sql, setter);
+		jdbcTemplate_dataBase.batchUpdate(sql, setter);
 	}
 	
 	public void batchInsertRows1(String sql, final List listbatch) throws Exception {
@@ -412,7 +457,7 @@ public class T_mc_outhosp_order {
 				JSONObject PassClient=JSONObject.fromObject(map.get("PassClient").toString());
 				String caseid=map.get("caseid").toString();
 				int iid=Integer.parseInt(map.get("iid").toString());
-				int cid=Integer.parseInt(map.get("cid").toString());
+				String cid=map.get("cid").toString();
 //				String startdate1=map.get("startdate1").toString();//接口导数据之后，PA自己生成的，不需要我在接口弄
 				
 				try{
@@ -443,7 +488,7 @@ public class T_mc_outhosp_order {
 					pst.setInt(25,1);//ordertype
 					pst.setString(26,ScreenDrug.getString("RouteName"));//routename
 					pst.setString(27,ScreenDrug.getString("EndTime"));//enddatetime
-					pst.setInt(28,cid);//cid
+					pst.setString(28,cid);//cid
 					pst.setString(29,drugspec);//drugspec
 					pst.setString(30,ScreenDrug.getString("ExecuteTime"));//executetime
 					pst.setString(31,Patient.getString("DeptName"));//wardname
@@ -454,8 +499,8 @@ public class T_mc_outhosp_order {
 					pst.setString(36,doseunit);//doseunit
 					pst.setInt(37,1);//is_allow]
 				}catch (Exception e){
-					System.out.println("出现异常的数据:"+map);
-					System.out.println(e);
+					log.debug("调试==>t_mc_outhosp_order 药品插表异常 ："+map);
+					log.debug("调试==>"+e);
 				}
 			}
 			@Override
@@ -464,6 +509,6 @@ public class T_mc_outhosp_order {
 				return listbatch.size();
 			}
 		};
-		jdbcTemplate_oracle.batchUpdate(sql, setter);
+		jdbcTemplate_dataBase.batchUpdate(sql, setter);
 	}
 }

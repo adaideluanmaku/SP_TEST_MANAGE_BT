@@ -34,6 +34,7 @@ import org.springframework.web.multipart.MultipartRequest;
 
 import com.ch.sysuntils.DataGrid;
 import com.ch.sysuntils.Select2;
+import com.ch.sysuntils.User;
 
 @Service
 public class Zfxmbean {
@@ -190,8 +191,8 @@ public class Zfxmbean {
 			remark=req.getParameter("remark");
 		} 
 		
-		sql="select count(*) from zfxm_team where teamname=?";
-		int sum=jdbcTemplate.queryForObject(sql,int.class,new Object[]{teamname});
+		sql="select count(*) from zfxm_team where teamname=? and teamid<>?";
+		int sum=jdbcTemplate.queryForObject(sql,int.class,new Object[]{teamname,teamid});
 		if(sum>0){
 			return "团队名称不能重复";
 		}
@@ -275,26 +276,6 @@ public class Zfxmbean {
 		dataGrid.setRows(lstRes);
 		
 		return dataGrid;
-	}
-	
-	public List teamgroup(HttpServletRequest req){
-		String sql=null;
-		sql="select teamid as id,teamname as text from zfxm_team";
-		List list=jdbcTemplate.queryForList(sql);
-//		Map map=new HashMap();
-//		map.put("id", 0);
-//		map.put("text","全选");
-//		list.add(map);
-//		//按字段重新排序
-//		Collections.sort(list, new Comparator<Map<String,Object>>() {
-//			//@Override
-//			public int compare(Map<String, Object> o1, Map<String, Object> o2) {
-//				//进行判断
-//				return String.valueOf(o1.get("id").toString()).compareTo(String.valueOf(o2.get("id").toString()));
-//			}
-//		});
-
-		return list;
 	}
 	
 	public String project_add(HttpServletRequest req){
@@ -391,8 +372,8 @@ public class Zfxmbean {
 			remark=req.getParameter("remark");
 		}
 		
-		sql="select count(*) from zfxm_project where projectname=? and teamid=?";
-		int sum=jdbcTemplate.queryForObject(sql,int.class,new Object[]{projectname,teamid});
+		sql="select count(*) from zfxm_project where projectname=? and teamid=? and projectid<>? ";
+		int sum=jdbcTemplate.queryForObject(sql,int.class,new Object[]{projectname,teamid,projectid});
 		if(sum>0){
 			return "团队名称重复";
 		}
@@ -454,15 +435,15 @@ public class Zfxmbean {
 			wherelist.add("%"+testno+"%");
 			wherelist.add(projectid);
 		}else{
-			sql1=sql1+" and a.testname like ? or a.testno like ? ";
-			sql2=sql2+" and a.testname like ? or a.testno like ? ";
+			sql1=sql1+" and (a.testname like ? or a.testno like ?) ";
+			sql2=sql2+" and (a.testname like ? or a.testno like ?) ";
 			wherelist.add("%"+testname+"%");
 			wherelist.add("%"+testno+"%");
 		}
 		
 		//拼接order
 		if(StringUtils.isBlank(sort)){
-			sql1=sql1+ "order by b.projectid,CAST(SUBSTRING_INDEX(a.testno, \"-\", 1) as SIGNED),a.testname, CAST(SUBSTRING_INDEX(a.testno, \"-\", -1) as SIGNED) asc ";
+			sql1=sql1+ "order by b.projectid , a.testno , a.orderbyno asc ";
 		}else{
 			sql1=sql1+ "order by "+sort+" "+order;
 		}
@@ -525,6 +506,7 @@ public class Zfxmbean {
 		int projectid=0;
 		String testname="";
 		String testno="";
+		int orderbyno=0;
 		String testtext="";
 		String testin="";
 		String testout="";
@@ -547,6 +529,9 @@ public class Zfxmbean {
 		}else{
 			testno=req.getParameter("testno").trim();
 		}
+		if(StringUtils.isNotBlank(req.getParameter("orderbyno"))){
+			orderbyno=Integer.parseInt(req.getParameter("orderbyno"));
+		}
 		if(StringUtils.isNotBlank(req.getParameter("testtext"))){
 			testtext=req.getParameter("testtext");
 		} 
@@ -562,21 +547,26 @@ public class Zfxmbean {
 		if(StringUtils.isNotBlank(req.getParameter("selenium_share_status"))){
 			selenium_share_status=Integer.parseInt(req.getParameter("selenium_share_status"));
 		} 
-		sql="select count(1) from zfxm_testmng where projectid=? and testno=?";
-		int sum=jdbcTemplate.queryForObject(sql,int.class,new Object[]{projectid,testno});
-		if(sum>0){
-			return "案例编号重复";
+		
+		//号码重复往后+1
+		sql="select count(1) from zfxm_testmng where projectid=? and testno=? and orderbyno=? ";
+		int countnum=jdbcTemplate.queryForObject(sql, int.class,new Object[]{projectid,testno,orderbyno});
+		if(countnum>0){
+			sql="update zfxm_testmng set orderbyno=orderbyno+1 where projectid=? and testno=? and orderbyno>=?";
+			jdbcTemplate.update(sql,new Object[]{projectid,testno,orderbyno});
 		}
 		
 		Date time=new Date();
 		SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		
-		System.out.println(sdf.format(time));
+//		System.out.println(sdf.format(time));
+		User user=new User();
+		user=(User)req.getSession().getAttribute("user");
 		
-		sql="insert into zfxm_testmng(projectid,testname,testno,testtext,testin,testout,remark,inserttime,userid,status,selenium_share_status) "
-				+ "values(?,?,?,?,?,?,?,?,?,?,?)";
+		sql="insert into zfxm_testmng(projectid,testname,testno,testtext,testin,testout,remark,inserttime,userid,status,selenium_share_status,orderbyno) "
+				+ "values(?,?,?,?,?,?,?,?,?,?,?,?)";
 		jdbcTemplate.update(sql,new Object[]{projectid,testname,testno,testtext,testin,testout,remark,sdf.format(time),
-				req.getSession().getAttribute("userid"),Integer.parseInt(req.getParameter("status")),selenium_share_status});
+				user.getUserid(),Integer.parseInt(req.getParameter("status")),selenium_share_status,orderbyno});
 		
 //		//广播通知
 //		socketBean.logreload(Integer.parseInt(req.getSession().getAttribute("userid").toString()));
@@ -619,6 +609,7 @@ public class Zfxmbean {
 		int projectid=0;
 		String testname="";
 		String testno="";
+		int orderbyno=0;
 		String testtext="";
 		String testin="";
 		String testout="";
@@ -648,6 +639,9 @@ public class Zfxmbean {
 		}else{
 			testno=req.getParameter("testno");
 		}
+		if(StringUtils.isNotBlank(req.getParameter("orderbyno"))){
+			orderbyno=Integer.parseInt(req.getParameter("orderbyno"));
+		}
 		if(StringUtils.isNotBlank(req.getParameter("testtext"))){
 			testtext=req.getParameter("testtext");
 		} 
@@ -671,29 +665,34 @@ public class Zfxmbean {
 			status=Integer.parseInt(req.getParameter("status"));
 		} 
 		
+		//号码重复往后+1
+		sql="select count(1) from zfxm_testmng where projectid=? and testno=? and orderbyno=? ";
+		int countnum=jdbcTemplate.queryForObject(sql, int.class,new Object[]{projectid,testno,orderbyno});
+		if(countnum>0){
+			sql="update zfxm_testmng set orderbyno=orderbyno+1 where projectid=? and testno=? and orderbyno>=?";
+			jdbcTemplate.update(sql,new Object[]{projectid,testno,orderbyno});
+		}
+		
 		Date time=new Date();
 		SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		
-		sql="select count(*) from zfxm_testmng where projectid<>? and testno=? and testid<>?";
-		int sum=jdbcTemplate.queryForObject(sql,int.class,new Object[]{projectid,testno,testid});
-		if(sum>0){
-			return "案例编号不能重复";
-		}
+		User user=new User();
+		user=(User)req.getSession().getAttribute("user");
 		
 		sql="select testresult from zfxm_testmng where testid=? ";
 		String testresult =jdbcTemplate.queryForObject(sql, String.class,new Object[]{testid});
 		if("新".equals(testresult)){
 			sql="update zfxm_testmng set projectid=?,testname=?,testno=?,testtext=?,testin=?,testout=?,remark=?,inserttime=?, "
-					+ "userid=?,status=?,selenium_share_status=?,testresult='' where testid=?";
+					+ "userid=?,status=?,selenium_share_status=?,testresult='',orderbyno=? where testid=?";
 			jdbcTemplate.update(sql,new Object[]{projectid,testname,testno,testtext,testin,testout,remark,sdf.format(time),
-					req.getSession().getAttribute("userid"),status,
-					selenium_share_status,testid});
+					user.getUserid(),status,
+					selenium_share_status,orderbyno,testid});
 		}else{
 			sql="update zfxm_testmng set projectid=?,testname=?,testno=?,testtext=?,testin=?,testout=?,remark=?,inserttime=?, "
-					+ "userid=?,status=?,selenium_share_status=? where testid=?";
+					+ "userid=?,status=?,selenium_share_status=?,orderbyno=? where testid=?";
 			jdbcTemplate.update(sql,new Object[]{projectid,testname,testno,testtext,testin,testout,remark,sdf.format(time),
-					req.getSession().getAttribute("userid"),status,
-					selenium_share_status,testid});
+					user.getUserid(),status,
+					selenium_share_status,orderbyno,testid});
 		}
 		
 		//广播通知

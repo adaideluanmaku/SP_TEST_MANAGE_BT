@@ -3,6 +3,7 @@ var addurl = null;
 $(document).ready(function() {
 	addurl = $("#addurl").val();
 	updateiframe();
+	
 });
 
 function updateiframe(){
@@ -101,6 +102,18 @@ function works_graph() {
 	$("#iframe_box").attr("src", addurl + "/homepage/works_graph");
 }
 
+function works_jihuaguanli() {
+	$("#iframe_box").attr("src", addurl + "/homepage/works_jihuaguanli");
+}
+
+function works_zhouhuibao() {
+	$("#iframe_box").attr("src", addurl + "/homepage/works_zhouhuibao");
+}
+
+function works_yuehuibao() {
+	$("#iframe_box").attr("src", addurl + "/homepage/works_yuehuibao");
+}
+
 //系统管理页面跳转
 function sysmanage_serverip() {
 	$("#iframe_box").attr("src", addurl + "/homepage/sysmanage_serverip");
@@ -108,3 +121,7 @@ function sysmanage_serverip() {
 function sysmanage_users() {
 	$("#iframe_box").attr("src", addurl + "/homepage/sysmanage_users");
 }
+function sysmanage_database() {
+	$("#iframe_box").attr("src", addurl + "/homepage/sysmanage_database");
+}
+

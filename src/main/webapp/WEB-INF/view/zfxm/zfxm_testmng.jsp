@@ -65,7 +65,7 @@
 				<ol class="breadcrumb">
 					<li><a>home</a></li>
 					<li><a>测试管理</a></li>
-					<li class="active"><strong>案例管理</strong></li>
+					<li class="active"><strong>其他项目案例管理</strong></li>
 				</ol>
 			</div>
 			<div class="col-lg-2"></div>
@@ -185,6 +185,11 @@
 						<label for="testno" class="col-sm-2 control-label">案例编号 :1-1(格式范例)</label>
 						<div class="col-sm-4">
 							<input type="text" class="form-control" id="testno"  name="testno">
+						</div>
+						<div class="col-sm-1" style="margin-top:5px">—
+						</div>
+						<div class="col-sm-3">
+							<input type="text" class="form-control" id="orderbyno"  name="orderbyno">
 						</div>
 					</div>
 					<div class="form-group">

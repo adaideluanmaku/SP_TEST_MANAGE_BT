@@ -1,24 +1,35 @@
 package com.ch.service;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.ch.dao.SpringJdbc_sqlserver_pass;
+import com.ch.sys.AlterKettle;
 import com.ch.sysuntils.DataGrid;
+import com.ch.sysuntils.KettleUtils;
 
 @Service
 public class Prescriptionbean {
 	@Autowired
 	JdbcTemplate jdbcTemplate;
-	
+	@Autowired
+	KettleUtils kettleUtils;
+	@Autowired
+	AlterKettle alterKettle;
+	private static Logger log = Logger.getLogger(Prescriptionbean.class);
 	public DataGrid prescription_query(HttpServletRequest req){
 		DataGrid dataGrid=new DataGrid();
 		
@@ -100,7 +111,7 @@ public class Prescriptionbean {
 	
 	public String prescription_update(HttpServletRequest req){
 		int prescriptiontype=0;
-		if(StringUtils.isNoneBlank(req.getParameter("prescriptiontype"))){
+		if(StringUtils.isNotBlank(req.getParameter("prescriptiontype"))){
 			prescriptiontype=Integer.parseInt(req.getParameter("prescriptiontype").toString());
 		}
 		
@@ -173,4 +184,215 @@ public class Prescriptionbean {
 		}
 		return "ok";
 	}
+
+	public String yijiandaorumubiao(int tongbuDatabaseid,String tongbuTable,String mhiscode,String path) {
+		String[] mhiscode1= new String[1];
+		mhiscode1[0]=mhiscode;
+		Map<String,String> map=new HashMap();
+		map.put("mhiscode", mhiscode);
+		
+		//读取目录下的所有文件
+//		File file = new File(path);
+//		File[] tempList = file.listFiles();
+//		if(tempList!=null){
+//			for (int i = 0; i < tempList.length; i++) {
+//				if (tempList[i].isFile()) {
+//					kettleUtils.runTransfer(mhiscode1, tempList[i].toString());
+//					log.info("finish :" + tempList[i]);
+//				}
+//			}
+//		}
+		
+		if("-1".equals(tongbuTable)){
+			path=path.split("webapp")[0]+"webapp\\kettle\\out\\";
+			alterKettle.kettlerun(tongbuDatabaseid, path);
+			
+			File file = new File(path);
+			File[] tempList = file.listFiles();
+			if(tempList!=null){
+				for (int i = 0; i < tempList.length; i++) {
+					if (tempList[i].isFile()) {
+						kettleUtils.runTransfer(mhiscode1, tempList[i].toString());
+						log.info("执行脚本结束 :" + tempList[i]);
+					}
+				}
+			}
+		}else{
+			path=path.split("webapp")[0]+"webapp\\kettle\\out\\"+tongbuTable+".ktr";
+			alterKettle.kettlerun(tongbuDatabaseid, path);
+			
+			kettleUtils.runTransfer(mhiscode1, path);
+			log.info("执行脚本结束 :" + path);
+		}
+		
+//		if(tongbuDatabaseid == 1){
+//			if("-1".equals(tongbuTable)){
+//				path=path.split("webapp")[0]+"webapp\\kettle_mysql\\out\\";
+//				alterKettle.kettlerun(tongbuDatabaseid, path);
+//				
+//				File file = new File(path);
+//				File[] tempList = file.listFiles();
+//				if(tempList!=null){
+//					for (int i = 0; i < tempList.length; i++) {
+//						if (tempList[i].isFile()) {
+//							kettleUtils.runTransfer(mhiscode1, tempList[i].toString());
+//							log.info("执行脚本结束 :" + tempList[i]);
+//						}
+//					}
+//				}
+//			}else{
+//				path=path.split("webapp")[0]+"webapp\\kettle_mysql\\out\\"+tongbuTable+".ktr";
+//				alterKettle.kettlerun(tongbuDatabaseid, path);
+//				
+//				kettleUtils.runTransfer(mhiscode1, path);
+//				log.info("执行脚本结束 :" + path);
+//			}
+//		}
+//		if (tongbuDatabaseid == 2) {
+//			if("-1".equals(tongbuTable)){
+//				path=path.split("webapp")[0]+"webapp\\kettle_sqlserver\\out\\";
+//				File file = new File(path);
+//				File[] tempList = file.listFiles();
+//				if(tempList!=null){
+//					for (int i = 0; i < tempList.length; i++) {
+//						if (tempList[i].isFile()) {
+//							kettleUtils.runTransfer(mhiscode1, tempList[i].toString());
+//							log.info("执行脚本结束 :" + tempList[i]);
+//						}
+//					}
+//				}
+//			}else{
+//				path=path.split("webapp")[0]+"webapp\\kettle_sqlserver\\out\\"+tongbuTable+".ktr";
+//				kettleUtils.runTransfer(mhiscode1, path);
+//				log.info("执行脚本结束 :" + path);
+//			}
+//			
+//		}
+//		if (tongbuDatabaseid == 3) {
+//			if("-1".equals(tongbuTable)){
+//				path=path.split("webapp")[0]+"webapp\\kettle_oracle\\out\\";
+//				File file = new File(path);
+//				File[] tempList = file.listFiles();
+//				if(tempList!=null){
+//					for (int i = 0; i < tempList.length; i++) {
+//						if (tempList[i].isFile()) {
+//							kettleUtils.runTransfer(mhiscode1, tempList[i].toString());
+//							log.info("执行脚本结束 :" + tempList[i]);
+//						}
+//					}
+//				}
+//			}else{
+//				path=path.split("webapp")[0]+"webapp\\kettle_oracle\\out\\"+tongbuTable+".ktr";
+//				kettleUtils.runTransfer(mhiscode1, path);
+//				log.info("执行脚本结束 :" + path);
+//			}
+//			
+//		}
+		
+		return "ok";
+	}
+	
+	public String yijiandaoruanli(int tongbuDatabaseid,String tongbuTable,String mhiscode,String path) {
+		String[] mhiscode1= new String[1];
+		mhiscode1[0]=mhiscode;
+		Map<String,String> map=new HashMap();
+		map.put("mhiscode", mhiscode);
+		
+		//读取目录下的所有文件
+//		File file = new File(path);
+//		File[] tempList = file.listFiles();
+//		if(tempList!=null){
+//			for (int i = 0; i < tempList.length; i++) {
+//				if (tempList[i].isFile()) {
+//					kettleUtils.runTransfer(mhiscode1, tempList[i].toString());
+//					log.info("finish :" + tempList[i]);
+//				}
+//			}
+//		}
+		
+		if("-1".equals(tongbuTable)){
+			path=path.split("webapp")[0]+"webapp\\kettle\\in\\";
+			alterKettle.kettlerun(tongbuDatabaseid, path);
+			
+			File file = new File(path);
+			File[] tempList = file.listFiles();
+			if(tempList!=null){
+				for (int i = 0; i < tempList.length; i++) {
+					if (tempList[i].isFile()) {
+						kettleUtils.runTransfer(mhiscode1, tempList[i].toString());
+						log.info("执行脚本结束 :" + tempList[i]);
+					}
+				}
+			}
+		}else{
+			path=path.split("webapp")[0]+"webapp\\kettle\\in\\"+tongbuTable+".ktr";
+			alterKettle.kettlerun(tongbuDatabaseid, path);
+			
+			kettleUtils.runTransfer(mhiscode1, path);
+			log.info("执行脚本结束 :" + path);
+		}
+		
+//		if(tongbuStatus == 1){
+//			if("-1".equals(tongbuTable)){
+//				path=path.split("webapp")[0]+"webapp\\kettle_mysql\\in\\";
+//				File file = new File(path);
+//				File[] tempList = file.listFiles();
+//				if(tempList!=null){
+//					for (int i = 0; i < tempList.length; i++) {
+//						if (tempList[i].isFile()) {
+//							kettleUtils.runTransfer(mhiscode1, tempList[i].toString());
+//							log.info("执行脚本结束 :" + tempList[i]);
+//						}
+//					}
+//				}
+//			}else{
+//				path=path.split("webapp")[0]+"webapp\\kettle_mysql\\in\\"+tongbuTable+".ktr";
+//				kettleUtils.runTransfer(mhiscode1, path);
+//				log.info("执行脚本结束 :" + path);
+//			}
+//			
+//		}
+//		if (tongbuStatus == 2) {
+//			if("-1".equals(tongbuTable)){
+//				path=path.split("webapp")[0]+"webapp\\kettle_sqlserver\\in\\";
+//				File file = new File(path);
+//				File[] tempList = file.listFiles();
+//				if(tempList!=null){
+//					for (int i = 0; i < tempList.length; i++) {
+//						if (tempList[i].isFile()) {
+//							kettleUtils.runTransfer(mhiscode1, tempList[i].toString());
+//							log.info("执行脚本结束 :" + tempList[i]);
+//						}
+//					}
+//				}
+//			}else{
+//				path=path.split("webapp")[0]+"webapp\\kettle_sqlserver\\in\\"+tongbuTable+".ktr";
+//				kettleUtils.runTransfer(mhiscode1, path);
+//				log.info("执行脚本结束 :" + path);
+//			}
+//			
+//		}
+//		if (tongbuStatus == 3) {
+//			if("-1".equals(tongbuTable)){
+//				path=path.split("webapp")[0]+"webapp\\kettle_oracle\\in\\";
+//				File file = new File(path);
+//				File[] tempList = file.listFiles();
+//				if(tempList!=null){
+//					for (int i = 0; i < tempList.length; i++) {
+//						if (tempList[i].isFile()) {
+//							kettleUtils.runTransfer(mhiscode1, tempList[i].toString());
+//							log.info("执行脚本结束 :" + tempList[i]);
+//						}
+//					}
+//				}
+//			}else{
+//				path=path.split("webapp")[0]+"webapp\\kettle_oracle\\in\\"+tongbuTable+".ktr";
+//				kettleUtils.runTransfer(mhiscode1, path);
+//				log.info("执行脚本结束 :" + path);
+//			}
+//		}
+		
+		return "ok";
+	}
+	
 }

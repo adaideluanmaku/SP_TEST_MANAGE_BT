@@ -38,7 +38,7 @@ var TableInit =function () {
 //			showColumns: true,                  // 是否显示所有的列按钮
 //			showRefresh: true,                  // 是否显示刷新按钮
 			minimumCountColumns: 2,             // 最少允许的列数
-			clickToSelect: false,               // 是否启用点击选中行
+			clickToSelect: true,               // 是否启用点击选中行
 			height: tableheight(),                        //450, 行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
 			uniqueId: "ID",                     // 每一行的唯一标识，一般为主键列
 //			showToggle:true,                    // 是否显示详细视图和列表视图的切换按钮
@@ -61,7 +61,7 @@ var TableInit =function () {
 			},
 			// 是否显示父子表
 			columns : [ {
-				field : 'ID',
+				field : 'select',
 				checkbox : true,
 			} ,{
 				field : 'servername',
@@ -74,15 +74,7 @@ var TableInit =function () {
 			
 			// 1.点击每行进行函数的触发
 			onClickRow : function(row, tr,flied){
-				if($(tr).find('input').prop("checked")){//check类型的input
-					$(tr).attr('class','');//改变样式
-					$(tr).find('input').prop("checked",false);//改变勾选状态
-					row.ID=false;//改变勾选值
-				}else{
-					$(tr).attr('class','selected');
-					$(tr).find('input').prop("checked",true);
-					row.ID=true;
-				}
+				$('#table_data').bootstrapTable('uncheckAll');//取消选中所有行
 			},
 
 			// 2. 点击前面的复选框进行对应的操作
@@ -154,6 +146,15 @@ function add_data(){
 }
 
 function del_data(){
+	var Selections = $('#table_data').bootstrapTable('getSelections');
+	if(Selections.length < 1){
+		swal({
+            title: "警告",
+            text: "请至少选择一条数据进行操作."
+        });
+		return;
+	}
+	
 	swal({
         title: "Are you sure?",
         text: "You will not be able to recover this imaginary file!",
@@ -166,7 +167,6 @@ function del_data(){
     	var queryaddress=addurl+'/sysmanage/server_query';
     	var deladdress=addurl+'/sysmanage/server_del';
     	
-    	var Selections = $('#table_data').bootstrapTable('getSelections');
     	var serverids=new Array();
     	for(var i=0;i<Selections.length;i++){
     		serverids.push(Selections[i].serverid);
@@ -267,20 +267,51 @@ function all_form_validator(){
 }
 
 function tableheight(){
-//	alert(window.screen.availWidth)
-//	alert(document.body.clientHeight)
-//	alert(document.getElementById("header_path").offsetHeight)
-//	alert(document.getElementById("search_div").offsetHeight)
-//	alert(document.getElementById("toolbar").offsetHeight)
-	
-	var _height = document.body.clientHeight-document.getElementById("header_path").offsetHeight
-	-document.getElementById("search_div").offsetHeight-document.getElementById("toolbar").offsetHeight;
-	
-	if(window.screen.availWidth/160%1==0){
-		_height=_height-10;
-	}else{
-		_height=_height-30;
+	var _height=0;
+	//获取父级窗口高度
+	_height=$(window.parent.window).height()-60-40-120-100;
+	if(_height<300){
+		_height=300;
 	}
-	
 	return _height;
+}
+
+function message(){
+	var str='';
+	str=str+'.NET WEBSERVICE接口说明： <br>'
+		+'DLL配置文件地址：http://IP:端口/PASS4WebService/PASSwebService.asmx <br>'
+		+'审查接口：http://IP:端口/PASS4WebService/PASSwebService.asmx/Mc_DoScreen <br>'
+		+'查询接口：http://IP:端口/PASS4WebService/PASSwebService.asmx/Mc_DoQuery <br>'
+		+'详细信息：http://IP:端口/PASS4WebService/PASSwebService.asmx/Mc_DoDetail <br>'
+		+'模块菜单：http://IP:端口/PASS4WebService/PASSwebService.asmx/Mc_DoModule <br>'
+		+'用药理由：http://IP:端口/PASS4WebService/PASSwebService.asmx/Mc_DoReason <br>'
+		+'PA审查接口：http://IP:端口/PASS4WebService/PASSwebService.asmx/Mc_DoCommand <br>'
+		
+		+'<h4 style="background-color:#d0eeef"></h4><br>'
+		
+		+'JAVA REST接口说明： <br>'
+		+'JS配置文件地址：http://IP:端口/pass/rs <br>'
+		+'审查接口：http://IP:端口/pass/ws/PASSwebService.asmx/Mc_DoScreen <br>'
+		+'查询接口：http://IP:端口/pass/ws/PASSwebService.asmx/Mc_DoQuery <br>'
+		+'详细信息：http://IP:端口/pass/ws/PASSwebService.asmx/Mc_DoDetail <br>'
+		+'模块菜单：http://IP:端口/pass/ws/PASSwebService.asmx/Mc_DoModule <br>'
+		+'用药理由：http://IP:端口/pass/ws/PASSwebService.asmx/Mc_DoReason <br>'
+		+'PA审查接口：http://IP:端口/pass/ws/paScreen <br>'
+		
+		+'<h4 style="background-color:#d0eeef"></h4><br>'
+		
+		+'JAVA WEBSERVICE接口说明： <br>'
+		+'DLL配置文件地址：http://IP:端口/pass/cxf/pass/passservice <br>'
+		+'DLL接口查看地址：http://IP:端口/pass/cxf/pass/passservice?wsdl <br>'
+			
+//	str=str+'<h4 style="background-color:#d0eeef">.NET WEBSERVICE接口说明：</h4><br>'
+//		+'<h4 style="background-color:#d0eeef">审查接口：http://IP:端口/PASS4WebService/PASSwebService.asmx/Mc_DoScreen</h4><br>'
+//		+'<h4 style="background-color:#d0eeef">查询接口：http://IP:端口/PASS4WebService/PASSwebService.asmx/Mc_DoQuery</h4><br>'
+//		+'<h4 style="background-color:#d0eeef">详细信息：http://IP:端口/PASS4WebService/PASSwebService.asmx/Mc_DoDetail</h4><br>'
+//		+'<h4 style="background-color:#d0eeef">模块菜单：http://IP:端口/PASS4WebService/PASSwebService.asmx/Mc_DoModule</h4><br>'
+//		+'<h4 style="background-color:#d0eeef">用药理由：http://IP:端口/PASS4WebService/PASSwebService.asmx/Mc_DoReason</h4><br>'
+//		+'<hr>'
+	$('#_look_modal_dialog #test_look').html(str);
+	
+	$('#_look_modal_dialog').modal('show');
 }

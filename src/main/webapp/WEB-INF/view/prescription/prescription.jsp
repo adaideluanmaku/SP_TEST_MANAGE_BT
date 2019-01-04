@@ -119,6 +119,7 @@
 			<div class="modal-body" style="height:400px;overflow:auto">
 				<form class="form-horizontal" role="form" id="prescription_dialog_form">
 					<input type="hidden" id="pre_id" name="pre_id" value="">
+					<input id="prescriptiontype" name="prescriptiontype" type="hidden" value="1">
 					<div class="form-group">
 						<label for="patientname" class="col-sm-2 control-label">病人姓名</label>
 						<div class="col-sm-4">

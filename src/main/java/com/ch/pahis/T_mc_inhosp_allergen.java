@@ -15,22 +15,38 @@ import java.util.Map;
 import java.util.Random;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
+
+import com.ch.dao.DataBaseType;
+import com.ch.dao.SpringJdbc_oracle_his;
+import com.ch.dao.SpringJdbc_sqlserver_his;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 @Service
 public class T_mc_inhosp_allergen {
+	private static Logger log = Logger.getLogger(T_mc_inhosp_allergen.class);
+	JdbcTemplate jdbcTemplate_dataBase=null;
 	@Autowired
-	JdbcTemplate jdbcTemplate_oracle;
+	DataBaseType dataBaseType;
 	
 	@Autowired
 	Sys_pa sys_pa;
-	public void inhosp_allergen(int trunca, int count, int sum_date,List anlilist,String hiscode,String ienddate){
+	@Value("${data.insertdatacount}")
+    private String insertdatacount;
+	public void inhosp_allergen(int trunca, int count, int sum_date,List anlilist,String hiscode,
+			String ienddate, int database1){
+		jdbcTemplate_dataBase=dataBaseType.getJdbcTemplate(database1);
+		if(jdbcTemplate_dataBase==null){
+			log.info("数据库连接失败");
+			return;
+		}
 		try {
 			String sql=null;
 			List listbatch=new ArrayList();
@@ -40,17 +56,22 @@ public class T_mc_inhosp_allergen {
 			int a=0;
 //			int b=0;
 			String ienddate1=ienddate;
+			JSONObject json=null;
+			JSONObject PassClient=null;
+			JSONObject Patient=null;
+			JSONObject ScreenAllergenList=null;
+			JSONArray ScreenAllergens=null;
 			for(int i=0;i<count;i++){
 				//数据分割，增加时间
 				if(i%(count/sum_date)==0 && i>0){
 			        ienddate1=sys_pa.date1(ienddate1, "yyyyMMdd");
 				}
 				for(int j=0;j<anlilist.size();j++){
-					JSONObject json=JSONObject.fromObject(anlilist.get(j));
-					JSONObject PassClient=json.getJSONObject("PassClient");
-					JSONObject Patient=json.getJSONObject("Patient");
-					JSONObject ScreenAllergenList=json.getJSONObject("ScreenAllergenList");
-					JSONArray ScreenAllergens=ScreenAllergenList.getJSONArray("ScreenAllergens");
+					json=JSONObject.fromObject(anlilist.get(j));
+					PassClient=json.getJSONObject("PassClient");
+					Patient=json.getJSONObject("Patient");
+					ScreenAllergenList=json.getJSONObject("ScreenAllergenList");
+					ScreenAllergens=ScreenAllergenList.getJSONArray("ScreenAllergens");
 					Patient.put("PatCode", hiscode+ienddate1+i+"_"+j+"_zy");
 //					Patient.put("InHospNo",hiscode+ienddate1+i+"_"+j);
 					Patient.put("InHospNo",hiscode+"_住院_"+Patient.getString("InHospNo"));
@@ -62,9 +83,6 @@ public class T_mc_inhosp_allergen {
 							continue;
 						}
 						a=a+1;
-						if(a%2000==0){
-							System.out.println("t_mc_inhosp_allergen --"+a);
-						}
 						
 						Map map=new HashMap();
 						map.put("ScreenAllergen", ScreenAllergen);
@@ -73,8 +91,9 @@ public class T_mc_inhosp_allergen {
 						map.put("caseid", caseid);
 						listbatch.add(map);
 						
-						if(a%500==0){
+						if(a%Integer.parseInt(insertdatacount)==0){
 							batchInsertRows(sql,listbatch);
+							log.info("======>t_mc_inhosp_allergen :"+a);
 							listbatch.clear();
 						} 
 						
@@ -100,10 +119,10 @@ public class T_mc_inhosp_allergen {
 				batchInsertRows(sql,listbatch);
 				listbatch.clear();
 			}
-			System.out.println("t_mc_inhosp_allergen总数："+a+"-->有效数据："+a);
+			log.info("======>t_mc_inhosp_allergen 总数："+a+"-->有效数据："+a);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			System.out.println("t_mc_inhosp_allergen制造数据异常"+e);
+			log.debug("调试==>t_mc_inhosp_allergen 制造数据异常："+e);
 		}
 	}
 	
@@ -125,8 +144,8 @@ public class T_mc_inhosp_allergen {
 					pst.setString(6,"过敏症状");//symptom
 					pst.setString(7,caseid);//caseid]
 				}catch (Exception e){
-					System.out.println("出现异常的数据:"+map);
-					System.out.println(e);
+					log.debug("调试==>t_mc_inhosp_allergen 插表异常："+map);
+					log.debug("调试==>"+e);
 				}
 			}
 			@Override
@@ -135,6 +154,6 @@ public class T_mc_inhosp_allergen {
 				return listbatch.size();
 			}
 		};
-		jdbcTemplate_oracle.batchUpdate(sql, setter);
+		jdbcTemplate_dataBase.batchUpdate(sql, setter);
 	}
 }

@@ -42,7 +42,8 @@ public class Mc_dict_dept1 {
 //				+ "is_emergency, deptname, is_clinic) values(?,?,?,?,?,?,?,?)";
 		//1712版
 		sql="insert into mc_dict_dept( searchcode, deptcode, is_save, is_inhosp, match_scheme, "
-				+ "is_emergency, deptname, is_clinic, updatedate) values(?,?,?,?,?,?,?,?,CONVERT(char(19),?))";
+				+ "is_emergency, deptname, is_clinic, updatedate) "
+				+ "values(?,?,?,?,?,?,?,?,CONVERT(char(19),?))";
 		
 		for(int i=0;i<list.size();i++){
 			Map map=(Map)list.get(i);

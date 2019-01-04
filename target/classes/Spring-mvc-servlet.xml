@@ -13,6 +13,25 @@
     <!-- HTML方式读取自定义配置文件路径 -->
     <context:property-placeholder ignore-unresolvable="true" location="classpath*:/config.properties" />
     
+    <!-- Spring读取配置文件   代码引入@Value("${insertdatacount}") private int insertdatacount;-->
+	<context:property-placeholder location="classpath:config.properties" ignore-unresolvable="true" />
+	
+	<!-- Spring 线程池 -->
+	<bean id="taskExecutor" class="org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor">
+         <!-- 核心线程数 -->
+        <property name="corePoolSize" value="5" />
+        <!-- 最大线程数 -->
+        <property name="maxPoolSize" value="5" />
+        <!-- 队列最大长度 >=mainExecutor.maxSize -->
+        <property name="queueCapacity" value="50" />
+        <!-- 线程池维护线程所允许的空闲时间 60s-->
+        <property name="keepAliveSeconds" value="3000" />
+        <!-- 线程池对拒绝任务(无线程可用)的处理策略 ThreadPoolExecutor.CallerRunsPolicy策略 ,调用者的线程会执行该任务,如果执行器已关闭,则丢弃.  -->
+        <property name="rejectedExecutionHandler">
+            <bean class="java.util.concurrent.ThreadPoolExecutor$CallerRunsPolicy" />
+        </property>
+    </bean>
+    
     <!-- CLASS包路径，接收拦截的所有请求 -->
     <context:component-scan base-package="com.ch"/>
     
@@ -25,7 +44,6 @@
     <!-- SPRING-mvc socket配置（socketjs）
     <mvc:resources location="/resources/" mapping="/resources/**" />
 	<context:component-scan base-package="com.ch1" /> -->
-	
 
   	<!-- 
     <bean id="configurationEncryptor" class="org.jasypt.encryption.pbe.StandardPBEStringEncryptor">
@@ -73,40 +91,8 @@
 		<property name="dataSource" ref="dataSource" />
 	</bean>
 	
-	 <!-- HTML方式读取资源文件，数据源配置, 改为druid数据库连接池 mysql-passpa2db-->
-	<!-- <bean id="dataSource_passpa2db" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
-		<property name="url" value="${jdbc.pa2dburl}" />
-		<property name="username" value="${jdbc.pa2dbusername}" />
-		<property name="password" value="${jdbc.pa2dbpassword}" />
-		<property name="initialSize" value="1" />
-		<property name="minIdle" value="10" />
-		<property name="maxActive" value="20" />
-		<property name="maxWait" value="60000" />
-		<property name="timeBetweenEvictionRunsMillis" value="60000" />
-		<property name="minEvictableIdleTimeMillis" value="300000" />
-
-		<property name="validationQuery" value="SELECT 9527" />
-		<property name="testWhileIdle" value="true" />
-		<property name="testOnBorrow" value="false" />
-		<property name="testOnReturn" value="false" />
-
-		<property name="poolPreparedStatements" value="true" />
-		<property name="maxPoolPreparedStatementPerConnectionSize" value="20" />
-
-		<property name="removeAbandoned" value="true" />
-		<property name="removeAbandonedTimeout" value="1800" />
-		<property name="logAbandoned" value="true" />
-
-		<property name="filters" value="stat" />
-	</bean> -->
-	
-	<!-- jdbc template for import -->
-	<!-- <bean id="jdbcTemplate_passpa2db" class="org.springframework.jdbc.core.JdbcTemplate">
-		<property name="dataSource" ref="dataSource_passpa2db" />
-	</bean> -->
-	
 	<!-- HTML方式读取资源文件，数据源配置, 改为druid数据库连接池 oracle-->
-	<bean id="dataSource_oracle" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+	<!-- <bean id="dataSource_oracle" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
 		<property name="url" value="${jdbc.orclurl}" />
 		<property name="username" value="${jdbc.orclusername}" />
 		<property name="password" value="${jdbc.orclpassword}" />
@@ -132,13 +118,12 @@
 		<property name="filters" value="stat" />
 	</bean>
 	
-  	<!-- jdbc template for import -->
  	<bean id="jdbcTemplate_oracle" class="org.springframework.jdbc.core.JdbcTemplate">
  		<property name="dataSource" ref="dataSource_oracle" /> 
- 	</bean>
+ 	</bean> -->
 	
  	<!-- HTML方式读取资源文件，数据源配置, 改为druid数据库连接池 oracle-->
-	<bean id="dataSource_sqlserver" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
+	<!-- <bean id="dataSource_sqlserver" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
 		<property name="url" value="${jdbc.sqlserverurl}" />
 		<property name="username" value="${jdbc.sqlserverusername}" />
 		<property name="password" value="${jdbc.sqlserverpassword}" />
@@ -164,43 +149,9 @@
 		<property name="filters" value="stat" />
 	</bean>
 	
-  	<!-- jdbc template for import -->
  	<bean id="jdbcTemplate_sqlserver" class="org.springframework.jdbc.core.JdbcTemplate">
  		<property name="dataSource" ref="dataSource_sqlserver" /> 
- 	</bean>
- 	
-	 <!-- HTML方式读取资源文件，数据源配置, 改为druid数据库连接池 mysql-passpa2db-->
-	<!-- <bean id="dataSource_anli" class="com.alibaba.druid.pool.DruidDataSource" init-method="init" destroy-method="close">
-		<property name="url" value="${jdbc.anliurl}" />
-		<property name="username" value="${jdbc.anliusername}" />
-		<property name="password" value="${jdbc.anlipassword}" />
-		<property name="initialSize" value="1" />
-		<property name="minIdle" value="10" />
-		<property name="maxActive" value="20" />
-		<property name="maxWait" value="60000" />
-		<property name="timeBetweenEvictionRunsMillis" value="60000" />
-		<property name="minEvictableIdleTimeMillis" value="300000" />
-
-		<property name="validationQuery" value="SELECT 9527" />
-		<property name="testWhileIdle" value="true" />
-		<property name="testOnBorrow" value="false" />
-		<property name="testOnReturn" value="false" />
-
-		<property name="poolPreparedStatements" value="true" />
-		<property name="maxPoolPreparedStatementPerConnectionSize" value="20" />
-
-		<property name="removeAbandoned" value="true" />
-		<property name="removeAbandonedTimeout" value="1800" />
-		<property name="logAbandoned" value="true" />
-
-		<property name="filters" value="stat" />
-	</bean> -->
-	
-	<!-- jdbc template for import -->
-	<!-- <bean id="jdbcTemplate_anli" class="org.springframework.jdbc.core.JdbcTemplate">
-		<property name="dataSource" ref="dataSource_anli" />
-	</bean> -->
- 	
+ 	</bean> -->
     <!-- 数据源配置, 结束-->
     
     <!-- 文件上传下载配置-->

@@ -121,7 +121,7 @@
 					<input type="hidden" id="teamid" name="teamid" value="">
 					<div class="form-group">
 						<label for="teamname" class="col-sm-2 control-label">团队名称</label>
-						<div class="col-sm-4">
+						<div class="col-sm-6">
 							<input type="text" class="form-control" id="teamname"  name="teamname">
 						</div>
 					</div>

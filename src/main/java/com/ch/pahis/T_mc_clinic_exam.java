@@ -15,23 +15,38 @@ import java.util.Map;
 import java.util.Random;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
+
+import com.ch.dao.DataBaseType;
+import com.ch.dao.SpringJdbc_oracle_his;
+import com.ch.dao.SpringJdbc_sqlserver_his;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 @Service
 public class T_mc_clinic_exam {
+	private static Logger log = Logger.getLogger(T_mc_clinic_exam.class);
+	JdbcTemplate jdbcTemplate_dataBase=null;
 	@Autowired
-	JdbcTemplate jdbcTemplate_oracle;
+	DataBaseType dataBaseType;
 	
 	@Autowired
 	Sys_pa sys_pa;
+	@Value("${data.insertdatacount}")
+    private String insertdatacount;
 	public void clinic_exam(int trunca, int count, int sum_date,List anlilist,String hiscode,String ienddate,
-			String startdate){
+			String startdate,int database1){
+		jdbcTemplate_dataBase=dataBaseType.getJdbcTemplate(database1);
+		if(jdbcTemplate_dataBase==null){
+			log.info("数据库连接失败");
+			return;
+		}
 		try {
 			List list=null;
 			String sql=null;
@@ -44,6 +59,9 @@ public class T_mc_clinic_exam {
 //			int b=0;
 			String ienddate1=ienddate;
 			String startdate1=startdate;
+			JSONObject json=null;
+			JSONObject PassClient=null;
+			JSONObject Patient=null;
 			for(int i=0;i<count;i++){
 				//数据分割，增加时间
 				if(i%(count/sum_date)==0 && i>0){
@@ -52,12 +70,9 @@ public class T_mc_clinic_exam {
 				}
 				for(int j=0;j<anlilist.size();j++){
 					a=a+1;
-					if(a%2000==0){
-						System.out.println("t_mc_clinic_exam --"+a);
-					}
-					JSONObject json=JSONObject.fromObject(anlilist.get(j));
-					JSONObject PassClient=json.getJSONObject("PassClient");
-					JSONObject Patient=json.getJSONObject("Patient");
+					json=JSONObject.fromObject(anlilist.get(j));
+					PassClient=json.getJSONObject("PassClient");
+					Patient=json.getJSONObject("Patient");
 					Patient.put("PatCode", hiscode+ienddate1+i+"_"+j+"_mz");
 //					Patient.put("InHospNo",hiscode+ienddate1+i+"_"+j);
 					Patient.put("InHospNo",hiscode+"_门诊_"+Patient.getString("InHospNo"));
@@ -72,8 +87,9 @@ public class T_mc_clinic_exam {
 					map.put("caseid", caseid);
 					listbatch.add(map);
 					
-					if(a%500==0){
+					if(a%Integer.parseInt(insertdatacount)==0){
 						batchInsertRows(sql,listbatch);
+						log.info("======>t_mc_clinic_exam:"+a);
 						listbatch.clear();
 					} 
 					
@@ -98,10 +114,10 @@ public class T_mc_clinic_exam {
 				batchInsertRows(sql,listbatch);
 				listbatch.clear();
 			}
-			System.out.println("t_mc_clinic_exam总数："+a+"-->有效数据："+a);
+			log.info("======>t_mc_clinic_exam总数："+a+"-->有效数据："+a);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			System.out.println("t_mc_clinic_exam制造数据异常");
+			log.debug("调试==>t_mc_clinic_exam制造数据异常："+e);
 		}
 	}
 	
@@ -131,8 +147,8 @@ public class T_mc_clinic_exam {
 					pst.setString(13,"020050925006N");//examcode
 					pst.setString(14,caseid);
 				}catch (Exception e){
-					System.out.println("出现异常的数据:"+map);
-					System.out.println(e);
+					log.debug("调试==>t_mc_clinic_exam插表异常："+map);
+					log.debug("调试==>"+e);
 				}
 			}
 			@Override
@@ -141,6 +157,6 @@ public class T_mc_clinic_exam {
 				return listbatch.size();
 			}
 		};
-		jdbcTemplate_oracle.batchUpdate(sql, setter);
+		jdbcTemplate_dataBase.batchUpdate(sql, setter);
 	}
 }

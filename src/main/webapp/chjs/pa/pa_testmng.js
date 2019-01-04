@@ -132,7 +132,7 @@ var TableInit =function () {
 			minimumCountColumns: 2,             // 最少允许的列数
 			clickToSelect: true,               // 是否启用点击选中行
 			height: tableheight(),                        //450, 行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
-			uniqueId: "ID",                     // 每一行的唯一标识，一般为主键列
+			uniqueId: "testid",                     // 每一行的唯一标识，一般为主键列
 //			showToggle:true,                    // 是否显示详细视图和列表视图的切换按钮
 //			cardView: false,                    // 是否显示详细视图
 			detailView: false, 					//是否显示父子表
@@ -167,12 +167,33 @@ var TableInit =function () {
 			columns : [ {
 				field:'select',
 				checkbox : true
-			},{
+			}, {
+				field : '',
+				title : '操作',
+				align : 'center',
+				formatter: function(value,row,index){
+//					if(row.testin==undefined || row.testin==''){
+//						return '--'
+//					}
+					
+                    return '<a href="'+addurl+'/prescription/prescription_edit?prescriptiontype=2&testid='+row.testid+'" target="_blank">打开</a>';
+				}
+			},
+//			{
+//				field:'',title:'查看',halign:'center',
+//				formatter: function(value,row,index){
+//					return '<a href="javascript:void(0);" onclick="_look('+row.testid+')" >查看</a>';
+//				}
+//			},
+			{
 				field:'projectname',title:'项目名称',halign:'center'
 			},{
 				field:'testresult',title:'测试',halign:'center',sortable : true
 			},{
-				field:'testno',title:'案例编号',halign:'center'
+				field:'testno',title:'案例编号',halign:'center',
+				formatter: function (value, row, index) {
+					return '<div style="width:100px;">'+value+'-'+row.orderbyno+'</div>'
+                }
 			},{
 				field:'testname',title:'案例名称',halign:'center'
 			},{
@@ -249,32 +270,16 @@ var TableInit =function () {
 				field:'username',title:'姓名',halign:'center'
 			},{
 				field:'inserttime',title:'创建日期',halign:'center'
-			}, {
-				field : '',
-				title : '操作',
-				align : 'center',
-				formatter: function(value,row,index){
-//					if(row.testin==undefined || row.testin==''){
-//						return '--'
-//					}
-					
-                    return '<a href="'+addurl+'/prescription/prescription_edit?prescriptiontype=2&testid='+row.testid+'" target="_blank">打开</a>';
-				}
 			}],
 			
 			// 1.点击每行进行函数的触发
 			onClickRow : function(row, tr,flied){
-//				if($(tr).find('input').prop("checked")){//check类型的input
-//					$(tr).attr('class','');//改变样式
-//					$(tr).find('input').prop("checked",false);//改变勾选状态
-//					row.ID=false;//改变勾选值
-//				}else{
-//					$(tr).attr('class','selected');
-//					$(tr).find('input').prop("checked",true);
-//					row.ID=true;
-//				}
+				$('#table_data').bootstrapTable('uncheckAll');//取消选中所有行
 			},
-
+			
+			onDblClickRow : function(row, tr, field){
+				_look(row)
+			},
 			// 2. 点击前面的复选框进行对应的操作
 			// 点击全选框时触发的操作
 			onCheckAll:function(rows){
@@ -318,7 +323,6 @@ function open_dialog(){
 
 //每次点击都要后台取数据
 function _select2(){
-	var addressprojectgroup = addurl + '/pa/projectgroup';
 
 	//每次点击都要后台取数据
 	$('#modal_dialog #projectid1').select2({
@@ -326,16 +330,18 @@ function _select2(){
 		allowClear: true,
 		dropdownParent: $("#modal_dialog"),//modal默认不显示，解决modal显示后下拉单样式问题
 		ajax: {
-			url: addressprojectgroup,
+			url: addurl + '/pa/_select2',
+			contentType:"application/json",
 			data: function (params) {
 	             return {
+	            	 searchstr:params.term,
 	            	 teamid:$('#modal_dialog #teamid').select2('val')
 	             };
 	        },
 			processResults: function (data) {
 			// Tranforms the top-level key of the response object from 'items' to 'results'
 				return {
-					results: data
+					results: data[0].projectlist
 				};
 			}
 		}
@@ -344,16 +350,18 @@ function _select2(){
 		placeholder: "--请选择--",
 		allowClear: true,
 		ajax: {
-			url: addressprojectgroup,
+			url: addurl + '/pa/_select2',
+			contentType:"application/json",
 			data: function (params) {
 	             return {
+	            	 searchstr:params.term,
 	            	 teamid:$('#table_div #teamid_search').select2('val')
 	             };
 	        },
 			processResults: function (data) {
 			// Tranforms the top-level key of the response object from 'items' to 'results'
 				return {
-					results: data
+					results: data[0].projectlist
 				};
 			}
 		}
@@ -364,11 +372,17 @@ function _select2(){
 		allowClear: true,
 		dropdownParent: $("#modal_dialog_HIS_data"),//modal默认不显示，解决modal显示后下拉单样式问题
 		ajax: {
-			url: addressprojectgroup,
+			url: addurl + '/pa/_select2',
+			contentType:"application/json",
+			data: function (params) {
+	             return {
+	            	 searchstr:params.term,
+	             };
+	        },
 			processResults: function (data) {
 			// Tranforms the top-level key of the response object from 'items' to 'results'
 				return {
-					results: data
+					results: data[0].projectlist
 				};
 			}
 		}
@@ -381,11 +395,17 @@ function _select2(){
 		allowClear: true,
 		dropdownParent: $("#table_div"),//modal默认不显示，解决modal显示后下拉单样式问题
 		ajax: {
-			url: addressteamgroup,
+			url: addurl + '/pa/_select2',
+			contentType:"application/json",
+			data: function (params) {
+	             return {
+	            	 searchstr:params.term,
+	             };
+	        },
 			processResults: function (data) {
 			// Tranforms the top-level key of the response object from 'items' to 'results'
 				return {
-					results: data
+					results: data[0].teamlist
 				};
 			}
 		}
@@ -400,11 +420,17 @@ function _select2(){
 		allowClear: true,
 		dropdownParent: $("#modal_dialog"),//modal默认不显示，解决modal显示后下拉单样式问题
 		ajax: {
-			url: addressteamgroup,
+			url: addurl + '/pa/_select2',
+			contentType:"application/json",
+			data: function (params) {
+	             return {
+	            	 searchstr:params.term,
+	             };
+	        },
 			processResults: function (data) {
 			// Tranforms the top-level key of the response object from 'items' to 'results'
 				return {
-					results: data
+					results: data[0].teamlist
 				};
 			}
 		}
@@ -421,13 +447,35 @@ function _select2(){
 	$("#modal_dialog #selenium_share_status").val('0').trigger("change");
 	
 	
+	$('#modal_dialog_HIS_data #database').select2({
+		placeholder: "--请选择--",
+		allowClear: true,
+		dropdownParent: $("#modal_dialog_HIS_data"),//modal默认不显示，解决modal显示后下拉单样式问题
+		ajax: {
+			url: addurl + '/dict/select2',
+			contentType:"application/json",
+			data: function (params) {
+	             return {
+	            	 searchstr:params.term,
+	             };
+	        },
+			processResults: function (data) {
+			// Tranforms the top-level key of the response object from 'items' to 'results'
+				return {
+					results: data[0].database
+				};
+			}
+		}
+	});
 }
 
 function add_data(){
-	if($('#dialog_form #projectid').select2('val')==null){
+	if($('#dialog_form #projectid1').select2('val')==null){
 		swal("", '请选择项目',"error");
 		return
 	}
+	
+	$('#modal_dialog #teamid').attr("disabled",false);
 	
 	var queryaddress=addurl+'/pa/testmng_query';
 	var addaddress=addurl+'/pa/testmng_add';
@@ -464,7 +512,7 @@ function add_data(){
 
 function del_data(){
 	var IdSelections = $('#table_data').bootstrapTable('getSelections');
-	if(IdSelections.length != 1){
+	if(IdSelections.length < 1){
 		swal({
             title: "警告",
             text: "请至少选择一条数据进行操作."
@@ -529,18 +577,21 @@ function edit_dialog(){
         });
 		return;
 	}
-	
+	$('#modal_dialog #teamid').html('<option value="' + IdSelections[0].teamid + '">' + IdSelections[0].teamname + '</option>').trigger("change");
+	$('#modal_dialog #teamid').attr("disabled",true);
 	$('#modal_dialog #testid').val(IdSelections[0].testid);
 	$('#modal_dialog #projectid1').html('<option value="' + IdSelections[0].projectid + '">' + IdSelections[0].projectname + '</option>').trigger("change");
 	$("#modal_dialog #status").val(IdSelections[0].status).trigger("change");
 	$("#modal_dialog #selenium_share_status").val(IdSelections[0].selenium_share_status).trigger("change");
 	$('#modal_dialog #testname').val(IdSelections[0].testname);
 	$('#modal_dialog #testno').val(IdSelections[0].testno);
+	$('#modal_dialog #orderbyno').val(IdSelections[0].orderbyno);
 	$('#modal_dialog #testtext').val(IdSelections[0].testtext);
 	$('#modal_dialog #testin').val(IdSelections[0].testin);
 	$('#modal_dialog #testout').val(IdSelections[0].testout);
 	$('#modal_dialog #remark').val(IdSelections[0].remark);
 	$('#modal_dialog #testout_response').val(IdSelections[0].testout_response);
+	$('#modal_dialog #status').val(IdSelections[0].status);
 	
 	$('#modal_dialog').modal('show');
 }
@@ -610,10 +661,25 @@ function init_time(){
 
 
 function open_modal_dialog_HIS_data(){
+	$('#mzfenmu').empty();
+	$('#zyfenmu').empty();
+	$('#cyfenmu').empty();
+	for(var i=1;i<=100;i++){
+		$('#mzfenmu').append('<option value="'+i+'">'+i+'</option>');
+		$('#zyfenmu').append('<option value="'+i+'">'+i+'</option>');
+		$('#cyfenmu').append('<option value="'+i+'">'+i+'</option>')
+	}
 	$('#modal_dialog_HIS_data').modal('show');
 }
 
 function create_data(){
+	var clear_radios=document.getElementsByName("clear_radio");
+	var clear_radio=null;
+	for(var i = 0; i < clear_radios.length; i++)
+	{
+	    if(clear_radios[i].checked)
+	    	clear_radio=clear_radios[i].value;
+	}
 	var address=addurl+"/pa/date_to_oracle";
 	//loading
 	parent.onloading();
@@ -622,10 +688,15 @@ function create_data(){
 		type:"POST",
 		url:address,
 		async:true,
-		data:{hiscodes1:$("#modal_dialog_HIS_data #hiscodes1").val(), 
+		data:{passorpa_hisdata1:$("#modal_dialog_HIS_data #passorpa_hisdata1").val(), 
+			hiscodes1:$("#modal_dialog_HIS_data #hiscodes1").val(), 
 			datetime1:$("#modal_dialog_HIS_data #datetime1 input").val(),
-			sum_date1:$("#modal_dialog_HIS_data #sum_date1").val(),
-			count1:$("#modal_dialog_HIS_data #count1").val(),
+			mz_sum_date1:$("#modal_dialog_HIS_data #mz_sum_date1").val(),
+//			zy_sum_date1:$("#modal_dialog_HIS_data #zy_sum_date1").val(),
+			cy_sum_date1:$("#modal_dialog_HIS_data #cy_sum_date1").val(),
+			countmz:$("#modal_dialog_HIS_data #countmz").val(),
+			countzy:$("#modal_dialog_HIS_data #countzy").val(),
+			countcy:$("#modal_dialog_HIS_data #countcy").val(),
 			mz1:$("#modal_dialog_HIS_data #mz1").val(),
 			zy1:$("#modal_dialog_HIS_data #zy1").val(),
 			cy1:$("#modal_dialog_HIS_data #cy1").val(),
@@ -637,7 +708,13 @@ function create_data(){
 			match_scheme1:$("#modal_dialog_HIS_data #match_scheme1").val(),
 			createTB1:$("#modal_dialog_HIS_data #createTB1").val(),
 			cleardict1:$("#modal_dialog_HIS_data #cleardict1").val(),
-			passorpa_hisdata1:0},
+			passorpa_hisdata1:0,
+			clear_radio:clear_radio,
+			database:$("#modal_dialog_HIS_data #database").val(),
+//			mzfenmu:$("#modal_dialog_HIS_data #mzfenmu").val(),
+//			zyfenmu:$("#modal_dialog_HIS_data #zyfenmu").val(),
+//			cyfenmu:$("#modal_dialog_HIS_data #cyfenmu").val(),
+		},
 			
 		success: function(result){
 			//loading
@@ -749,7 +826,7 @@ var TableInit_serverip =function () {
 //			showRefresh: true,                  // 是否显示刷新按钮
 			minimumCountColumns: 2,             // 最少允许的列数
 			clickToSelect: true,               // 是否启用点击选中行
-			height: 480,                        //450, 行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
+//			height: 480,                        //450, 行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
 			uniqueId: "ID",                     // 每一行的唯一标识，一般为主键列
 //			showToggle:true,                    // 是否显示详细视图和列表视图的切换按钮
 //			cardView: false,                    // 是否显示详细视图
@@ -1072,20 +1149,64 @@ function anli_copy(){
 }
 
 function tableheight(){
-//	alert(window.screen.availWidth)
-//	alert(document.body.clientHeight)
-//	alert(document.getElementById("header_path").offsetHeight)
-//	alert(document.getElementById("search_div").offsetHeight)
-//	alert(document.getElementById("toolbar").offsetHeight)
-	
-	var _height = document.body.clientHeight-document.getElementById("header_path").offsetHeight
-	-document.getElementById("search_div").offsetHeight-document.getElementById("toolbar").offsetHeight;
-	
-	if(window.screen.availWidth/160%1==0){
-		_height=_height-10;
-	}else{
-		_height=_height-30;
+	var _height=0;
+	//获取父级窗口高度
+	_height=$(window.parent.window).height()-60-40-120-100;
+	if(_height<300){
+		_height=300;
 	}
-	
 	return _height;
+}
+
+function _look(row){
+//	var rowdata=$('#table_data').bootstrapTable('getRowByUniqueId', testid);
+//	var str='';
+//	str=str+'<h4 style="background-color:#d0eeef">案例名称:</h4><br>'+rowdata.testname+'<br>'
+//		+'<hr>'
+//		+'<h4 style="background-color:#d0eeef">案例编号:</h4><br>'+rowdata.testno+'<br>'
+//		+'<hr>'
+//		+'<h4 style="background-color:#d0eeef">逻辑描述:</h4><br>'+rowdata.testtext+'<br>'
+//		+'<hr>'
+//		+'<h4 style="background-color:#d0eeef">输入条件:</h4><br>'+rowdata.testin+'<br>'
+//		+'<hr>'
+//		+'<h4 style="background-color:#d0eeef">预期结果:</h4><br>'+rowdata.testout+'<br>'
+//		+'<hr>'
+//		+'<h4 style="background-color:#d0eeef">备注:</h4><br>'+rowdata.remark+'<br>'
+//	$('#_look_modal_dialog #test_look').html(str);
+//	
+//	$('#_look_modal_dialog').modal('show');
+	
+	//清空表单
+	document.getElementById('dialog_form').reset();
+	$('#modal_dialog #projectid1').select2('val','0');
+	$('#modal_dialog #teamid').select2('val','0');
+	
+	$('#modal_dialog button').show();
+	$('#modal_dialog #btn_add').hide();
+	$('#modal_dialog #btn_update').hide();
+	
+	var IdSelections = $('#table_data').bootstrapTable('getSelections');
+//	if(IdSelections.length != 1){
+//		swal({
+//            title: "警告",
+//            text: "请选择一条数据进行操作."
+//        });
+//		return;
+//	}
+	$('#modal_dialog #teamid').html('<option value="' + row.teamid + '">' + row.teamname + '</option>').trigger("change");
+	$('#modal_dialog #teamid').attr("disabled",true);
+	$('#modal_dialog #testid').val(row.testid);
+	$('#modal_dialog #projectid1').html('<option value="' + row.projectid + '">' + row.projectname + '</option>').trigger("change");
+	$("#modal_dialog #status").val(row.status).trigger("change");
+	$("#modal_dialog #selenium_share_status").val(row.selenium_share_status).trigger("change");
+	$('#modal_dialog #testname').val(row.testname);
+	$('#modal_dialog #testno').val(row.testno);
+	$('#modal_dialog #testtext').val(row.testtext);
+	$('#modal_dialog #testin').val(row.testin);
+	$('#modal_dialog #testout').val(row.testout);
+	$('#modal_dialog #remark').val(row.remark);
+	$('#modal_dialog #testout_response').val(row.testout_response);
+	$('#modal_dialog #status').val(row.status);
+	
+	$('#modal_dialog').modal('show');
 }

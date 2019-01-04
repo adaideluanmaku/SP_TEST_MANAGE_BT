@@ -15,11 +15,16 @@ import java.util.Map;
 import java.util.Random;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import com.ch.dao.DataBaseType;
+import com.ch.dao.SpringJdbc_oracle_his;
+import com.ch.dao.SpringJdbc_sqlserver_his;
 import com.ch.sysuntils.Strisnull;
 
 import net.sf.json.JSONArray;
@@ -27,16 +32,24 @@ import net.sf.json.JSONObject;
 
 @Service
 public class T_mc_outhosp_operation {
+	private static Logger log = Logger.getLogger(T_mc_outhosp_operation.class);
+	JdbcTemplate jdbcTemplate_dataBase=null;
 	@Autowired
-	JdbcTemplate jdbcTemplate_oracle;
+	DataBaseType dataBaseType;
 	
 	@Autowired
 	Sys_pa sys_pa;
 	@Autowired
 	Strisnull strisnull;
-	
+	@Value("${data.insertdatacount}")
+    private String insertdatacount;
 	public void outhosp_operation(int trunca, int count, int sum_date,List anlilist,String hiscode,String ienddate,
-			String enddate){
+			String enddate,int database1){
+		jdbcTemplate_dataBase=dataBaseType.getJdbcTemplate(database1);
+		if(jdbcTemplate_dataBase==null){
+			log.info("数据库连接失败");
+			return;
+		}
 		try {
 			String sql=null;
 			List listbatch=new ArrayList();
@@ -49,18 +62,25 @@ public class T_mc_outhosp_operation {
 			int iid=0;
 			String ienddate1=ienddate;
 			String enddate1=enddate;
+			JSONObject json=null;
+			JSONObject PassClient=null;
+			JSONObject Patient=null;
+			JSONObject ScreenOperationList=null;
+			JSONArray ScreenOperations=null;
+			JSONObject ScreenDrugList=null;
+			JSONArray ScreenDrugs=null;
 			for(int i=0;i<count;i++){
 				//数据分割，增加时间
 				if(i%(count/sum_date)==0 && i>0){
 					ienddate1=sys_pa.date1(ienddate1, "yyyyMMdd");
-					 enddate1=sys_pa.date1(enddate1, "yyyy-MM-dd");
+					 enddate1=sys_pa.date1(enddate1, "yyyy-MM-dd HH:mm:ss");
 				}
 				for(int j=0;j<anlilist.size();j++){
-					JSONObject json=JSONObject.fromObject(anlilist.get(j));
-					JSONObject PassClient=json.getJSONObject("PassClient");
-					JSONObject Patient=json.getJSONObject("Patient");
-					JSONObject ScreenOperationList=json.getJSONObject("ScreenOperationList");
-					JSONArray ScreenOperations=ScreenOperationList.getJSONArray("ScreenOperations");
+					json=JSONObject.fromObject(anlilist.get(j));
+					PassClient=json.getJSONObject("PassClient");
+					Patient=json.getJSONObject("Patient");
+					ScreenOperationList=json.getJSONObject("ScreenOperationList");
+					ScreenOperations=ScreenOperationList.getJSONArray("ScreenOperations");
 					Patient.put("PatCode", hiscode+ienddate1+i+"_"+j+"_cy");
 //					Patient.put("InHospNo",hiscode+ienddate1+i+"_"+j);
 					Patient.put("InHospNo",hiscode+"_出院_"+Patient.getString("InHospNo"));
@@ -69,8 +89,8 @@ public class T_mc_outhosp_operation {
 					String caseid="Cy"+Patient.getString("PatCode");
 					
 					//设置数据时间偏移量
-					JSONObject ScreenDrugList=json.getJSONObject("ScreenDrugList");
-					JSONArray ScreenDrugs=ScreenDrugList.getJSONArray("ScreenDrugs");
+					ScreenDrugList=json.getJSONObject("ScreenDrugList");
+					ScreenDrugs=ScreenDrugList.getJSONArray("ScreenDrugs");
 					String starttimeaa="";
 					String starttimebb="";
 					int timesum=0;
@@ -99,9 +119,6 @@ public class T_mc_outhosp_operation {
 						}
 						iid=iid+1;
 						a=a+1;
-						if(a%2000==0){
-							System.out.println("t_mc_outhosp_operation --"+a);
-						}
 						
 						//针对出院的病人，需要根据住院的时间段，来调整手术时间
 						String OprStartDate=ScreenOperation.getString("OprStartDate");
@@ -131,8 +148,9 @@ public class T_mc_outhosp_operation {
 						
 						listbatch.add(map);
 						
-						if(a%500==0){
+						if(a%Integer.parseInt(insertdatacount)==0){
 							batchInsertRows(sql,listbatch);
+							log.info("======>t_mc_outhosp_operation :"+a);
 							listbatch.clear();
 						} 
 						
@@ -158,10 +176,10 @@ public class T_mc_outhosp_operation {
 				batchInsertRows(sql,listbatch);
 				listbatch.clear();
 			}
-			System.out.println("t_mc_outhosp_operation总数："+a+"-->有效数据："+a);
+			log.info("======>t_mc_outhosp_operation 总数  ："+a+"-->有效数据："+a);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			System.out.println("t_mc_outhosp_operation制造数据异常");
+			log.debug("调试==>t_mc_outhosp_operation 制造数据异常 ："+e);
 		}
 	}
 	
@@ -194,8 +212,8 @@ public class T_mc_outhosp_operation {
 					pst.setString(13,ScreenOperation.getString("OprCode"));//operationcode
 					pst.setString(14,caseid);//caseid]
 				}catch (Exception e){
-					System.out.println("出现异常的数据:"+map);
-					System.out.println(e);
+					log.debug("调试==>t_mc_outhosp_operation 插表异常 ："+map);
+					log.debug("调试==>"+e);
 				}
 			}
 			@Override
@@ -204,6 +222,6 @@ public class T_mc_outhosp_operation {
 				return listbatch.size();
 			}
 		};
-		jdbcTemplate_oracle.batchUpdate(sql, setter);
+		jdbcTemplate_dataBase.batchUpdate(sql, setter);
 	}
 }

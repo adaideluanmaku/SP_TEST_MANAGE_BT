@@ -10,16 +10,19 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.ch.pahis.Date_to_Oracle;
+import com.ch.pahisthread.Date_to_Oracle_Thread;
 import com.ch.service.Pabean;
 import com.ch.sysuntils.DataGrid;
 import com.ch.sysuntils.Select2;
+import com.ch.sysuntils.User;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
@@ -30,7 +33,10 @@ public class PaAction {
 	@Autowired
 	Pabean pabean;
 	@Autowired
-	Date_to_Oracle date_to_Oracle;
+	JdbcTemplate jdbcTemplate;
+	@Autowired
+	Date_to_Oracle_Thread date_to_Oracle_Thread;
+	private static Logger log = Logger.getLogger(PaAction.class);
 	
 	@ResponseBody
 	@RequestMapping("/team_query")
@@ -64,12 +70,6 @@ public class PaAction {
 		return datagrid;
 	}
 	
-	//获取team下拉单
-	@RequestMapping("/teamgroup")
-	@ResponseBody
-	public List teamgroup(HttpServletRequest req){
-		return pabean.teamgroup(req);
-	}
 	
 	@ResponseBody
 	@RequestMapping(value="/project_add",produces = "text/html;charset=UTF-8")
@@ -96,12 +96,6 @@ public class PaAction {
 		return datagrid;
 	}
 	
-	//获取team下拉单
-	@RequestMapping("/projectgroup")
-	@ResponseBody
-	public List projectgroup(HttpServletRequest req){
-		return pabean.projectgroup(req);
-	}
 
 	@ResponseBody
 	@RequestMapping(value="/testmng_add",produces = "text/html;charset=UTF-8")
@@ -121,6 +115,42 @@ public class PaAction {
 		return pabean.testmng_update(req);
 	}
 	
+	//下拉单
+	@RequestMapping("/_select2")
+	@ResponseBody
+	public List _select2(HttpServletRequest req){
+		List list=new ArrayList();
+		String sql =null; 
+		String searchstr="";
+		int teamid=0;
+		if(StringUtils.isNotBlank(req.getParameter("searchstr"))){
+			searchstr=req.getParameter("searchstr");
+		}
+		
+		sql="select teamid as id,teamname as text from pa_team where teamname like ? ";
+		List teamlist=jdbcTemplate.queryForList(sql,new Object[]{"%"+searchstr+"%"});
+		
+		if(StringUtils.isNotBlank(req.getParameter("teamid"))){
+			teamid=Integer.parseInt(req.getParameter("teamid"));
+		}
+		
+		List projectlist=null;
+		if(teamid>0){
+			sql="select a.projectid as id , a.projectname as text from pa_project a, pa_team b where "
+					+ " a.teamid=b.teamid and b.teamid=? and projectname like ? order by a.projectname asc";
+			projectlist=jdbcTemplate.queryForList(sql,new Object[]{teamid,"%"+searchstr+"%"});
+		}else{
+			sql="select projectid as id ,projectname as text from pa_project where projectname like ? order by projectname asc";
+			projectlist=jdbcTemplate.queryForList(sql,new Object[]{"%"+searchstr+"%"});
+		}
+		
+		Map map= new HashMap();
+		map.put("projectlist", projectlist);
+		map.put("teamlist", teamlist);
+		list.add(map);
+		return list;
+	}
+	
 	@RequestMapping(value="/date_to_oracle",produces = "text/html;charset=UTF-8")
 	@ResponseBody
 	public String date_to_oracle(HttpServletRequest req) throws ClassNotFoundException, SQLException, IOException{
@@ -128,16 +158,33 @@ public class PaAction {
 //				 || StringUtils.isBlank(req.getParameter("sum_date1")) || StringUtils.isBlank(req.getParameter("count1"))){
 //			return "输入数据不完整";
 //		}
-		System.out.println("开始制作HIS数据");
+		String qianfanggaoneng="";
+		log.info("======>开始制作HIS数据");
 		String hiscodes1=req.getParameter("hiscodes1");
 		String datetime1=req.getParameter("datetime1");
-		int sum_date1=0;
-		if(StringUtils.isNotBlank(req.getParameter("sum_date1"))){
-			sum_date1=Integer.parseInt(req.getParameter("sum_date1"));
+		int mz_sum_date1=0;
+		if(StringUtils.isNotBlank(req.getParameter("mz_sum_date1"))){
+			mz_sum_date1=Integer.parseInt(req.getParameter("mz_sum_date1"));
 		};
-		int count1=0;
-		if(StringUtils.isNotBlank(req.getParameter("count1"))){
-			count1=Integer.parseInt(req.getParameter("count1"));
+//		int zy_sum_date1=0;
+//		if(StringUtils.isNotBlank(req.getParameter("zy_sum_date1"))){
+//			zy_sum_date1=Integer.parseInt(req.getParameter("zy_sum_date1"));
+//		};
+		int cy_sum_date1=0;
+		if(StringUtils.isNotBlank(req.getParameter("cy_sum_date1"))){
+			cy_sum_date1=Integer.parseInt(req.getParameter("cy_sum_date1"));
+		};
+		int countmz=0;
+		if(StringUtils.isNotBlank(req.getParameter("countmz"))){
+			countmz=Integer.parseInt(req.getParameter("countmz"));
+		};
+		int countzy=0;
+		if(StringUtils.isNotBlank(req.getParameter("countzy"))){
+			countzy=Integer.parseInt(req.getParameter("countzy"));
+		};
+		int countcy=0;
+		if(StringUtils.isNotBlank(req.getParameter("countcy"))){
+			countcy=Integer.parseInt(req.getParameter("countcy"));
 		};
 		int mz1=Integer.parseInt(req.getParameter("mz1"));
 		int zy1=Integer.parseInt(req.getParameter("zy1"));
@@ -145,6 +192,7 @@ public class PaAction {
 		int dict1=Integer.parseInt(req.getParameter("dict1"));
 		int createview1=Integer.parseInt(req.getParameter("createview1"));
 		int trunca1=Integer.parseInt(req.getParameter("trunca1"));
+		int clear_radio=Integer.parseInt(req.getParameter("clear_radio"));
 //		int anlisum=Integer.parseInt(req.getParameter("anlisum"));
 		int projectid1=0;
 		if(StringUtils.isNotBlank(req.getParameter("projectid1"))){
@@ -160,11 +208,24 @@ public class PaAction {
 		//默认=0制作PA数据，=1制作PASS数据(应该是制作肝肾检验值数据使用)
 		int passorpa_hisdata1=Integer.parseInt(req.getParameter("passorpa_hisdata1"));
 		int cleardict1=Integer.parseInt(req.getParameter("cleardict1"));
-		date_to_Oracle.Rundate(hiscodes1, datetime1, sum_date1, count1, mz1, zy1, cy1, dict1, createview1, 
-				trunca1,projectid1,match_scheme1,createTB1,passorpa_hisdata1,cleardict1);
+		int database=Integer.parseInt(req.getParameter("database"));
+//		int mzfenmu=Integer.parseInt(req.getParameter("mzfenmu"));
+//		int zyfenmu=Integer.parseInt(req.getParameter("zyfenmu"));
+//		int cyfenmu=Integer.parseInt(req.getParameter("cyfenmu"));
+		
+		User user= new User();
+		user = (User)req.getSession().getAttribute("user");
+		
+		//单线程
+//		date_to_Oracle.Rundate(user.getUserid(),hiscodes1, datetime1, mz_sum_date1, countmz,countzy,countcy, mz1, zy1, cy1, dict1, createview1, 
+//		trunca1,projectid1,match_scheme1,createTB1,passorpa_hisdata1,cleardict1,clear_radio,database,cy_sum_date1);
+		//多线程
+		qianfanggaoneng=date_to_Oracle_Thread.Rundate(user.getUserid(),hiscodes1, datetime1, mz_sum_date1, countmz,countzy,countcy, mz1, zy1, cy1, dict1, createview1, 
+				trunca1,projectid1,match_scheme1,createTB1,passorpa_hisdata1,cleardict1,clear_radio,database,cy_sum_date1);
 		long endTime = System.currentTimeMillis();
-		System.out.println("总耗时："+(endTime-startTime)+"毫秒");
-		return "=========数据制作结束=======总耗时："+(endTime-startTime)+"毫秒";
+//		log.info("======>总耗时："+(endTime-startTime)+"毫秒");
+//		return "=========数据制作结束=======总耗时："+(endTime-startTime)+"毫秒";
+		return "前方高能！反正很快。。-_-！("+qianfanggaoneng+")";
 	}
 	
 	//pa审查-单个案例

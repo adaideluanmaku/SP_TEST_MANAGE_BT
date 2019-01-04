@@ -18,6 +18,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.ch.service.Prescriptionbean;
 import com.ch.sysuntils.DataGrid;
+import com.ch.sysuntils.User;
 
 @Controller
 @RequestMapping("/prescription")
@@ -62,7 +63,9 @@ public class PrescriptionAction {
 		if(StringUtils.isNoneBlank(req.getParameter("prescriptiontype"))){
 			prescriptiontype=Integer.parseInt(req.getParameter("prescriptiontype").toString());
 		}
-		if(req.getSession().getAttribute("loginname")==null || prescriptiontype==0){
+		User user=new User();
+		user=(User)req.getSession().getAttribute("user");
+		if(user.getLoginname()==null || prescriptiontype==0){
 			return mav;
 		}
 
@@ -102,4 +105,35 @@ public class PrescriptionAction {
 		return mav;
 	}
 	
+	@ResponseBody
+	@RequestMapping(value="/yijiandaorumubiao",produces = "text/html;charset=UTF-8")
+	public String yijiandaorumubiao(HttpServletRequest req) {
+		int tongbuDatabaseid=0;
+		String mhiscode="";
+		String tongbuTable="";
+		String path="";
+		tongbuDatabaseid=Integer.parseInt(req.getParameter("tongbuDatabaseid"));
+		mhiscode=req.getParameter("mhiscode");
+		tongbuTable=req.getParameter("tongbuTable");
+		path=req.getRealPath(req.getServletPath()); 
+		
+		prescription.yijiandaorumubiao(tongbuDatabaseid, tongbuTable, mhiscode, path);
+		return "ok";
+	}
+	
+	@ResponseBody
+	@RequestMapping(value="/yijiandaoruanli",produces = "text/html;charset=UTF-8")
+	public String yijiandaoruanli(HttpServletRequest req) {
+		int tongbuDatabaseid=0;
+		String mhiscode="-1";
+		String tongbuTable="";
+		String path="";
+		tongbuDatabaseid=Integer.parseInt(req.getParameter("tongbuDatabaseid"));
+		mhiscode=req.getParameter("mhiscode");
+		tongbuTable=req.getParameter("tongbuTable");
+		path=req.getRealPath(req.getServletPath()); 
+		
+		prescription.yijiandaoruanli(tongbuDatabaseid, tongbuTable, mhiscode, path);
+		return "ok";
+	}
 }

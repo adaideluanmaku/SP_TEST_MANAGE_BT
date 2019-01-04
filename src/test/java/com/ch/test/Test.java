@@ -1,48 +1,39 @@
 package com.ch.test;
 
+import java.math.BigDecimal;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Random;
+import java.util.Set;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
+import org.apache.commons.lang3.StringUtils;
+
+import com.ch.pahis.Sys_pa;
+import com.ch.sys.StrLevenshtein;
+
 public class Test {
+	
 	public static void main(String args[]){
-//		Object a="0";
-//		if(a instanceof Integer){
-//			System.out.println("11111");
+		AgeDaysUtil ageDaysUtil=new AgeDaysUtil();
+//		for(int i=0;i<10;i++){
+//			System.out.println(ageDaysUtil.getDateTimeFormat("1900-01-01 00:00:00",0));
+//			
 //		}
-		
-		String frequency="1/1/1";
-		
-		int frequency_int=-1;
-		try{
-			frequency_int=Integer.parseInt(frequency);
-		}catch(Exception e){
-			
-		}
-		
-		String[] frequencys=null;
-		int times=0;
-		int days=0;
-		if(frequency_int==-1){
-			frequencys=frequency.split("/");
-			if(frequencys.length==2){
-				try{
-					times=Integer.parseInt(frequencys[0].toString());
-				}catch(Exception e){
-					times=-1;
-				}
-				try{
-					days=Integer.parseInt(frequencys[1].toString());
-				}catch(Exception e){
-					days=-1;
-				}
-			}else{
-				times=-1;
-				days=-1;
-			}
-		}else{
-			times=frequency_int;
-			days=frequency_int;
-		}
-		
-		System.out.println(times+":"+days);
-		
-		System.out.println("22222");
+		System.out.println(ageDaysUtil.getDateTimeFormat("1900:01:01 00:00:00",0));
 	}
+	
 }
+

@@ -49,7 +49,7 @@ public class T_mc_clinic_patient1 {
 				//数据分割，增加时间
 				if(i%(count/sum_date)==0 && i>0){
 			        ienddate1=sys_pa.date1(ienddate1, "yyyyMMdd");
-			        enddate1=sys_pa.date1(enddate1, "yyyy-MM-dd");
+			        enddate1=sys_pa.date1(enddate1, "yyyy-MM-dd HH:mm:ss");
 				}
 				for(int j=0;j<anlilist.size();j++){
 					a=a+1;

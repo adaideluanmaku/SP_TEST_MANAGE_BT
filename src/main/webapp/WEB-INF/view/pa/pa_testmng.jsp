@@ -189,6 +189,11 @@
 						<div class="col-sm-4">
 							<input type="text" class="form-control" id="testno"  name="testno">
 						</div>
+						<div class="col-sm-1" style="margin-top:5px">—
+						</div>
+						<div class="col-sm-3">
+							<input type="text" class="form-control" id="orderbyno"  name="orderbyno">
+						</div>
 					</div>
 					<div class="form-group">
 						<label for="testtext" class="col-sm-2 control-label">逻辑描述</label>
@@ -240,9 +245,23 @@
 				<h4 class="modal-title">HIS数据制作</h4>
 			</div>
 			<div class="modal-body" style="height:400px;overflow:auto">
+				<input type="hidden" class="form-control" id="passorpa_hisdata1" name="passorpa_hisdata1" value="0">
 				<div class="row" style="margin-bottom : 15px">
 					<h4>将数据导入到ORACLE数据库，模拟HIS数据。</h4><br>
-					<h4>N家HISCODE*数据集*单天循环次数*天数=总数</h4>
+					<h4>数据总量=N家HISCODE*数据集*单天循环次数*循环天数</h4>
+				</div>
+				<div class="row" style="margin-bottom : 15px">
+					<div class="col-sm-6">
+				      	<div class="input-group">
+				            <span class="input-group-addon">选择数据库</span>
+				            <!-- <select class="form-control m-b" name="database" id="database">
+	                            <option value="0" selected="selected"><font style="vertical-align: inherit;">oracle</font></option>
+	                            <option value="1"><font style="vertical-align: inherit;">sqlserver</font></option>
+	                            <option value="2"><font style="vertical-align: inherit;">mysql</font></option>
+	                        </select> -->
+	                        <select id="database" name="database" class="js-data-example-ajax" style="width:100%"></select>
+				        </div>
+				    </div>
 				</div>
 				<div class="row" style="margin-bottom : 15px">
 					<div class="col-sm-6">
@@ -274,40 +293,19 @@
 				</div>
 				<hr>
 				<div class="row" style="margin-bottom : 15px">
-					<div class="col-sm-8">
-				      	<!-- <div class="input-group">
-				            <span class="input-group-addon">循环1次数据集</span>
-				            <select class="form-control m-b" name="anlisum" id="anlisum">
-	                            <option value="1" selected="selected"><font style="vertical-align: inherit;">23条PASS各模块案例</font></option>
-	                            <option value="2"><font style="vertical-align: inherit;">2235条PASS全案例</font></option>
-	                            <option value="3"><font style="vertical-align: inherit;">343条PA全案例</font></option>
-	                        </select>
-				        </div> -->
-				        <div class="input-group">
-				            <span class="input-group-addon">循环1次数据集</span>
-				            <select id='projectid' name="projectid" class="form-control m-b js-data-example-ajax" style="width:100%"></select>
-			            </div>
-				    </div>
-				</div>
-				<div class="row" style="margin-bottom : 15px">
 					<div class="col-sm-6">
 				      	<div class="input-group">
-				            <span class="input-group-addon">单天循环次数</span>
-				            <input type="text" class="form-control" id="count1" name="count1">
+				            <span class="input-group-addon">重新创建所有表和结构</span>
+				            <select class="form-control m-b" name="createTB1" id="createTB1">
+	                            <option value="0" selected="selected"><font style="vertical-align: inherit;">关</font></option>
+	                            <option value="1"><font style="vertical-align: inherit;">开</font></option>
+	                        </select>
 				        </div>
 				    </div>
 				    <div class="col-sm-6">
 				      	<div class="input-group">
-				            <span class="input-group-addon">循环天数</span>
-				            <input type="text" class="form-control" id="sum_date1" name="sum_date1">
-				        </div>
-				    </div>
-				</div>
-				<div class="row" style="margin-bottom : 15px">
-					<div class="col-sm-8">
-				      	<div class="input-group">
-				            <span class="input-group-addon">重新创建所有表和结构</span>
-				            <select class="form-control m-b" name="createTB1" id="createTB1">
+				            <span class="input-group-addon">创建视图</span>
+				            <select class="form-control m-b" name="createview1" id="createview1">
 	                            <option value="0" selected="selected"><font style="vertical-align: inherit;">关</font></option>
 	                            <option value="1"><font style="vertical-align: inherit;">开</font></option>
 	                        </select>
@@ -325,19 +323,45 @@
 				        </div>
 				    </div>
 				</div>
+				<div class="row">
+					<div class="col-sm-8">
+						<label><input type="radio" name="clear_radio" id="clear_radio1" value="0" checked> 全清</label>
+						<label><input type="radio" name="clear_radio" id="clear_radio2" value="1">只清导入模块</label>
+					</div>
+				</div>
+				<hr>
 				<div class="row" style="margin-bottom : 15px">
 					<div class="col-sm-8">
-				      	<div class="input-group">
-				            <span class="input-group-addon">创建视图</span>
-				            <select class="form-control m-b" name="createview1" id="createview1">
-	                            <option value="0" selected="selected"><font style="vertical-align: inherit;">关</font></option>
-	                            <option value="1"><font style="vertical-align: inherit;">开</font></option>
+				      	<!-- <div class="input-group">
+				            <span class="input-group-addon">循环1次数据集</span>
+				            <select class="form-control m-b" name="anlisum" id="anlisum">
+	                            <option value="1" selected="selected"><font style="vertical-align: inherit;">23条PASS各模块案例</font></option>
+	                            <option value="2"><font style="vertical-align: inherit;">2235条PASS全案例</font></option>
+	                            <option value="3"><font style="vertical-align: inherit;">343条PA全案例</font></option>
 	                        </select>
-				        </div>
+				        </div> -->
+				        <div class="input-group">
+				            <span class="input-group-addon">数据集</span>
+				            <select id='projectid' name="projectid" class="form-control m-b js-data-example-ajax" style="width:100%"></select>
+			            </div>
 				    </div>
 				</div>
 				<div class="row" style="margin-bottom : 15px">
-					<div class="col-sm-8">
+					<!-- <div class="col-sm-6">
+				      	<div class="input-group">
+				            <span class="input-group-addon">单天循环次数</span>
+				            <input type="text" class="form-control" id="count1" name="count1">
+				        </div>
+				    </div> 
+				    <div class="col-sm-6">
+				      	<div class="input-group">
+				            <span class="input-group-addon">循环天数</span>
+				            <input type="text" class="form-control" id="sum_date1" name="sum_date1">
+				        </div>
+				    </div>-->
+				</div>
+				<div class="row" style="margin-bottom : 15px">
+					<div class="col-sm-6">
 				      	<div class="input-group">
 				            <span class="input-group-addon">门诊数据</span>
 				            <select class="form-control m-b" name="mz1" id="mz1">
@@ -348,7 +372,22 @@
 				    </div>
 				</div>
 				<div class="row" style="margin-bottom : 15px">
-					<div class="col-sm-8">
+				    <div class="col-sm-6">
+				    	<!-- 1/<select id="mzfenmu"></select> -->
+				    	<div class="input-group">
+				            <span class="input-group-addon">门诊单天循环次数</span>
+				            <input type="text" class="form-control" id="countmz" name="countmz" value="1">
+				        </div>
+				    </div>
+				     <div class="col-sm-6">
+				      	<div class="input-group">
+				            <span class="input-group-addon">门诊循环天数</span>
+				            <input type="text" class="form-control" id="mz_sum_date1" name="mz_sum_date1">
+				        </div>
+				    </div>
+				</div>
+				<div class="row" style="margin-bottom : 15px">
+					<div class="col-sm-6">
 				      	<div class="input-group">
 				            <span class="input-group-addon">住院数据</span>
 				            <select class="form-control m-b" name="zy1" id="zy1">
@@ -359,13 +398,43 @@
 				    </div>
 				</div>
 				<div class="row" style="margin-bottom : 15px">
-					<div class="col-sm-8">
+				    <div class="col-sm-6">
+				    	<!-- 1/<select id="zyfenmu"></select> -->
+				    	<div class="input-group">
+				            <span class="input-group-addon">住院单天循环次数</span>
+				            <input type="text" class="form-control" id="countzy" name="countzy" value="1">
+				        </div>
+				    </div>
+				    <!-- <div class="col-sm-6">
+				      	<div class="input-group">
+				            <span class="input-group-addon">住院循环天数</span>
+				            <input type="text" class="form-control" id="zy_sum_date1" name="zy_sum_date1"  value="1" readonly="true">
+				        </div>
+				    </div> -->
+				</div>
+				<div class="row" style="margin-bottom : 15px">
+					<div class="col-sm-6">
 				      	<div class="input-group">
 				            <span class="input-group-addon">出院数据</span>
 				            <select class="form-control m-b" name="cy1" id="cy1">
 	                            <option value="0" selected="selected"><font style="vertical-align: inherit;">关</font></option>
 	                            <option value="1"><font style="vertical-align: inherit;">开</font></option>
 	                        </select>
+				        </div>
+				    </div>
+				</div>
+				<div class="row" style="margin-bottom : 15px">
+				    <div class="col-sm-6">
+				    	<!-- 1/<select id="cyfenmu"></select> -->
+				    	<div class="input-group">
+				            <span class="input-group-addon">出院单天循环次数</span>
+				            <input type="text" class="form-control" id="countcy" name="countcy" value="1">
+				        </div>
+				    </div>
+				    <div class="col-sm-6">
+				      	<div class="input-group">
+				            <span class="input-group-addon">出院循环天数</span>
+				            <input type="text" class="form-control" id="cy_sum_date1" name="cy_sum_date1">
 				        </div>
 				    </div>
 				</div>
@@ -455,6 +524,24 @@
 			</div>
 			<div class="modal-body" style="height:400px;overflow:auto">
 				<div id="jsonerr"></div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal -->
+</div>
+
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="_look_modal_dialog" tabindex="-1" data-backdrop="static" data-keyboard="false" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" height="600px">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title">查看</h4>
+			</div>
+			<div class="modal-body" style="height:400px;overflow:auto">
+				<div id="test_look"></div>
 			</div>
 			<div class="modal-footer">
 				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>

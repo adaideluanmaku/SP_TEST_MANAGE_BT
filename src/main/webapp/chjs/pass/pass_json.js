@@ -88,8 +88,23 @@ function _select2(){
 		}
 	});
 	
-	$("#jsonversion").select2({data:[{id:'1609',text:'1609'},{id:'1712',text:'1712'}]});
-	$("#jsonversion").val('1609').trigger('change');
+	$('#jsonversion').select2({
+		placeholder: "--请选择--",
+		allowClear: true,
+//		dropdownParent: $("#modal_dialog_serverip"),//modal默认不显示，解决modal显示后下拉单样式问题
+		ajax: {
+			url: addurl + '/pass/_select2',
+			processResults: function (data) {
+			// Tranforms the top-level key of the response object from 'items' to 'results'
+				return {
+					results: data[0].jsonversions
+				};
+			}
+		}
+	});
+	
+//	$("#jsonversion").select2({data:[{id:'1609',text:'1609'},{id:'1712',text:'1712'},{id:'1809',text:'1809'}]});
+//	$("#jsonversion").val('1609').trigger('change');
 	
 	$("#jsontype").select2({data:[{id:'1',text:'screen'},{id:'2',text:'query'},{id:'3',text:'detail'}]});
 	$("#jsontype").val('1').trigger('change');

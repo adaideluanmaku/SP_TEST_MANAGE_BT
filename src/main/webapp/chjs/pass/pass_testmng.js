@@ -7,7 +7,7 @@ $(document).ready(function() {
 	//初始化整个页面所有下拉单
 	_select2();
 	
-	//初始化所有表格open_dialog
+	//初始化所有表格open_dialog_daoshuju
 	var oTable=new TableInit();
 	oTable.Init();
 	
@@ -99,7 +99,7 @@ var TableInit =function () {
 			minimumCountColumns: 2,             // 最少允许的列数
 			clickToSelect: true,               // 是否启用点击选中行
 			height: tableheight(),                        //450, 行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
-			uniqueId: "ID",                     // 每一行的唯一标识，一般为主键列
+			uniqueId: "testid",                     // 每一行的唯一标识，一般为主键列
 //			showToggle:true,                    // 是否显示详细视图和列表视图的切换按钮
 //			cardView: false,                    // 是否显示详细视图
 			detailView: false, 					//是否显示父子表
@@ -128,7 +128,7 @@ var TableInit =function () {
 					searchdata: $("#searchdata").val(),
 					projectid: $("#table_div #projectid_search").select2('val'),
 					anlitype:$("#table_div #anlitype").select2('val'),
-					moduleid:$("#table_div #moduleid").select2('val'),
+					moduleid:$("#table_div #moduleid1").select2('val'),
 			    };
 			    return temp;
 			},
@@ -136,22 +136,38 @@ var TableInit =function () {
 			columns : [ {
 				field:'select',
 				checkbox : true
+			}, {
+				field : '',title : '操作JSON',//width : 100,
+				align : 'center',
+				formatter: function(value,row,index){
+                    return '<a href="'+addurl+'/pass/pass_json?testid='+row.testid+'" target="_blank">打开</a>';
+				}
+			}, {
+				field : '',
+				title : '操作',
+				align : 'center',
+				formatter: function(value,row,index){
+//					if(row.testin==undefined || row.testin==''){
+//						return '--'
+//					}
+					
+                    return '<a href="'+addurl+'/prescription/prescription_edit?prescriptiontype=3&testid='+row.testid+'" target="_blank">打开</a>';
+				}
 			},{
-				field:'projectname',title:'项目名称',//width:100,
+				field:'testresult',title:'测试',sortable : true,//dth:100,
 			},{
-				field:'testresult',title:'测试',sortable : true//dth:100,
-			},{
-				field:'modulename',title:'模块名称',//width:100,
-			},{
-				field:'testno',title:'案例编号',sortable : true//width:80,
+				field:'testno',title:'案例编号',sortable : true,//width:80,
+				formatter: function (value, row, index) {
+					return '<div style="width:100px;">'+value+'-'+row.orderbyno+'</div>'
+                }
 			},{
 				field:'testname',title:'案例名称',//width:150,
 			},{
-				field:'testtext',title:'逻辑描述',halign:'center',
+				field:'testtext',title:'逻辑描述',halign:'center',//width:250,
 				formatter: function (value, row, index) {
 					if(value!=null){
 						if (value.length>30) {
-	                    	return '<div style="width:200px;">'+value+'</div>';
+	                    	return '<div style="width:300px;">'+value+'</div>';
 	                    }else{
 	                    	return value;
 	                    }
@@ -164,7 +180,7 @@ var TableInit =function () {
 				formatter: function (value, row, index) {
 					if(value!=null){
 						if (value.length>30) {
-	                    	return '<div style="width:200px;">'+value+'</div>';
+	                    	return '<div style="width:100px;">'+value+'</div>';
 	                    }else{
 	                    	return value;
 	                    }
@@ -177,13 +193,23 @@ var TableInit =function () {
 				formatter: function (value, row, index) {
 					if(value!=null){
 						if (value.length>30) {
-	                    	return '<div style="width:200px;"><xmp style="margin: auto">'+value+'</xmp></div>';
+	                    	return '<div style="width:100px;"><xmp style="margin: auto">'+value+'</xmp></div>';
+//							return '<div style="width:100px;">'+value+'</div>';
 	                    }else{
 	                    	return value;
 	                    }
 					}else{
 						return value;
 					}
+                }
+			},{
+				field:'projectname',title:'项目名称',//width:100,
+			},{
+				field:'modulename',title:'模块名称',//width:100,
+			},{
+				field:'anlitype',title:'案例类型',sortable : true,//dth:100,
+				formatter: function (value, row, index) {
+					return getanlitype(value);
                 }
 			},{
 				field:'remark',title:'备注',//width:100,
@@ -203,11 +229,6 @@ var TableInit =function () {
 				field:'username',title:'用户',//width:100,
 			},{
 				field:'inserttime',title:'创建日期',//width:130,
-			}, {
-				field : '',title : '查看JSON',//width : 100,
-				formatter: function(value,row,index){
-                    return '<a href="'+addurl+'/pass/pass_json?testid='+row.testid+'" target="_blank">打开</a>';
-				}
 			},{
 				field:'status',title:'状态',//width:50,
 				formatter: function (value, row, index) {
@@ -217,23 +238,15 @@ var TableInit =function () {
                     	 return '停用';
                     }
                 }
-			}, {
-				field : '',
-				title : '操作',
-				align : 'center',
-				formatter: function(value,row,index){
-//					if(row.testin==undefined || row.testin==''){
-//						return '--'
-//					}
-					
-                    return '<a href="'+addurl+'/prescription/prescription_edit?prescriptiontype=3&testid='+row.testid+'" target="_blank">打开</a>';
-				}
 			}],
 			
 			// 1.点击每行进行函数的触发
 			onClickRow : function(row, tr,flied){
+				$('#table_div #table_data').bootstrapTable('uncheckAll');//取消选中所有行
 			},
-
+			onDblClickRow : function(row, tr, field){
+				_look(row.testid)
+			},
 			// 2. 点击前面的复选框进行对应的操作
 			// 点击全选框时触发的操作
 			onCheckAll:function(rows){
@@ -257,6 +270,7 @@ function table_search(){
 }
 
 function open_dialog(){
+	$('#modal_dialog_add_update #teamidaa').attr("disabled",false);
 	//清空表单
 	document.getElementById('dialog_form').reset();
 	$('#modal_dialog_add_update #anlitypeaa').select2('val','0');
@@ -279,18 +293,25 @@ function open_dialog(){
 
 //每次点击都要后台取数据
 function _select2(){
-	var addressteamgroup = addurl + '/pass/teamgroup';
 	$('#table_div #teamid_search').select2({
 		placeholder: "--请选择--",
 //		placeholder: { id: "0", text: "--请选择--" },//默认初始值
 		allowClear: true,
 		dropdownParent: $("#table_div"),//modal默认不显示，解决modal显示后下拉单样式问题
 		ajax: {
-			url: addressteamgroup,
+			url: addurl + '/pass/_select2',
+			contentType:"application/json",
+			data: function (params) {
+	             return {
+	            	 searchstr:params.term,
+//	            	 page : params.page,// 第几页，分页哦
+//	                 rows : 10// 每页显示多少行
+	             };
+	        },
 			processResults: function (data) {
 			// Tranforms the top-level key of the response object from 'items' to 'results'
 				return {
-					results: data
+					results: data[0].teamlist
 				};
 			}
 		}
@@ -300,15 +321,15 @@ function _select2(){
 		$('#table_div #projectid_search').select2('val','0');
 	})
 	
-	var addressprojectgroup = addurl + '/pass/projectgroup';
 	$('#table_div #projectid_search').select2({
 		placeholder: "--请选择--",
 		allowClear: true,
 		ajax: {
-			url: addressprojectgroup,
+			url: addurl + '/pass/_select2',
 			contentType:"application/json",
 			data: function (params) {
 	             return {
+	            	 searchstr:params.term,
 	            	 teamid:$('#table_div #teamid_search').select2('val')
 	             };
 	        },
@@ -316,19 +337,24 @@ function _select2(){
 				console.log($('#table_div #teamid_search').select2('val'))
 			// Tranforms the top-level key of the response object from 'items' to 'results'
 				return {
-					results: data
+					results: data[0].projectlist
 				};
 			}
 		}
 	});
 	
-	var address_select2 = addurl + '/pass/_select2';
 	$('#table_div #anlitype').select2({
 		placeholder: "--请选择--",
 		allowClear: true,
 		dropdownParent: $("#table_div"),//modal默认不显示，解决modal显示后下拉单样式问题
 		ajax: {
-			url: address_select2,
+			url: addurl + '/pass/_select2',
+			contentType:"application/json",
+			data: function (params) {
+	             return {
+	            	 searchstr:params.term,
+	             };
+	        },
 			processResults: function (data) {
 			// Tranforms the top-level key of the response object from 'items' to 'results'
 				return {
@@ -338,30 +364,54 @@ function _select2(){
 		}
 	});
 	
-	var addressmodulenamegroup = addurl + '/pass/modulenamegroup';
-	var modulenamegroupdata={}
-	$.ajax({
-		type:"POST",
-		url:addressmodulenamegroup,
-		async:false,
-		success: function (result) {
-			modulenamegroupdata=result
-		},
-	});
 	$('#modal_dialog_add_update #moduleid').select2({
 		placeholder: "--请选择--",
 //		placeholder: { id: "0", text: "--请选择--" },//默认初始值
 		allowClear: true,
 		dropdownParent: $("#modal_dialog_add_update"),//modal默认不显示，解决modal显示后下拉单样式问题
-		data:modulenamegroupdata
+//		data:modulenamegroupdata
+		ajax: {
+			url: addurl + '/pass/_select2',
+			contentType:"application/json",
+			data: function (params) {
+	             return {
+	            	 searchstr:params.term,
+	             };
+	        },
+			processResults: function (data) {
+			// Tranforms the top-level key of the response object from 'items' to 'results'
+				return {
+					results: data[0].modules
+				};
+			}
+		}
 	});
-	$('#table_div #moduleid').select2({
+	$('#table_div #moduleid1').select2({
 		placeholder: "--请选择--",
 //		placeholder: { id: "0", text: "--请选择--" },//默认初始值
 		allowClear: true,
 		dropdownParent: $("#table_div"),//modal默认不显示，解决modal显示后下拉单样式问题
-		data:modulenamegroupdata
+//		data:modulenamegroupdata
+		ajax: {
+			url: addurl + '/pass/_select2',
+			contentType:"application/json",
+			data: function (params) {
+	             return {
+	            	 searchstr:params.term,
+	             };
+	        },
+			processResults: function (data) {
+			// Tranforms the top-level key of the response object from 'items' to 'results'
+				return {
+					results: data[0].modules
+				};
+			}
+		}
 	});
+	//选中team下拉后，初始化project的数据
+	$('#modal_dialog_add_update #moduleid').on("select2:select", function(e) {
+		$('#modal_dialog_add_update #modulename').val($('#modal_dialog_add_update #moduleid').text());
+	})
 	
 	var addressteamgroup = addurl + '/pass/teamgroup';
 	$('#modal_dialog_add_update #teamidaa').select2({
@@ -370,11 +420,17 @@ function _select2(){
 		allowClear: true,
 		dropdownParent: $("#modal_dialog_add_update"),//modal默认不显示，解决modal显示后下拉单样式问题
 		ajax: {
-			url: addressteamgroup,
+			url: addurl + '/pass/_select2',
+			contentType:"application/json",
+			data: function (params) {
+	             return {
+	            	 searchstr:params.term,
+	             };
+	        },
 			processResults: function (data) {
 			// Tranforms the top-level key of the response object from 'items' to 'results'
 				return {
-					results: data
+					results: data[0].teamlist
 				};
 			}
 		}
@@ -384,39 +440,40 @@ function _select2(){
 		$('#modal_dialog_add_update #projectid').select2('val','0');
 	})
 	
-	var addressprojectgroup = addurl + '/pass/projectgroup';
 	$('#modal_dialog_add_update #projectidaa').select2({
 		placeholder: "--请选择--",
 		allowClear: true,
 		dropdownParent: $("#modal_dialog_add_update"),//modal默认不显示，解决modal显示后下拉单样式问题
 		ajax: {
-			url: addressprojectgroup,
+			url: addurl + '/pass/_select2',
+			contentType:"application/json",
 			data: function (params) {//后台查数据
 	             return {
+	            	 searchstr:params.term,
 	            	 teamid:$('#modal_dialog_add_update #teamidaa').select2('val')
 	             };
 	        },
 			processResults: function (data) {
 			// Tranforms the top-level key of the response object from 'items' to 'results'
 				return {
-					results: data
+					results: data[0].projectlist
 				};
 			}
 		}
 	});
 	
-	var address_select2 = addurl + '/pass/_select2';
 	$('#modal_dialog_add_update #anlitypeaa').select2({
 		placeholder: "--请选择--",
 		allowClear: true,
 		dropdownParent: $("#modal_dialog_add_update"),//modal默认不显示，解决modal显示后下拉单样式问题
 		ajax: {
-			url: address_select2,
-//			data: function (params) {//后台查数据
-//	             return {
-//	            	 teamid:$('#modal_dialog_add_update #anlitype').select2('val')
-//	             };
-//	        },
+			url: addurl + '/pass/_select2',
+			contentType:"application/json",
+			data: function (params) {//后台查数据
+	             return {
+	            	 searchstr:params.term,
+	             };
+	        },
 			processResults: function (data) {
 			// Tranforms the top-level key of the response object from 'items' to 'results'
 				return {
@@ -426,18 +483,23 @@ function _select2(){
 		}
 	});
 	
-	var addressteamgroup = addurl + '/pass/teamgroup';
 	$('#modal_dialog_tools #teamid').select2({
 		placeholder: "--请选择--",
 //		placeholder: { id: "0", text: "--请选择--" },//默认初始值
 		allowClear: true,
 		dropdownParent: $("#modal_dialog_tools"),//modal默认不显示，解决modal显示后下拉单样式问题
 		ajax: {
-			url: addressteamgroup,
+			url: addurl + '/pass/_select2',
+			contentType:"application/json",
+			data: function (params) {//后台查数据
+	             return {
+	            	 searchstr:params.term,
+	             };
+	        },
 			processResults: function (data) {
 			// Tranforms the top-level key of the response object from 'items' to 'results'
 				return {
-					results: data
+					results: data[0].teamlist
 				};
 			}
 		}
@@ -447,34 +509,40 @@ function _select2(){
 		$('#modal_dialog_tools #projectid').select2('val','0');
 	})
 	
-	var addressprojectgroup = addurl + '/pass/projectgroup';
 	$('#modal_dialog_tools #projectid').select2({
 		placeholder: "--请选择--",
 		allowClear: true,
 		dropdownParent: $("#modal_dialog_tools"),//modal默认不显示，解决modal显示后下拉单样式问题
 		ajax: {
-			url: addressprojectgroup,
+			url: addurl + '/pass/_select2',
+			contentType:"application/json",
 			data: function (params) {
 	             return {
+	            	 searchstr:params.term,
 	            	 teamid:$('#modal_dialog_tools #teamid').select2('val')
 	             };
 	        },
 			processResults: function (data) {
 			// Tranforms the top-level key of the response object from 'items' to 'results'
 				return {
-					results: data
+					results: data[0].projectlist
 				};
 			}
 		}
 	});
 	
-	var address_select2 = addurl + '/pass/_select2';
 	$('#modal_dialog_serverip #jsonversion').select2({
 		placeholder: "--请选择--",
 		allowClear: true,
 		dropdownParent: $("#modal_dialog_serverip"),//modal默认不显示，解决modal显示后下拉单样式问题
 		ajax: {
-			url: address_select2,
+			url: addurl + '/pass/_select2',
+			contentType:"application/json",
+			data: function (params) {
+	             return {
+	            	 searchstr:params.term,
+	             };
+	        },
 			processResults: function (data) {
 			// Tranforms the top-level key of the response object from 'items' to 'results'
 				return {
@@ -488,7 +556,13 @@ function _select2(){
 		allowClear: true,
 		dropdownParent: $("#modal_dialog_serverip"),//modal默认不显示，解决modal显示后下拉单样式问题
 		ajax: {
-			url: address_select2,
+			url: addurl + '/pass/_select2',
+			contentType:"application/json",
+			data: function (params) {
+	             return {
+	            	 searchstr:params.term,
+	             };
+	        },
 			processResults: function (data) {
 			// Tranforms the top-level key of the response object from 'items' to 'results'
 				return {
@@ -503,7 +577,13 @@ function _select2(){
 		allowClear: true,
 		dropdownParent: $("#modal_dialog_tools"),//modal默认不显示，解决modal显示后下拉单样式问题
 		ajax: {
-			url: address_select2,
+			url: addurl + '/pass/_select2',
+			contentType:"application/json",
+			data: function (params) {
+	             return {
+	            	 searchstr:params.term,
+	             };
+	        },
 			processResults: function (data) {
 			// Tranforms the top-level key of the response object from 'items' to 'results'
 				return {
@@ -516,6 +596,26 @@ function _select2(){
 	$("#modal_dialog_add_update #status").select2({dropdownParent: $("#modal_dialog_add_update"),data:[{id:0,text:'停用'},{id:1,text:'启动'}]});
 	$("#modal_dialog_add_update #status").val(1).trigger('change');
 	
+	$('#modal_dialog_tools #database').select2({
+		placeholder: "--请选择--",
+		allowClear: true,
+		dropdownParent: $("#modal_dialog_tools"),//modal默认不显示，解决modal显示后下拉单样式问题
+		ajax: {
+			url: addurl + '/pass/_select2',
+			contentType:"application/json",
+			data: function (params) {
+	             return {
+	            	 searchstr:params.term,
+	             };
+	        },
+			processResults: function (data) {
+			// Tranforms the top-level key of the response object from 'items' to 'results'
+				return {
+					results: data[0].database
+				};
+			}
+		}
+	});
 }
 
 function add_data(){
@@ -569,7 +669,7 @@ function add_data(){
 
 function del_data(){
 	var IdSelections = $('#table_data').bootstrapTable('getSelections');
-	if(IdSelections.length != 1){
+	if(IdSelections.length < 1){
 		swal({
             title: "警告",
             text: "请至少选择一条数据进行操作."
@@ -636,45 +736,26 @@ function edit_dialog(){
 	}
 	
 	var anlitypename='';
-	if(IdSelections[0].anlitype==1){
-		anlitypename='自动案例'
-	}else if(IdSelections[0].anlitype==2){
-		anlitypename='手动案例'
-	}else if(IdSelections[0].anlitype==3){
-		anlitypename='说明书'
-	}else if(IdSelections[0].anlitype==4){
-		anlitypename='浮动窗口'
-	}else if(IdSelections[0].anlitype==5){
-		anlitypename='详细信息'
-	}else if(IdSelections[0].anlitype==6){
-		anlitypename='用药理由'
-	}else if(IdSelections[0].anlitype==7){
-		anlitypename='右键菜单'
-	}else if(IdSelections[0].anlitype==8){
-		anlitypename='模块菜单'
-	}else if(IdSelections[0].anlitype==9){
-		anlitypename='自由自定义'
-	}else if(IdSelections[0].anlitype==10){
-		anlitypename='中药材专论'
-	}else if(IdSelections[0].anlitype==11){
-		anlitypename='用药指导单'
-	}else {
-		anlitypename='未定位'
-	}
+	
+	anlitypename=getanlitype(IdSelections[0].anlitype);
+
+	$('#modal_dialog_add_update #teamidaa').html('<option value="' + IdSelections[0].teamid + '">' + IdSelections[0].teamname + '</option>').trigger("change");
+	$('#modal_dialog_add_update #teamidaa').attr("disabled",true);
 	$('#modal_dialog_add_update #anlitypeaa').html('<option value="' + IdSelections[0].anlitype + '">' + anlitypename + '</option>').trigger("change");
 	$('#modal_dialog_add_update #testid').val(IdSelections[0].testid);
 	$('#modal_dialog_add_update #projectidaa').html('<option value="' + IdSelections[0].projectid + '">' + IdSelections[0].projectname + '</option>').trigger("change");
-	$("#modal_dialog_add_update #status").val(IdSelections[0].status).trigger("change");
-//	$('#modal_dialog_add_update #moduleid').html('<option value="' + IdSelections[0].moduleid + '">' + IdSelections[0].modulename + '</option>').trigger("change");
-	$('#modal_dialog_add_update #moduleid').val(IdSelections[0].moduleid).trigger("change");
-	$('#modal_dialog_add_update #modulename').val(IdSelections[0].modulename);
+	$("#modal_dialog_add_update #status").val(IdSelections[0].status);
+	$('#modal_dialog_add_update #moduleid').html('<option value="' + IdSelections[0].moduleid + '">' + IdSelections[0].modulename + '</option>').trigger("change");
+//	$('#modal_dialog_add_update #modulename').val(IdSelections[0].modulename);
 	$('#modal_dialog_add_update #testname').val(IdSelections[0].testname);
 	$('#modal_dialog_add_update #testno').val(IdSelections[0].testno);
+	$('#modal_dialog_add_update #orderbyno').val(IdSelections[0].orderbyno);
 	$('#modal_dialog_add_update #testtext').val(IdSelections[0].testtext);
 	$('#modal_dialog_add_update #testin').val(IdSelections[0].testin);
 	$('#modal_dialog_add_update #testout').val(IdSelections[0].testout);
 	$('#modal_dialog_add_update #remark').val(IdSelections[0].remark);
 	$('#modal_dialog_add_update #testout_response').val(IdSelections[0].testout_response);
+	$('#modal_dialog_add_update #status').val(IdSelections[0].status);
 	
 	$('#modal_dialog_add_update').modal('show');
 }
@@ -908,7 +989,7 @@ var TableInit_serverip =function () {
 //			showRefresh: true,                  // 是否显示刷新按钮
 			minimumCountColumns: 2,             // 最少允许的列数
 			clickToSelect: false,               // 是否启用点击选中行
-			height: 480,                        //450, 行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
+//			height: 480,                        //450, 行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
 			uniqueId: "ID",                     // 每一行的唯一标识，一般为主键列
 //			showToggle:true,                    // 是否显示详细视图和列表视图的切换按钮
 //			cardView: false,                    // 是否显示详细视图
@@ -1009,13 +1090,16 @@ function open_modal_dialg_tools(){
 	$('#modal_dialog_tools #_daoshuju').select2('val','0');
 	$('#modal_dialog_tools #projectid').select2('val','0');
 	$('#modal_dialog_tools #teamid').select2('val','0');
+	$('#modal_dialog_tools #mhiscode_user').val('');
 	$('#modal_dialog_tools').modal('show');
 }
 
 function sqlserver_data(){
 	var _daoshuju=$('#modal_dialog_tools #_daoshuju').select2('val');
 	var projectid=$('#modal_dialog_tools #projectid').select2('val');
-	if(_daoshuju==null || projectid==null || projectid==0){
+	var databaseid=$('#modal_dialog_tools #database').select2('val');
+	var mhiscode_user=$('#modal_dialog_tools #mhiscode_user').val();
+	if(_daoshuju==null || projectid==null || projectid==0 || mhiscode_user==null || mhiscode_user==''){
 		swal("" ,"请合理选择数据","error");
 		return;
 	}
@@ -1023,7 +1107,7 @@ function sqlserver_data(){
 	
 	swal({
         title: "Are you sure?",
-        text: "重新导入数据后，将覆盖原来的所有数据!",
+        text: "重新导入数据后，将覆盖原来的所有数据，请确认!",
         type: "warning",
         showCancelButton: true,
         confirmButtonColor: "#DD6B55",
@@ -1043,7 +1127,9 @@ function sqlserver_data(){
 //    		cache:true,
     		data:{
     			dao: _daoshuju,
-    			projectid:projectid
+    			projectid:projectid,
+    			databaseid:databaseid,
+    			mhiscode_user:mhiscode_user,
     		},
     		success: function (result) {
     			//loading
@@ -1110,20 +1196,66 @@ function anli_copy(){
 }
 
 function tableheight(){
-//	alert(window.screen.availWidth)
-//	alert(document.body.clientHeight)
-//	alert(document.getElementById("header_path").offsetHeight)
-//	alert(document.getElementById("search_div").offsetHeight)
-//	alert(document.getElementById("toolbar").offsetHeight)
-	
-	var _height = document.body.clientHeight-document.getElementById("header_path").offsetHeight
-	-document.getElementById("search_div").offsetHeight-document.getElementById("toolbar").offsetHeight;
-	
-	if(window.screen.availWidth/160%1==0){
-		_height=_height-10;
-	}else{
-		_height=_height-30;
+	var _height=0;
+	//获取父级窗口高度
+	_height=$(window.parent.window).height()-60-40-120-140;
+	if(_height<300){
+		_height=300;
 	}
-	
 	return _height;
 }
+
+function _look(testid){
+	var rowdata=$('#table_data').bootstrapTable('getRowByUniqueId', testid);
+	var str='';
+	str=str+'<h4 style="background-color:#d0eeef">案例名称:</h4><br>'+rowdata.testname+'<br>'
+		+'<hr>'
+		+'<h4 style="background-color:#d0eeef">案例编号:</h4><br>'+rowdata.testno+'<br>'
+		+'<hr>'
+		+'<h4 style="background-color:#d0eeef">逻辑描述:</h4><br>'+rowdata.testtext+'<br>'
+		+'<hr>'
+		+'<h4 style="background-color:#d0eeef">输入条件:</h4><br>'+rowdata.testin+'<br>'
+		+'<hr>'
+		+'<h4 style="background-color:#d0eeef">预期结果:</h4><br>'+rowdata.testout+'<br>'
+		+'<hr>'
+		+'<h4 style="background-color:#d0eeef">备注:</h4><br>'+rowdata.remark+'<br>'
+	$('#_look_modal_dialog #test_look').html(str);
+	
+	$('#_look_modal_dialog').modal('show');
+}
+
+function getanlitype(type){
+	var anlitypename=null;
+	if(type==1){
+		anlitypename='自动案例'
+	}else if(type==2){
+		anlitypename='手动案例'
+	}else if(type==3){
+		anlitypename='其他(暂时无用)'
+	}else
+//		if(IdSelections[0].anlitype==4){
+//		anlitypename='浮动窗口'
+//	}else 
+		if(type==5){
+		anlitypename='详细信息接口'
+	}else if(type==6){
+		anlitypename='用药理由接口'
+	}else if(type==7){
+		anlitypename='右键菜单接口'
+	}else if(type==12){
+		anlitypename='查询接口'
+	}else 
+//		if(IdSelections[0].anlitype==9){
+//		anlitypename='自由自定义'
+//	}else if(IdSelections[0].anlitype==10){
+//		anlitypename='中药材专论'
+//	}else  if(IdSelections[0].anlitype==11){
+//		anlitypename='用药指导单'
+//	}else
+	{
+		anlitypename='未定位'
+	}
+	
+	return anlitypename;
+}
+

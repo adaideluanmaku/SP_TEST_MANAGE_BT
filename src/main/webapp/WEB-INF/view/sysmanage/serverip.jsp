@@ -85,6 +85,9 @@
 					    <button id="btn_delete" type="button" class="btn btn-default" onclick="del_data()">
 					        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>删除
 					    </button>
+					    <button id="btn_message" type="button" class="btn btn-default" onclick="message()">
+					        <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>说明
+					    </button>
 					    <div  class="btn-group">
 							<button id="dropdownMenu1" type="button"
 								class="btn btn-default dropdown-toggle" data-toggle="dropdown"
@@ -141,7 +144,23 @@
 		</div><!-- /.modal-content -->
 	</div><!-- /.modal -->
 </div>
-
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="_look_modal_dialog" tabindex="-1" data-backdrop="static" data-keyboard="false" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" height="600px">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title">查看</h4>
+			</div>
+			<div class="modal-body" style="height:400px;overflow:auto">
+				<div id="test_look"></div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal -->
+</div>
 </body>
 </html>
 

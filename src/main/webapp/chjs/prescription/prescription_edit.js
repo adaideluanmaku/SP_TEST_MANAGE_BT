@@ -1,4 +1,5 @@
 var addurl=null;
+var online=1; //0：离线，1：在线
 
 //表格
 var TableInit_drugs_table = null;
@@ -11,6 +12,8 @@ var TableInit_fujiaotherrecip_table = null;
 var TableInit_fujiaexaminfo_table = null;
 var TableInit_fujialabinfo_table = null;
 
+var TableInit_database_table = null;
+var TableInit_mchospital_table = null;
 var TableInit_dictdrug_table = null;
 var TableInit_dictroute_table  = null;
 var TableInit_dictfre_table = null;
@@ -37,8 +40,10 @@ var hospital=null;
 $(document).ready(function() {
 	addurl=$("#addurl").val();
 	
-	//下拉单数据
-	_select2();
+	//下拉单数据,   DEMO程序的时候全部屏蔽
+	if(online==1){
+		_select2();
+	}
 	
 	//生成表格
 	TableInit_drugs_table = new TableInit_drugs();
@@ -68,52 +73,58 @@ $(document).ready(function() {
 	TableInit_fujialabinfo_table = new TableInit_fujialabinfo();
 	TableInit_fujialabinfo_table.Init();
 	
-	//字典表
-	TableInit_dictdrug_table = new TableInit_dict_drug();
-	TableInit_dictdrug_table.Init();
+	//字典表,   DEMO程序的时候全部屏蔽
+	if(online==1){
+		TableInit_database_table = new TableInit_database();
+		TableInit_database_table.Init();
+		
+		TableInit_mchospital_table = new TableInit_mc_hospital();
+		TableInit_mchospital_table.Init();
+		
+		TableInit_dictdrug_table = new TableInit_dict_drug();
+		TableInit_dictdrug_table.Init();
+		
+		TableInit_dictroute_table = new TableInit_dict_route();
+		TableInit_dictroute_table.Init();
+		
+		TableInit_dictfre_table = new TableInit_dict_fre();
+		TableInit_dictfre_table.Init();
+		
+		TableInit_dictdept_table = new TableInit_dict_dept();
+		TableInit_dictdept_table.Init();
+		
+		TableInit_dictdoctor_table = new TableInit_dict_doctor();
+		TableInit_dictdoctor_table.Init();
+		
+		TableInit_dictallergen_table = new TableInit_dict_allergen();
+		TableInit_dictallergen_table.Init();
+		
+		TableInit_dictdisease_table = new TableInit_dict_disease();
+		TableInit_dictdisease_table.Init();
+		
+		TableInit_dictoperation_table = new TableInit_dict_operation();
+		TableInit_dictoperation_table.Init();
+		
+		TableInit_dictexam_table = new TableInit_dict_exam();
+		TableInit_dictexam_table.Init();
+		
+		TableInit_dictlab_table = new TableInit_dict_lab();
+		TableInit_dictlab_table.Init();
+	}
 	
-	TableInit_dictroute_table = new TableInit_dict_route();
-	TableInit_dictroute_table.Init();
-	
-	TableInit_dictfre_table = new TableInit_dict_fre();
-	TableInit_dictfre_table.Init();
-	
-	TableInit_dictdept_table = new TableInit_dict_dept();
-	TableInit_dictdept_table.Init();
-	
-	TableInit_dictdoctor_table = new TableInit_dict_doctor();
-	TableInit_dictdoctor_table.Init();
-	
-	TableInit_dictallergen_table = new TableInit_dict_allergen();
-	TableInit_dictallergen_table.Init();
-	
-	TableInit_dictdisease_table = new TableInit_dict_disease();
-	TableInit_dictdisease_table.Init();
-	
-	TableInit_dictoperation_table = new TableInit_dict_operation();
-	TableInit_dictoperation_table.Init();
-	
-	TableInit_dictexam_table = new TableInit_dict_exam();
-	TableInit_dictexam_table.Init();
-	
-	TableInit_dictlab_table = new TableInit_dict_lab();
-	TableInit_dictlab_table.Init();
 	
 	//初始化时间插件
 	init_time();
 	
-	//获取JSON数据,解析处理
-	var prescription_json=null;
-	if($("#prescription_json").val()!=''){
-		prescription_json=$("#prescription_json").val();
-		prescription_json = JSON.parse(prescription_json);
+	//获取JSON数据,解析处理,   DEMO程序的时候全部屏蔽
+	if(online==1){
+		var prescription_json=null;
+		if($("#prescription_json").val()!='' && $("#prescription_json").val()!='${fn:escapeXml(prescription_json)}'){
+			prescription_json=$("#prescription_json").val();
+			prescription_json = JSON.parse(prescription_json);
+		}
+		json_fenjie(prescription_json);
 	}
-	json_fenjie(prescription_json);
-	
-//	$('#drugsmessage .input-group').datetimepicker({
-//		format: 'YYYY-MM-DD HH:mm:ss',  //YYYY-MM-DD HH:mm:ss
-//        locale: moment.locale('zh-cn'),
-//	});
 	
 	//鼠标浮动提示窗口-触发事件
 	$(document).on('mouseover mouseout','table td',function(){ 
@@ -164,6 +175,17 @@ $(document).ready(function() {
 		}
 	}); 
 	
+	$('.tab-content').attr('style','height:'+tableheight()+'px');
+	
+	//初始化表格里面的时间插件
+//	$('#tabledatetimepicker').datetimepicker();
+	$('#tabledatetimepicker').datetimepicker({  
+        format: 'YYYY-MM-DD HH:mm:ss',  //YYYY-MM-DD HH:mm:ss
+        locale: moment.locale('zh-cn'),
+//        defaultDate: "1990-1-1 00:00:01"
+    });
+	
+	youjiancaidan();
 });
 
 //=========================================医生开处方信息界面，列表数据==============================
@@ -204,8 +226,8 @@ var TableInit_drugs =function () {
 //			height: 400,                        //1.450, 行高
 												//2.如果没有设置height属性，表格自动根据记录条数觉得表格高度
 												//3.在tab标签样式里面会导致高度出错，自己CSS写固定高度
-//			uniqueId: "ID",                     // 每一行的唯一标识，一般为主键列
-//			idField: "RoleId",
+//			uniqueId: "Index",                     // 每一行的唯一标识，一般为主键列
+//			idField: "Index",						//表明每行唯 一的标识符
 //			fixedColumns: true,					//固定列,引入bootstrap-table-fixed-columns.js
 //	        fixedNumber:2,						//固定前两列,引入bootstrap-table-fixed-columns.js
 			// 传递参数（*）,组织表格参数和页面查询参数
@@ -218,7 +240,16 @@ var TableInit_drugs =function () {
 			columns : [{
 				field : 'select',
 				checkbox : true,width:30
-			} ,	{
+			}, {
+				width:70,
+				field : 'jingshi',
+				title : '警示',
+				align:'center',
+//				formatter: function(value,row,index){
+////					alert(1)
+//                    return index;
+//				}
+			},	{
 				width:70,
 				field : 'RecipNo',
 				title : '处方号',
@@ -615,30 +646,34 @@ var TableInit_drugs =function () {
 			} ],
 			// 1.点击每行进行函数的触发
 			onClickRow : function(row, tr,flied){
+				$('#drugsmessage #json_table').bootstrapTable('uncheckAll');//取消选中所有行
 			},
+			//双击
 			onDblClickRow: function (row, tr, field) {
-//				alert(tr[0].rowIndex)//获取点击的行数ID
-                if(field=='DrugName'){
-                	dict_drug_modal_open('bb',tr[0].rowIndex-1);
-                }
-                if(field=='RouteName'){
-                	dict_route_modal_open('bb',tr[0].rowIndex-1);
-                }
-                if(field=='Frequency'){
-                	dict_fre_modal_open('bb',tr[0].rowIndex-1);
-                }
-                if(field=='DeptName'){
-                	dict_dept_modal_open('bb',tr[0].rowIndex-1);
-                }
-                if(field=='DoctorName'){
-                	dict_doctor_modal_open('bb',tr[0].rowIndex-1);
-                }
-                if(field=='Pharmacists'){
-                	dict_doctor_modal_open('bb_1',tr[0].rowIndex-1);
-                }
-                if(field=='Pharmacists_'){
-                	dict_doctor_modal_open('bb_2',tr[0].rowIndex-1);
-                }
+				if(online==1){
+//					alert(tr[0].rowIndex)//获取点击的行数ID
+	                if(field=='DrugName'){
+	                	dict_drug_modal_open('bb',tr[0].rowIndex-1);
+	                }
+	                if(field=='RouteName'){
+	                	dict_route_modal_open('bb',tr[0].rowIndex-1);
+	                }
+	                if(field=='Frequency'){
+	                	dict_fre_modal_open('bb',tr[0].rowIndex-1);
+	                }
+	                if(field=='DeptName'){
+	                	dict_dept_modal_open('bb',tr[0].rowIndex-1);
+	                }
+	                if(field=='DoctorName'){
+	                	dict_doctor_modal_open('bb',tr[0].rowIndex-1);
+	                }
+	                if(field=='Pharmacists'){
+	                	dict_doctor_modal_open('bb_1',tr[0].rowIndex-1);
+	                }
+	                if(field=='Pharmacists_'){
+	                	dict_doctor_modal_open('bb_2',tr[0].rowIndex-1);
+	                }
+				}
             },
 		});
 	}
@@ -680,7 +715,7 @@ var TableInit_allergen =function () {
 			detailView: false, 					//是否显示父子表
 			minimumCountColumns: 2,             // 最少允许的列数
 			clickToSelect: true,               // 是否启用点击选中行
-			height: 400,                        //450, 行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
+//			height: 400,                        //450, 行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
 //			uniqueId: "ID",                     // 每一行的唯一标识，一般为主键列
 //			fixedColumns: true,					//固定列,引入bootstrap-table-fixed-columns.js
 //	        fixedNumber:2,						//固定前两列,引入bootstrap-table-fixed-columns.js
@@ -737,12 +772,16 @@ var TableInit_allergen =function () {
 	        }],
 	     // 1.点击每行进行函数的触发
 			onClickRow : function(row, tr,flied){
+				$('#allergenmessage #json_table').bootstrapTable('uncheckAll');//取消选中所有行
 			},
 			onDblClickRow: function (row, tr, field) {
-//				alert(tr[0].rowIndex)//获取点击的行数ID
-                if(field=='AllerName'){
-                	dict_allergen_modal_open('cc',tr[0].rowIndex-1);
-                }
+				if(online==1){
+					alert(tr[0].rowIndex)//获取点击的行数ID
+	                if(field=='AllerName'){
+	                	dict_allergen_modal_open('cc',tr[0].rowIndex-1);
+	                }
+				}
+//				
             },
 		});
 	}
@@ -863,12 +902,16 @@ var TableInit_disease =function () {
 	        }],
 	     // 1.点击每行进行函数的触发
 			onClickRow : function(row, tr,flied){
+				$('#diseasemessage #json_table').bootstrapTable('uncheckAll');//取消选中所有行
 			},
 			onDblClickRow: function (row, tr, field) {
-//				alert(tr[0].rowIndex)//获取点击的行数ID
-                if(field=='DiseaseName'){
-                	dict_disease_modal_open('dd',tr[0].rowIndex-1);
-                }
+				if(online==1){
+					alert(tr[0].rowIndex)//获取点击的行数ID
+	                if(field=='DiseaseName'){
+	                	dict_disease_modal_open('dd',tr[0].rowIndex-1);
+	                }
+				}
+//				
             },
 		});
 	}
@@ -969,6 +1012,10 @@ var TableInit_operation =function () {
                     pk:1,
                     title:"设置时间",
                 },
+//                formatter:function(value,row,index){
+//	        		var str= '<input type="text" id="tabledatetimepicker" value="" >  '+value+'</input>';
+//	        		return str
+//	        	}
 	        },
 	        {field:'OprEndDate',title:'手术结束时间',width:150,align:'center',
 	        	editable: {
@@ -998,12 +1045,16 @@ var TableInit_operation =function () {
 	        }],
 	     // 1.点击每行进行函数的触发
 			onClickRow : function(row, tr,flied){
+				$('#operationmessage #json_table').bootstrapTable('uncheckAll');//取消选中所有行
 			},
 			onDblClickRow: function (row, tr, field) {
-//				alert(tr[0].rowIndex)//获取点击的行数ID
-                if(field=='OprName'){
-                	dict_operation_modal_open('ee',tr[0].rowIndex-1);
-                }
+				if(online==1){
+					alert(tr[0].rowIndex)//获取点击的行数ID
+	                if(field=='OprName'){
+	                	dict_operation_modal_open('ee',tr[0].rowIndex-1);
+	                }
+				}
+//				
             },
 		});
 	}
@@ -1094,9 +1145,21 @@ var TableInit_fujiadrug =function () {
                     validate: function (v) {
                     }
                 }
+	        },
+	        {field:'skintest',title:'皮试',align:'center',
+	        	editable: {
+	                type: 'select',
+	                pk: 1,
+	                source: [
+	                    {value: -1, text: '未皮试'},
+	                    {value: 0, text: '阴性'},
+	                    {value: 1, text: '阳性'}
+	                ]
+	            }
 	        }],
 	     // 1.点击每行进行函数的触发
 			onClickRow : function(row, tr,flied){
+				$('#fujiadrug #json_table').bootstrapTable('uncheckAll');//取消选中所有行
 			},
 		});
 	}
@@ -1186,15 +1249,19 @@ var TableInit_fujiadisease =function () {
 	        }],
 	     // 1.点击每行进行函数的触发
 			onClickRow : function(row, tr,flied){
+				$('#fujiadisease #json_table').bootstrapTable('uncheckAll');//取消选中所有行
 			},
 			onDblClickRow: function (row, tr, field) {
-//				alert(tr[0].rowIndex)//获取点击的行数ID
-                if(field=='DrugName'){
-                	dict_drug_modal_open('dd',tr[0].rowIndex-1);
-                }
-                if(field=='RouteName'){
-                	dict_route_modal_open('dd',tr[0].rowIndex-1);
-                }
+				if(online==1){
+					alert(tr[0].rowIndex)//获取点击的行数ID
+	                if(field=='DrugName'){
+	                	dict_drug_modal_open('dd',tr[0].rowIndex-1);
+	                }
+	                if(field=='RouteName'){
+	                	dict_route_modal_open('dd',tr[0].rowIndex-1);
+	                }
+				}
+//				
             },
 		});
 	}
@@ -1336,15 +1403,19 @@ var TableInit_fujiaotherrecip =function () {
 	        }],
 	     // 1.点击每行进行函数的触发
 			onClickRow : function(row, tr,flied){
+				$('#fujiaotherrecip #json_table').bootstrapTable('uncheckAll');//取消选中所有行
 			},
 			onDblClickRow: function (row, tr, field) {
-//				alert(tr[0].rowIndex)//获取点击的行数ID
-                if(field=='drugname'){
-                	dict_drug_modal_open('ll',tr[0].rowIndex-1);
-                }
-                if(field=='routename'){
-                	dict_route_modal_open('ll',tr[0].rowIndex-1);
-                }
+				if(online==1){
+					alert(tr[0].rowIndex)//获取点击的行数ID
+	                if(field=='drugname'){
+	                	dict_drug_modal_open('ll',tr[0].rowIndex-1);
+	                }
+	                if(field=='routename'){
+	                	dict_route_modal_open('ll',tr[0].rowIndex-1);
+	                }
+				}
+//				
             },
 		});
 	}
@@ -1472,18 +1543,22 @@ var TableInit_fujiaexaminfo =function () {
 	        }],
 	     // 1.点击每行进行函数的触发
 			onClickRow : function(row, tr,flied){
+				$('#fujiaexaminfo #json_table').bootstrapTable('uncheckAll');//取消选中所有行
 			},
 			onDblClickRow: function (row, tr, field) {
-//				alert(tr[0].rowIndex)//获取点击的行数ID
-                if(field=='labexamname'){
-                	dict_exam_modal_open('mm',tr[0].rowIndex-1);
-                }
-                if(field=='deptname'){
-                	dict_dept_modal_open('mm',tr[0].rowIndex-1);
-                }
-                if(field=='doctorname'){
-                	dict_doctor_modal_open('mm',tr[0].rowIndex-1);
-                }
+				if(online==1){
+					alert(tr[0].rowIndex)//获取点击的行数ID
+	                if(field=='labexamname'){
+	                	dict_exam_modal_open('mm',tr[0].rowIndex-1);
+	                }
+	                if(field=='deptname'){
+	                	dict_dept_modal_open('mm',tr[0].rowIndex-1);
+	                }
+	                if(field=='doctorname'){
+	                	dict_doctor_modal_open('mm',tr[0].rowIndex-1);
+	                }
+				}
+//				
             },
 		});
 	}
@@ -1657,18 +1732,22 @@ var TableInit_fujialabinfo =function () {
 	        }],
 	     // 1.点击每行进行函数的触发
 			onClickRow : function(row, tr,flied){
+				$('#fujialabinfo #json_table').bootstrapTable('uncheckAll');//取消选中所有行
 			},
 			onDblClickRow: function (row, tr, field) {
-//				alert(tr[0].rowIndex)//获取点击的行数ID
-                if(field=='labexamname'){
-                	dict_lab_modal_open('nn',tr[0].rowIndex-1);
-                }
-                if(field=='deptname'){
-                	dict_dept_modal_open('nn',tr[0].rowIndex-1);
-                }
-                if(field=='doctorname'){
-                	dict_doctor_modal_open('nn',tr[0].rowIndex-1);
-                }
+				if(online==1){
+					alert(tr[0].rowIndex)//获取点击的行数ID
+	                if(field=='labexamname'){
+	                	dict_lab_modal_open('nn',tr[0].rowIndex-1);
+	                }
+	                if(field=='deptname'){
+	                	dict_dept_modal_open('nn',tr[0].rowIndex-1);
+	                }
+	                if(field=='doctorname'){
+	                	dict_doctor_modal_open('nn',tr[0].rowIndex-1);
+	                }
+				}
+//				
             },
 		});
 	}
@@ -1707,6 +1786,472 @@ function init_time(){
 }
 
 //=========================================用户双击弹出选择字典表数据时==============================
+//数据库配置表格
+var TableInit_database =function () {
+	var oTableInit=new Object();
+	var address=addurl+"/dict/database";
+	
+	//初始化表格
+	oTableInit.Init = function(){
+		$("#database_modal #dict_table").bootstrapTable('destroy'); // 销毁数据表格,不销毁可能有数据缓存问题
+		$('#database_modal #dict_table').bootstrapTable({
+			url: address,         				// 请求后台的URL（*）
+			method: 'post',                     // 请求方式（*）
+//			pagelabel: "json",					//数据类型
+//			data:[{dbColName1:"aa"}],			//JSON数据
+			contentType:"application/x-www-form-urlencoded; charset=UTF-8", //get请求时可不设置，POST请求时需要HTTP内容类型
+			toolbar: '#database_modal #toolbar',                // 工具按钮用哪个容器
+			striped: true,                      // 是否显示行间隔色
+			cache: false,                       // 是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+			pagination: true,                   // 是否显示分页（*）
+			sortable: false,                    // 是否启用排序
+			sortOrder: "asc",                   // 排序方式
+			sidePagination: "server",           // 分页方式：client客户端分页，server服务端分页（*），两种分页JSON结构不同
+			pageNumber:1,                       // 初始化加载第一页，默认第一页
+			pageSize: 10,                       // 每页的记录行数（*）
+			pageList: [10,25,50,100],        				// 可供选择的每页的行数（*）
+			search: true,                       // 是否显示表格搜索，此搜索是客户端搜索，不会进服务端，所以，个人感觉意义不大(陈辉-验证可以提交查询数据到服务端)
+			strictSearch: true,				
+			showColumns: false,                  // 是否显示所有的列按钮
+			showRefresh: true,                  // 是否显示刷新按钮
+			showToggle:false,                    // 是否显示详细视图和列表视图的切换按钮
+			cardView: false,                    // 是否显示详细视图
+			detailView: false, 					//是否显示父子表
+			minimumCountColumns: 2,             // 最少允许的列数
+			clickToSelect: true,               // 是否启用点击选中行
+//			height: 400,                        //1.450, 行高
+												//2.如果没有设置height属性，表格自动根据记录条数觉得表格高度
+												//3.在tab标签样式里面会导致高度出错，自己CSS写固定高度
+//			uniqueId: "id",                  	// 每一行的唯一标识，一般为主键列
+//			fixedColumns: true,					//固定列,引入bootstrap-table-fixed-columns.js
+//	        fixedNumber:2,						//固定前两列,引入bootstrap-table-fixed-columns.js
+			// 传递参数（*）,组织表格参数和页面查询参数
+			queryParams : function (params) {
+			    var temp = {   // 这里的键的名字和控制器的变量名必须一致，这边改动，控制器也需要改成一样的
+			    		limit: params.limit,   // 页面数量大小
+						offset: params.offset, // 当前页码
+						search: params.search, // 工具栏查询内容,search:true才有
+			    };
+			    return temp;
+			},
+			// 是否显示父子表
+			columns : [{field:'select',radio : true,width:30
+			},
+			{field:'name',title:'name',width:120,align:'center',
+	        },
+	        {field:'kettle_Database_two',title:'kettle_Database_two',width:120,align:'center',
+	        },
+			{field:'databasetype',title:'databasetype',width:120,align:'center',
+	        },    
+	        {field:'databasename',title:'databasename',width:120,align:'center',
+	        },
+	        {field:'ip',title:'ip',width:100,align:'center',
+	        },
+	        {field:'username',title:'username',width:100,align:'center',
+	        },    
+	        {field:'password',title:'password',width:100,align:'center',
+	        }
+	        ],
+	        // 1.点击每行进行函数的触发
+			onClickRow : function(row, tr,flied){
+			},
+		});
+	}
+	
+	return oTableInit;
+};
+
+function database_open(type){
+	$("#database_data_modal #kettle_Database_two").attr("readonly",true);
+	
+	if(type==1){
+		//清空form表单
+		document.getElementById("dialog_form").reset();
+		$("#database_data_modal #name").attr("readonly",false);
+		
+		$('#database_data_modal #btn_add').show();
+		$('#database_data_modal #btn_update').hide();
+	}
+	if(type==2){
+		var IdSelections = $('#database_modal #dict_table').bootstrapTable('getSelections');
+		if(IdSelections.length != 1){
+			swal({
+	            title: "警告",
+	            text: "请选择一条数据进行操作."
+	        });
+			return;
+		}
+		
+		
+		$('#database_data_modal #name').val(IdSelections[0].name)
+		$('#database_data_modal #kettle_Database_two').val(IdSelections[0].kettle_Database_two)
+		$('#database_data_modal #databaseid').val(IdSelections[0].databaseid)
+		$('#database_data_modal #databasetype').val(IdSelections[0].databasetype)
+		$('#database_data_modal #databasename').val(IdSelections[0].databasename)
+		$('#database_data_modal #ip').val(IdSelections[0].ip)
+		$('#database_data_modal #username').val(IdSelections[0].username)
+		$('#database_data_modal #password').val(IdSelections[0].password)
+		
+		$("#database_data_modal #name").attr("readonly",true);
+		
+		$('#database_data_modal #btn_add').hide();
+		$('#database_data_modal #btn_update').show();
+	}
+	
+	$('#database_data_modal').modal('show');
+}
+
+function database_data(type){
+	if(type==1){
+		$.ajax({
+			type:"POST",
+			url:addurl+'/dict/insertdatabase',
+			async:false,
+			cache:true,
+			data:$('#database_data_modal #dialog_form').serialize(),
+			success: function(result){
+				if(result=='ok'){
+					swal("" ,result,"success");
+//					//清空表单
+//					document.getElementById("prescription_dialog_form").reset();
+					$('#database_modal #dict_table').bootstrapTable('refresh', {url: addurl+"/dict/database"});
+					$('#database_data_modal').modal('hide');
+				}else{
+					swal("", result,"error");
+				}
+			},
+			error:function(XMLResponse){
+				alert(XMLResponse.responseText)
+			}
+		});
+	}
+	if(type==2){
+		$.ajax({
+			type:"POST",
+			url:addurl+'/dict/updatedatabase',
+			async:false,
+			cache:true,
+			data:$('#database_data_modal #dialog_form').serialize(),
+			success: function(result){
+				if(result=='ok'){
+					swal("" ,result,"success");
+//					//清空表单
+//					document.getElementById("prescription_dialog_form").reset();
+					$('#database_modal #dict_table').bootstrapTable('refresh', {url: addurl+"/dict/database"});
+					$('#database_data_modal').modal('hide');
+				}else{
+					swal("", result,"error");
+				}
+			},
+			error:function(XMLResponse){
+				alert(XMLResponse.responseText)
+			}
+		});
+	}
+	if(type==3){
+		var IdSelections = $('#database_modal #dict_table').bootstrapTable('getSelections');
+		if(IdSelections.length != 1){
+			swal({
+	            title: "警告",
+	            text: "请选择一条数据进行操作."
+	        });
+			return;
+		}
+		
+		$.ajax({
+			type:"POST",
+			url:addurl+'/dict/deletedatabase',
+			async:false,
+			cache:true,
+			data:{databaseid:IdSelections[0].databaseid},
+			success: function(result){
+				if(result=='ok'){
+					swal("" ,result,"success");
+//					//清空表单
+//					document.getElementById("prescription_dialog_form").reset();
+					$('#database_modal #dict_table').bootstrapTable('refresh', {url: addurl+"/dict/database"});
+					$('#database_data_modal').modal('hide');
+				}else{
+					swal("", result,"error");
+				}
+			},
+			error:function(XMLResponse){
+				alert(XMLResponse.responseText)
+			}
+		});
+	}
+	
+}
+
+function database_modal_open(){
+	$("#database_modal #dict_table").bootstrapTable('refresh',{silent:true});
+	$('#database_modal').modal('show');
+}
+
+//机构表表格
+var TableInit_mc_hospital =function () {
+	var oTableInit=new Object();
+	var address=addurl+"/dict/hospital";
+	
+	//初始化表格
+	oTableInit.Init = function(){
+		$("#mc_hospital_modal #dict_table").bootstrapTable('destroy'); // 销毁数据表格,不销毁可能有数据缓存问题
+		$('#mc_hospital_modal #dict_table').bootstrapTable({
+			url: address,         				// 请求后台的URL（*）
+			method: 'post',                     // 请求方式（*）
+//			pagelabel: "json",					//数据类型
+//			data:[{dbColName1:"aa"}],			//JSON数据
+			contentType:"application/x-www-form-urlencoded; charset=UTF-8", //get请求时可不设置，POST请求时需要HTTP内容类型
+			toolbar: '#mc_hospital_modal #toolbar',                // 工具按钮用哪个容器
+			striped: true,                      // 是否显示行间隔色
+			cache: false,                       // 是否使用缓存，默认为true，所以一般情况下需要设置一下这个属性（*）
+			pagination: true,                   // 是否显示分页（*）
+			sortable: false,                    // 是否启用排序
+			sortOrder: "asc",                   // 排序方式
+			sidePagination: "server",           // 分页方式：client客户端分页，server服务端分页（*），两种分页JSON结构不同
+			pageNumber:1,                       // 初始化加载第一页，默认第一页
+			pageSize: 10,                       // 每页的记录行数（*）
+			pageList: [10,25,50,100],        				// 可供选择的每页的行数（*）
+			search: true,                       // 是否显示表格搜索，此搜索是客户端搜索，不会进服务端，所以，个人感觉意义不大(陈辉-验证可以提交查询数据到服务端)
+			strictSearch: true,				
+			showColumns: false,                  // 是否显示所有的列按钮
+			showRefresh: true,                  // 是否显示刷新按钮
+			showToggle:false,                    // 是否显示详细视图和列表视图的切换按钮
+			cardView: false,                    // 是否显示详细视图
+			detailView: false, 					//是否显示父子表
+			minimumCountColumns: 2,             // 最少允许的列数
+			clickToSelect: true,               // 是否启用点击选中行
+//			height: 400,                        //1.450, 行高
+												//2.如果没有设置height属性，表格自动根据记录条数觉得表格高度
+												//3.在tab标签样式里面会导致高度出错，自己CSS写固定高度
+//			uniqueId: "id",                  	// 每一行的唯一标识，一般为主键列
+//			fixedColumns: true,					//固定列,引入bootstrap-table-fixed-columns.js
+//	        fixedNumber:2,						//固定前两列,引入bootstrap-table-fixed-columns.js
+			// 传递参数（*）,组织表格参数和页面查询参数
+			queryParams : function (params) {
+			    var temp = {   // 这里的键的名字和控制器的变量名必须一致，这边改动，控制器也需要改成一样的
+			    		limit: params.limit,   // 页面数量大小
+						offset: params.offset, // 当前页码
+						search: params.search, // 工具栏查询内容,search:true才有
+			    };
+			    return temp;
+			},
+			// 是否显示父子表
+			columns : [{field:'select',radio : true,width:30
+			},
+//			{field:'ID',title:'ID',width:50,
+//				formatter: function (value, row, index) {
+//					return index+1;
+//				}
+//			},
+			{field:'mhiscode',title:'mhiscode',width:100,align:'center',
+	        },    
+	        {field:'hiscode',title:'hiscode',width:100,align:'center',
+	        },
+	        {field:'hisname',title:'hisname',width:150,align:'center',
+	        },
+	        {field:'doctorgroupmatch_scheme',title:'doctorgroupmatch_scheme',width:100,align:'center',
+	        },    
+	        {field:'wardmatch_scheme',title:'wardmatch_scheme',width:100,align:'center',
+	        },    
+	        {field:'drugmatch_scheme',title:'drugmatch_scheme',width:100,align:'center',
+	        },    
+	        {field:'allermatch_scheme',title:'allermatch_scheme',width:100,align:'center',
+	        },    
+	        {field:'dismatch_scheme',title:'dismatch_scheme',width:100,align:'center',
+	        },    
+	        {field:'freqmatch_scheme',title:'freqmatch_scheme',width:100,align:'center',
+	        },    
+	        {field:'routematch_scheme',title:'routematch_scheme',width:100,align:'center',
+	        }, 
+	        {field:'doctormatch_scheme',title:'doctormatch_scheme',width:100,align:'center',
+	        }, 
+	        {field:'oprmatch_scheme',title:'oprmatch_scheme',width:100,align:'center',
+	        }, 
+	        {field:'costitemmatch_scheme',title:'costitemmatch_scheme',width:100,align:'center',
+	        }, 
+	        {field:'deptmatch_scheme',title:'deptmatch_scheme',width:100,align:'center',
+	        }, 
+	        {field:'exammatch_scheme',title:'exammatch_scheme',width:100,align:'center',
+	        }, 
+	        {field:'labmatch_scheme',title:'labmatch_scheme',width:100,align:'center',
+	        }, 
+	        {field:'labsubmatch_scheme',title:'labsubmatch_scheme',width:100,align:'center',
+	        }, 
+	        {field:'hiscode_user',title:'hiscode_user',width:100,align:'center',
+	        }, 
+	        ],
+	        //行内编辑保存
+	        onClickCell: function(field, value, row, $element) {
+				//当列为编辑状态时，再次点击不会触发
+//	            if($element.context.contentEditable!='true'){
+//	            	$element.attr('contentEditable', true);
+//	            	$element.blur(function() {
+//						var index = $element.parent().data('index');
+//		            	var tdValue = $element.html();
+//		            	if(value != tdValue){
+//		            		console.log(1111)
+//		            		$.ajax({
+//			                    type: "post",
+//			                    url: $("#addurl").val()+"/dict/updatedrug",
+//			                    data: row,
+//			                    dataType: 'JSON',
+//			                    success: function (data, status) {
+//			                    	swal({title: "提示",text: ""});
+//			                    },
+//			                    error: function () {
+//			                        alert('编辑失败');
+//			                    },
+//			                    complete: function () {
+		//	
+//			                    }
+//							});
+//		            		$("#mc_hospital_modal").bootstrapTable('updateCell', {index:index,field:field,value:tdValue});
+//		            	}
+//		            	$element.attr('contentEditable', 'inherit');
+//		            	$element.unbind( 'blur' ); 
+//		            });
+//	            }
+	        },
+		});
+	}
+	
+	return oTableInit;
+};
+
+function mc_hospital_open(type){
+	if(type==1){
+		$("#mc_hospital_data_modal #mhiscode").attr("readonly",false);
+		
+		$('#mc_hospital_data_modal #btn_add').show();
+		$('#mc_hospital_data_modal #btn_update').hide();
+	}
+	if(type==2){
+		var IdSelections = $('#mc_hospital_modal #dict_table').bootstrapTable('getSelections');
+		if(IdSelections.length != 1){
+			swal({
+	            title: "警告",
+	            text: "请选择一条数据进行操作."
+	        });
+			return;
+		}
+		$('#mc_hospital_data_modal #mhiscode').val(IdSelections[0].mhiscode)
+		$('#mc_hospital_data_modal #hiscode').val(IdSelections[0].hiscode)
+		$('#mc_hospital_data_modal #hisname').val(IdSelections[0].hisname)
+		$('#mc_hospital_data_modal #doctorgroupmatch_scheme').val(IdSelections[0].doctorgroupmatch_scheme)
+		$('#mc_hospital_data_modal #wardmatch_scheme').val(IdSelections[0].wardmatch_scheme)
+		$('#mc_hospital_data_modal #drugmatch_scheme').val(IdSelections[0].drugmatch_scheme)
+		$('#mc_hospital_data_modal #allermatch_scheme').val(IdSelections[0].allermatch_scheme)
+		$('#mc_hospital_data_modal #dismatch_scheme').val(IdSelections[0].dismatch_scheme)
+		$('#mc_hospital_data_modal #freqmatch_scheme').val(IdSelections[0].freqmatch_scheme)
+		$('#mc_hospital_data_modal #routematch_scheme').val(IdSelections[0].routematch_scheme)
+		$('#mc_hospital_data_modal #doctormatch_scheme').val(IdSelections[0].doctormatch_scheme)
+		$('#mc_hospital_data_modal #oprmatch_scheme').val(IdSelections[0].oprmatch_scheme)
+		$('#mc_hospital_data_modal #costitemmatch_scheme').val(IdSelections[0].costitemmatch_scheme)
+		$('#mc_hospital_data_modal #deptmatch_scheme').val(IdSelections[0].deptmatch_scheme)
+		$('#mc_hospital_data_modal #exammatch_scheme').val(IdSelections[0].exammatch_scheme)
+		$('#mc_hospital_data_modal #labmatch_scheme').val(IdSelections[0].labmatch_scheme)
+		$('#mc_hospital_data_modal #labsubmatch_scheme').val(IdSelections[0].labsubmatch_scheme)
+		$('#mc_hospital_data_modal #hiscode_user').val(IdSelections[0].hiscode_user)
+		
+		
+		
+		$("#mc_hospital_data_modal #mhiscode").attr("readonly",true);
+		
+		$('#mc_hospital_data_modal #btn_add').hide();
+		$('#mc_hospital_data_modal #btn_update').show();
+	}
+	
+	$('#mc_hospital_data_modal').modal('show');
+}
+
+function mc_hospital_data(type){
+	if(type==1){
+		$.ajax({
+			type:"POST",
+			url:addurl+'/dict/inserthospital',
+			async:false,
+			cache:true,
+			data:$('#mc_hospital_data_modal #dialog_form').serialize(),
+			success: function(result){
+				if(result=='ok'){
+					swal("" ,result,"success");
+//					//清空表单
+//					document.getElementById("prescription_dialog_form").reset();
+					$('#mc_hospital_modal #dict_table').bootstrapTable('refresh', {url: addurl+"/dict/hospital"});
+					$('#mc_hospital_data_modal').modal('hide');
+				}else{
+					swal("", result,"error");
+				}
+			},
+			error:function(XMLResponse){
+				alert(XMLResponse.responseText)
+			}
+		});
+	}
+	if(type==2){
+		$.ajax({
+			type:"POST",
+			url:addurl+'/dict/updatehospital',
+			async:false,
+			cache:true,
+			data:$('#mc_hospital_data_modal #dialog_form').serialize(),
+			success: function(result){
+				if(result=='ok'){
+					swal("" ,result,"success");
+//					//清空表单
+//					document.getElementById("prescription_dialog_form").reset();
+					$('#mc_hospital_modal #dict_table').bootstrapTable('refresh', {url: addurl+"/dict/hospital"});
+					$('#mc_hospital_data_modal').modal('hide');
+				}else{
+					swal("", result,"error");
+				}
+			},
+			error:function(XMLResponse){
+				alert(XMLResponse.responseText)
+			}
+		});
+	}
+	if(type==3){
+		var IdSelections = $('#mc_hospital_modal #dict_table').bootstrapTable('getSelections');
+		if(IdSelections.length != 1){
+			swal({
+	            title: "警告",
+	            text: "请选择一条数据进行操作."
+	        });
+			return;
+		}
+		
+		$.ajax({
+			type:"POST",
+			url:addurl+'/dict/deletehospital',
+			async:false,
+			cache:true,
+			data:{mhiscode:IdSelections[0].mhiscode,hiscode:IdSelections[0].hiscode},
+			success: function(result){
+				if(result=='ok'){
+					swal("" ,result,"success");
+//					//清空表单
+//					document.getElementById("prescription_dialog_form").reset();
+					$('#mc_hospital_modal #dict_table').bootstrapTable('refresh', {url: addurl+"/dict/hospital"});
+					$('#mc_hospital_data_modal').modal('hide');
+				}else{
+					swal("", result,"error");
+				}
+			},
+			error:function(XMLResponse){
+				alert(XMLResponse.responseText)
+			}
+		});
+	}
+	
+}
+
+function mc_hospital_modal_open(){
+	$("#mc_hospital_modal #dict_table").bootstrapTable('refresh',{silent:true});
+	$('#mc_hospital_modal').modal('show');
+}
+
 //药品字典表表格
 var TableInit_dict_drug =function () {
 	var oTableInit=new Object();
@@ -1752,6 +2297,7 @@ var TableInit_dict_drug =function () {
 			    		limit: params.limit,   // 页面数量大小
 						offset: params.offset, // 当前页码
 						search: params.search, // 工具栏查询内容,search:true才有
+						mhiscode:$('#dict_drug_modal #mhiscode1').select2('val'),
 			    };
 			    return temp;
 			},
@@ -1767,7 +2313,7 @@ var TableInit_dict_drug =function () {
 	        },    
 	        {field:'drugcode',title:'药品编号',width:100,align:'center',
 	        },
-	        {field:'drug_unique_code',title:'药品编号',width:100,align:'center',
+	        {field:'drug_unique_code',title:'唯一码',width:100,align:'center',
 	        },    
 	        {field:'drugname',title:'药品名称',width:100,align:'center',
 	        },    
@@ -1778,30 +2324,11 @@ var TableInit_dict_drug =function () {
 	        {field:'comp_name',title:'厂家',width:100,align:'center',
 	        },    
 	        {field:'doseunit',title:'给药单位',width:100,align:'center',
+	        },    
+	        {field:'costunit',title:'划价单位',width:100,align:'center',
 	        }],
 	        //编辑保存
 			onEditableSave: function (field, row, oldValue, $el) {
-				if(row.drug_unique_code == '' || row.hiscode == '' || row.doseunit == ''){
-					swal({title: "提示",text: "机构、药品编码、给药单位不能为空."});
-					return;
-				}
-//				alert(1)
-                $.ajax({
-                    type: "post",
-                    url: $("#addurl").val()+"/dict/updatedrug",
-                    data: row,
-                    dataType: 'JSON',
-                    success: function (data, status) {
-//                    	swal({title: "提示",text: ""});
-                    },
-                    error: function () {
-                        alert('编辑失败');
-                    },
-                    complete: function () {
-
-                    }
-
-                });
             }
 		});
 	}
@@ -1918,7 +2445,8 @@ function dict_drug_data(type){
 			data:{hiscode:IdSelections[0].hiscode,drugcode:IdSelections[0].drugcode,
 				drug_unique_code:IdSelections[0].drug_unique_code,drugname:IdSelections[0].drugname,
 				drugform:IdSelections[0].drugform,drugspec:IdSelections[0].drugspec,
-				comp_name:IdSelections[0].comp_name,doseunit:IdSelections[0].doseunit},
+				comp_name:IdSelections[0].comp_name,doseunit:IdSelections[0].doseunit,
+				costunit:IdSelections[0].costunit},
 			success: function(result){
 				if(result=='ok'){
 					swal("" ,result,"success");
@@ -1978,6 +2506,10 @@ function dict_drug_modal_open(pagelabel,rowIndex){
 		$("#dict_drug_modal #queren").hide();
 	}else{
 		$("#dict_drug_modal #queren").show();
+		$("#dict_drug_modal #btn_add").hide();
+		$("#dict_drug_modal #btn_update").hide();
+		$("#dict_drug_modal #btn_delete").hide();
+		
 	}
 	
 	$("#dict_drug_modal #dict_table").bootstrapTable('refresh',{silent:true});
@@ -2070,6 +2602,7 @@ var TableInit_dict_route =function () {
 			    		limit: params.limit,   // 页面数量大小
 						offset: params.offset, // 当前页码
 						search: params.search, // 工具栏查询内容,search:true才有
+						mhiscode:$('#dict_route_modal #mhiscode2').select2('val'),
 			    };
 			    return temp;
 			},
@@ -2223,6 +2756,9 @@ function dict_route_modal_open(pagelabel,rowIndex){
 		$("#dict_route_modal #queren").hide();
 	}else{
 		$("#dict_route_modal #queren").show();
+		$("#dict_route_modal #btn_add").hide();
+		$("#dict_route_modal #btn_update").hide();
+		$("#dict_route_modal #btn_delete").hide();
 	}
 	
 	$("#dict_route_modal #dict_table").bootstrapTable('refresh',{silent:true});
@@ -2307,6 +2843,7 @@ var TableInit_dict_fre =function () {
 			    		limit: params.limit,   // 页面数量大小
 						offset: params.offset, // 当前页码
 						search: params.search, // 工具栏查询内容,search:true才有
+						mhiscode:$('#dict_fre_modal #mhiscode3').select2('val'),
 			    };
 			    return temp;
 			},
@@ -2446,6 +2983,9 @@ function dict_fre_modal_open(pagelabel,rowIndex){
 		$("#dict_fre_modal #queren").hide();
 	}else{
 		$("#dict_fre_modal #queren").show();
+		$("#dict_fre_modal #btn_add").hide();
+		$("#dict_fre_modal #btn_update").hide();
+		$("#dict_fre_modal #btn_delete").hide();
 	}
 	
 	$("#dict_fre_modal #dict_table").bootstrapTable('refresh',{silent:true});
@@ -2519,6 +3059,7 @@ var TableInit_dict_dept =function () {
 			    		limit: params.limit,   // 页面数量大小
 						offset: params.offset, // 当前页码
 						search: params.search, // 工具栏查询内容,search:true才有
+						mhiscode:$('#dict_dept_modal #mhiscode4').select2('val'),
 			    };
 			    return temp;
 			},
@@ -2674,11 +3215,14 @@ function dict_dept_modal_open(pagelabel,rowIndex){
 		$("#dict_dept_modal #rowid").val(rowIndex);
 	}
 	
-	//区分处理时字典数据维护还是选取字典数据
-	if(rowIndex<0 || rowIndex==undefined){
+	//区分是字典数据维护还是选取字典数据
+	if(pagelabel != 'patientmessage' && (rowIndex<0 || rowIndex==undefined)){
 		$("#dict_dept_modal #queren").hide();
 	}else{
 		$("#dict_dept_modal #queren").show();
+		$("#dict_dept_modal #btn_add").hide();
+		$("#dict_dept_modal #btn_update").hide();
+		$("#dict_dept_modal #btn_delete").hide();
 	}
 	
 	$("#dict_dept_modal #dict_table").bootstrapTable('refresh',{silent:true});
@@ -2773,6 +3317,7 @@ var TableInit_dict_doctor =function () {
 			    		limit: params.limit,   // 页面数量大小
 						offset: params.offset, // 当前页码
 						search: params.search, // 工具栏查询内容,search:true才有
+						mhiscode:$('#dict_doctor_modal #mhiscode5').select2('val'),
 			    };
 			    return temp;
 			},
@@ -2942,11 +3487,14 @@ function dict_doctor_modal_open(pagelabel,rowIndex){
 		
 	}
 	
-	//区分处理时字典数据维护还是选取字典数据
-	if(rowIndex<0 || rowIndex==undefined){
+	//区分是字典数据维护还是选取字典数据
+	if(pagelabel != 'patientmessage' && (rowIndex<0 || rowIndex==undefined)){
 		$("#dict_doctor_modal #queren").hide();
 	}else{
 		$("#dict_doctor_modal #queren").show();
+		$("#dict_doctor_modal #btn_add").hide();
+		$("#dict_doctor_modal #btn_update").hide();
+		$("#dict_doctor_modal #btn_delete").hide();
 	}
 	
 	$("#dict_doctor_modal #dict_table").bootstrapTable('refresh',{silent:true});
@@ -3061,6 +3609,7 @@ var TableInit_dict_allergen =function () {
 			    		limit: params.limit,   // 页面数量大小
 						offset: params.offset, // 当前页码
 						search: params.search, // 工具栏查询内容,search:true才有
+						mhiscode:$('#dict_allergen_modal #mhiscode6').select2('val'),
 			    };
 			    return temp;
 			},
@@ -3211,6 +3760,9 @@ function dict_allergen_modal_open(pagelabel,rowIndex){
 		$("#dict_allergen_modal #queren").hide();
 	}else{
 		$("#dict_allergen_modal #queren").show();
+		$("#dict_allergen_modal #btn_add").hide();
+		$("#dict_allergen_modal #btn_update").hide();
+		$("#dict_allergen_modal #btn_delete").hide();
 	}
 	
 	$("#dict_allergen_modal #dict_table").bootstrapTable('refresh',{silent:true});
@@ -3287,6 +3839,7 @@ var TableInit_dict_disease =function () {
 			    		limit: params.limit,   // 页面数量大小
 						offset: params.offset, // 当前页码
 						search: params.search, // 工具栏查询内容,search:true才有
+						mhiscode:$('#dict_disease_modal #mhiscode7').select2('val'),
 			    };
 			    return temp;
 			},
@@ -3436,6 +3989,9 @@ function dict_disease_modal_open(pagelabel,rowIndex){
 		$("#dict_disease_modal #queren").hide();
 	}else{
 		$("#dict_disease_modal #queren").show();
+		$("#dict_disease_modal #btn_add").hide();
+		$("#dict_disease_modal #btn_update").hide();
+		$("#dict_disease_modal #btn_delete").hide();
 	}
 	
 	$("#dict_disease_modal #dict_table").bootstrapTable('refresh',{silent:true});
@@ -3513,6 +4069,7 @@ var TableInit_dict_operation =function () {
 			    		limit: params.limit,   // 页面数量大小
 						offset: params.offset, // 当前页码
 						search: params.search, // 工具栏查询内容,search:true才有
+						mhiscode:$('#dict_operation_modal #mhiscode8').select2('val'),
 			    };
 			    return temp;
 			},
@@ -3662,6 +4219,9 @@ function dict_operation_modal_open(pagelabel,rowIndex){
 		$("#dict_operation_modal #queren").hide();
 	}else{
 		$("#dict_operation_modal #queren").show();
+		$("#dict_operation_modal #btn_add").hide();
+		$("#dict_operation_modal #btn_update").hide();
+		$("#dict_operation_modal #btn_delete").hide();
 	}
 	
 	$("#dict_operation_modal #dict_table").bootstrapTable('refresh',{silent:true});
@@ -3741,6 +4301,7 @@ var TableInit_dict_exam =function () {
 			    		limit: params.limit,   // 页面数量大小
 						offset: params.offset, // 当前页码
 						search: params.search, // 工具栏查询内容,search:true才有
+						mhiscode:$('#dict_exam_modal #mhiscode9').select2('val'),
 			    };
 			    return temp;
 			},
@@ -3890,6 +4451,9 @@ function dict_exam_modal_open(pagelabel,rowIndex){
 		$("#dict_exam_modal #queren").hide();
 	}else{
 		$("#dict_exam_modal #queren").show();
+		$("#dict_exam_modal #btn_add").hide();
+		$("#dict_exam_modal #btn_update").hide();
+		$("#dict_exam_modal #btn_delete").hide();
 	}
 	
 	$("#dict_exam_modal #dict_table").bootstrapTable('refresh',{silent:true});
@@ -3964,6 +4528,7 @@ var TableInit_dict_lab =function () {
 			    		limit: params.limit,   // 页面数量大小
 						offset: params.offset, // 当前页码
 						search: params.search, // 工具栏查询内容,search:true才有
+						mhiscode:$('#dict_lab_modal #mhiscode10').select2('val'),
 			    };
 			    return temp;
 			},
@@ -4113,6 +4678,9 @@ function dict_lab_modal_open(pagelabel,rowIndex){
 		$("#dict_lab_modal #queren").hide();
 	}else{
 		$("#dict_lab_modal #queren").show();
+		$("#dict_lab_modal #btn_add").hide();
+		$("#dict_lab_modal #btn_update").hide();
+		$("#dict_lab_modal #btn_delete").hide();
 	}
 	
 	$("#dict_lab_modal #dict_table").bootstrapTable('refresh',{silent:true});
@@ -4166,219 +4734,240 @@ function json_fenjie(json){
 	InputJsonInfoList= json.InputJsonInfoList; 
 	
 	//机构编码复制
-	$("#HospID").val(PassClient.HospID);
+	if(PassClient!=null){
+		$("#HospID").val(PassClient.HospID);
+	}
 	
 	//病人信息赋值
-	$('#patientmessage #PatCode').val(Patient.PatCode);
-	$('#patientmessage #InHospNo').val(Patient.InHospNo);
-	$('#patientmessage #VisitCode').val(Patient.VisitCode);
-	$('#patientmessage #Name').val(Patient.Name);
-	$('#patientmessage #Sex').val(Patient.Sex);
-	$('#patientmessage #Birthday input').val(Patient.Birthday);
-	$('#patientmessage #HeightCM').val(Patient.HeightCM);
-	$('#patientmessage #WeighKG').val(Patient.WeighKG);
-	$('#patientmessage #DeptCode').val(Patient.DeptCode);
-	$('#patientmessage #DeptName').val(Patient.DeptName);
-	$('#patientmessage #DoctorCode').val(Patient.DoctorCode);
-	$('#patientmessage #DoctorName').val(Patient.DoctorName);
-	$('#patientmessage #PatStatus').val(Patient.PatStatus);
-	$('#patientmessage #IsLactation').val(Patient.IsLactation);
-	$('#patientmessage #IsPregnancy').val(Patient.IsPregnancy);
-	$('#patientmessage #PregStartDate input').val(Patient.PregStartDate);
-	$('#patientmessage #HepDamageDegree').val(Patient.HepDamageDegree);
-	$('#patientmessage #RenDamageDegree').val(Patient.RenDamageDegree);
-	$('#patientmessage #UseTime input').val(Patient.UseTime);
-	$('#patientmessage #CheckMode').val(Patient.CheckMode);
-	$('#patientmessage #IsDoSave').val(Patient.IsDoSave);
-	$('#patientmessage #Age').val(Patient.Age);
-	$('#patientmessage #PayClass').val(Patient.PayClass);
-	$('#patientmessage #IsTestEtiology').val(Patient.IsTestEtiology);
-	$('#patientmessage #InHospDate input').val(Patient.InHospDate);
-	$('#patientmessage #OutHospDate input').val(Patient.OutHospDate);
-	$('#patientmessage #IDCard').val(Patient.IDCard);
-	$('#patientmessage #Telephone').val(Patient.Telephone);
+	if(Patient!=null){
+		$('#patientmessage #PatCode').val(Patient.PatCode);
+		$('#patientmessage #InHospNo').val(Patient.InHospNo);
+		$('#patientmessage #VisitCode').val(Patient.VisitCode);
+		$('#patientmessage #Name').val(Patient.Name);
+		$('#patientmessage #Sex').val(Patient.Sex);
+		$('#patientmessage #Birthday input').val(Patient.Birthday);
+		$('#patientmessage #HeightCM').val(Patient.HeightCM);
+		$('#patientmessage #WeighKG').val(Patient.WeighKG);
+		$('#patientmessage #DeptCode').val(Patient.DeptCode);
+		$('#patientmessage #DeptName').val(Patient.DeptName);
+		$('#patientmessage #DoctorCode').val(Patient.DoctorCode);
+		$('#patientmessage #DoctorName').val(Patient.DoctorName);
+		$('#patientmessage #PatStatus').val(Patient.PatStatus);
+		$('#patientmessage #IsLactation').val(Patient.IsLactation);
+		$('#patientmessage #IsPregnancy').val(Patient.IsPregnancy);
+		$('#patientmessage #PregStartDate input').val(Patient.PregStartDate);
+		$('#patientmessage #HepDamageDegree').val(Patient.HepDamageDegree);
+		$('#patientmessage #RenDamageDegree').val(Patient.RenDamageDegree);
+		$('#patientmessage #UseTime input').val(Patient.UseTime);
+		if(Patient.CheckMode=='BOTH_PASS_PA'){
+			$('#patientmessage #CheckMode').val('mz');
+		}else{
+			$('#patientmessage #CheckMode').val(Patient.CheckMode);
+		}
+		
+		$('#patientmessage #IsDoSave').val(Patient.IsDoSave);
+		$('#patientmessage #Age').val(Patient.Age);
+		$('#patientmessage #PayClass').val(Patient.PayClass);
+		$('#patientmessage #IsTestEtiology').val(Patient.IsTestEtiology);
+		$('#patientmessage #InHospDate input').val(Patient.InHospDate);
+		$('#patientmessage #OutHospDate input').val(Patient.OutHospDate);
+		$('#patientmessage #IDCard').val(Patient.IDCard);
+		$('#patientmessage #Telephone').val(Patient.Telephone);
+	}
 	
 	//医嘱信息赋值
-	var ScreenDrugs = ScreenDrugList.ScreenDrugs;
-	$('#drugsmessage #json_table').bootstrapTable('load',ScreenDrugs); 
-//	for(var i=0; i<ScreenDrugs.length;i++){
-//		var ScreenDrug = ScreenDrugs[i];
-//
-//		$('#drugsmessage #json_table').bootstrapTable('append',{
-//			RecipNo: ScreenDrug.RecipNo,
-//            Index: ScreenDrug.Index,
-//            OrderNo:parseInt(ScreenDrug.OrderNo),
-//            DrugSource: ScreenDrug.DrugSource,
-//            DrugUniqueCode: ScreenDrug.DrugUniqueCode,
-//            DrugCode: ScreenDrug.DrugCode,
-//            DrugName: ScreenDrug.DrugName,
-//            DoseUnit: ScreenDrug.DoseUnit,
-//            Form: ScreenDrug.Form,
-//            Strength: ScreenDrug.Strength,
-//            CompName: ScreenDrug.CompName,
-//            RouteSource: ScreenDrug.RouteSource,
-//            RouteCode: ScreenDrug.RouteCode,
-//            RouteName: ScreenDrug.RouteName,
-//            FreqSource: ScreenDrug.FreqSource,
-//            Frequency: ScreenDrug.Frequency,
-//            DosePerTime: ScreenDrug.DosePerTime,
-//            StartTime: ScreenDrug.StartTime,
-//            EndTime: ScreenDrug.EndTime,
-//            ExecuteTime: ScreenDrug.ExecuteTime,
-//            DeptCode: ScreenDrug.DeptCode,
-//            DeptName: ScreenDrug.DeptName,
-//            DoctorCode: ScreenDrug.DoctorCode,
-//            DoctorName: ScreenDrug.DoctorName,
-//            GroupTag: ScreenDrug.GroupTag,
-//            IsTempDrug:parseInt(ScreenDrug.IsTempDrug) ,
-//            OrderType:parseInt(ScreenDrug.OrderType),
-//            Pharmacists: ScreenDrug.Pharmacists,
-//            Pharmacists_: ScreenDrug.Pharmacists_,
-//            Num: ScreenDrug.Num,
-//            NumUnit: ScreenDrug.NumUnit,
-//            Cost: ScreenDrug.Cost,
-//            Purpose: parseInt(ScreenDrug.Purpose),
-//            OprCode: ScreenDrug.OprCode,
-//            MediTime: ScreenDrug.MediTime,
-//            Remark: ScreenDrug.Remark
-//		});
-//	}
+	if(ScreenDrugList!=null){
+		var ScreenDrugs = ScreenDrugList.ScreenDrugs;
+		$('#drugsmessage #json_table').bootstrapTable('load',ScreenDrugs); 
+//		for(var i=0; i<ScreenDrugs.length;i++){
+//			var ScreenDrug = ScreenDrugs[i];
+	//
+//			$('#drugsmessage #json_table').bootstrapTable('append',{
+//				RecipNo: ScreenDrug.RecipNo,
+//	            Index: ScreenDrug.Index,
+//	            OrderNo:parseInt(ScreenDrug.OrderNo),
+//	            DrugSource: ScreenDrug.DrugSource,
+//	            DrugUniqueCode: ScreenDrug.DrugUniqueCode,
+//	            DrugCode: ScreenDrug.DrugCode,
+//	            DrugName: ScreenDrug.DrugName,
+//	            DoseUnit: ScreenDrug.DoseUnit,
+//	            Form: ScreenDrug.Form,
+//	            Strength: ScreenDrug.Strength,
+//	            CompName: ScreenDrug.CompName,
+//	            RouteSource: ScreenDrug.RouteSource,
+//	            RouteCode: ScreenDrug.RouteCode,
+//	            RouteName: ScreenDrug.RouteName,
+//	            FreqSource: ScreenDrug.FreqSource,
+//	            Frequency: ScreenDrug.Frequency,
+//	            DosePerTime: ScreenDrug.DosePerTime,
+//	            StartTime: ScreenDrug.StartTime,
+//	            EndTime: ScreenDrug.EndTime,
+//	            ExecuteTime: ScreenDrug.ExecuteTime,
+//	            DeptCode: ScreenDrug.DeptCode,
+//	            DeptName: ScreenDrug.DeptName,
+//	            DoctorCode: ScreenDrug.DoctorCode,
+//	            DoctorName: ScreenDrug.DoctorName,
+//	            GroupTag: ScreenDrug.GroupTag,
+//	            IsTempDrug:parseInt(ScreenDrug.IsTempDrug) ,
+//	            OrderType:parseInt(ScreenDrug.OrderType),
+//	            Pharmacists: ScreenDrug.Pharmacists,
+//	            Pharmacists_: ScreenDrug.Pharmacists_,
+//	            Num: ScreenDrug.Num,
+//	            NumUnit: ScreenDrug.NumUnit,
+//	            Cost: ScreenDrug.Cost,
+//	            Purpose: parseInt(ScreenDrug.Purpose),
+//	            OprCode: ScreenDrug.OprCode,
+//	            MediTime: ScreenDrug.MediTime,
+//	            Remark: ScreenDrug.Remark
+//			});
+//		}
+	}
 	
-	//过敏原信息赋值
-	var ScreenAllergens = ScreenAllergenList.ScreenAllergens;
-	$('#allergenmessage #json_table').bootstrapTable('load',ScreenAllergens); 
-//	for(var i=0; i<ScreenAllergens.length;i++){
-//		var ScreenAllergen = ScreenAllergens[i];
-//		$('#allergenmessage #json_table').bootstrapTable('append',{
-//			Index: ScreenAllergen.Index,
-//			AllerSource: ScreenAllergen.AllerSource,
-//			AllerCode: ScreenAllergen.AllerCode,
-//			AllerName:ScreenAllergen.AllerName,
-//			AllerSymptom:ScreenAllergen.AllerSymptom
-//		});
-//	}
+	if(ScreenAllergenList!=null){
+		//过敏原信息赋值
+		var ScreenAllergens = ScreenAllergenList.ScreenAllergens;
+		$('#allergenmessage #json_table').bootstrapTable('load',ScreenAllergens); 
+//		for(var i=0; i<ScreenAllergens.length;i++){
+//			var ScreenAllergen = ScreenAllergens[i];
+//			$('#allergenmessage #json_table').bootstrapTable('append',{
+//				Index: ScreenAllergen.Index,
+//				AllerSource: ScreenAllergen.AllerSource,
+//				AllerCode: ScreenAllergen.AllerCode,
+//				AllerName:ScreenAllergen.AllerName,
+//				AllerSymptom:ScreenAllergen.AllerSymptom
+//			});
+//		}
+	}
 	
-	//疾病信息赋值
-	var ScreenMedConds = ScreenMedCondList.ScreenMedConds;
-	$('#diseasemessage #json_table').bootstrapTable('load',ScreenMedConds); 
-//	for(var i=0; i<ScreenMedConds.length;i++){
-//		var ScreenMedCond = ScreenMedConds[i];
-//		$('#diseasemessage #json_table').bootstrapTable('append',{
-//			RecipNo: ScreenMedCond.RecipNo,
-//			Index: ScreenMedCond.Index,
-//			DisSource: ScreenMedCond.DisSource,
-//			DiseaseCode:ScreenMedCond.DiseaseCode,
-//			DiseaseName:ScreenMedCond.DiseaseName,
-//			DisTimeType:parseInt(ScreenMedCond.DisTimeType),
-//			Ishospinfection:parseInt(ScreenMedCond.Ishospinfection)
-//		});
-//	}
+	if(ScreenMedCondList!=null){
+		//疾病信息赋值
+		var ScreenMedConds = ScreenMedCondList.ScreenMedConds;
+		$('#diseasemessage #json_table').bootstrapTable('load',ScreenMedConds); 
+//		for(var i=0; i<ScreenMedConds.length;i++){
+//			var ScreenMedCond = ScreenMedConds[i];
+//			$('#diseasemessage #json_table').bootstrapTable('append',{
+//				RecipNo: ScreenMedCond.RecipNo,
+//				Index: ScreenMedCond.Index,
+//				DisSource: ScreenMedCond.DisSource,
+//				DiseaseCode:ScreenMedCond.DiseaseCode,
+//				DiseaseName:ScreenMedCond.DiseaseName,
+//				DisTimeType:parseInt(ScreenMedCond.DisTimeType),
+//				Ishospinfection:parseInt(ScreenMedCond.Ishospinfection)
+//			});
+//		}
+	}
 	
-	//手术信息赋值
-	var ScreenOperations = ScreenOperationList.ScreenOperations;
-	$('#operationmessage #json_table').bootstrapTable('load',ScreenOperations); 
-//	for(var i=0; i<ScreenOperations.length;i++){
-//		var ScreenOperation = ScreenOperations[i];
-//		$('#operationmessage #json_table').bootstrapTable('append',{
-//			Index: ScreenOperation.Index,
-//			OprCode: ScreenOperation.OprCode,
-//			OprName: ScreenOperation.OprName,
-//			IncisionType:ScreenOperation.IncisionType,
-//			OprStartDate:ScreenOperation.OprStartDate,
-//			OprEndDate: ScreenOperation.OprEndDate,
-//			OprMediTime:parseInt(ScreenOperation.OprMediTime),
-//			OprTreatTime:parseInt(ScreenOperation.OprTreatTime)
-//		});
-//	}
+	if(ScreenOperationList!=null){
+		//手术信息赋值
+		var ScreenOperations = ScreenOperationList.ScreenOperations;
+		$('#operationmessage #json_table').bootstrapTable('load',ScreenOperations); 
+//		for(var i=0; i<ScreenOperations.length;i++){
+//			var ScreenOperation = ScreenOperations[i];
+//			$('#operationmessage #json_table').bootstrapTable('append',{
+//				Index: ScreenOperation.Index,
+//				OprCode: ScreenOperation.OprCode,
+//				OprName: ScreenOperation.OprName,
+//				IncisionType:ScreenOperation.IncisionType,
+//				OprStartDate:ScreenOperation.OprStartDate,
+//				OprEndDate: ScreenOperation.OprEndDate,
+//				OprMediTime:parseInt(ScreenOperation.OprMediTime),
+//				OprTreatTime:parseInt(ScreenOperation.OprTreatTime)
+//			});
+//		}
+	}
 	
-	//附加信息节点赋值
-	var InputJsonInfos = InputJsonInfoList.InputJsonInfos;
-	for(var i=0; i<InputJsonInfos.length;i++){
-		var InputJsonInfo = InputJsonInfos[i];
-		if(InputJsonInfo.type=="jsontype"){
-			$('#fujiamessage #jsontype').val(InputJsonInfo.screentype);
-		}
-		if(InputJsonInfo.type=="prtasktype"){
-			$('#fujiatask #prtasktype').val(InputJsonInfo.urgent);
-		}
-		if(InputJsonInfo.type=="druginfo"){
-			var aaa = new Array();
-			aaa.push(InputJsonInfo);
-//			$('#fujiadrug #json_table').bootstrapTable('load',aaa); 
-			$('#fujiadrug #json_table').bootstrapTable('append',aaa); 
-//			$('#fujiadrug #json_table').bootstrapTable('append',{
-//				type:"druginfo",
-//				index: InputJsonInfo.index,
-//				driprate: InputJsonInfo.driprate,
-//				driptime: InputJsonInfo.driptime,
-//				duration:InputJsonInfo.duration
-//			});
-		}
-		if(InputJsonInfo.type=="diseaseinfo"){
-			var aaa = new Array();
-			aaa.push(InputJsonInfo);
-			$('#fujiadisease #json_table').bootstrapTable('append',aaa); 
-//			$('#fujiadisease #json_table').bootstrapTable('append',{
-//				type:"diseaseinfo",
-//				index: InputJsonInfo.index,
-//				starttime: InputJsonInfo.starttime,
-//				endtime: InputJsonInfo.endtime
-//			});
-		}
-		if(InputJsonInfo.type=="otherrecipinfo"){
-			var aaa = new Array();
-			aaa.push(InputJsonInfo);
-			$('#fujiaotherrecip #json_table').bootstrapTable('append',aaa); 
-//			$('#fujiaotherrecip #json_table').bootstrapTable('append',{
-//				type:"otherrecipinfo",
-//				hiscode: InputJsonInfo.hiscode,
-//				index: InputJsonInfo.index,
-//				recipno: InputJsonInfo.recipno,
-//				drugsource: InputJsonInfo.drugsource,
-//				druguniquecode: InputJsonInfo.druguniquecode,
-//				drugname: InputJsonInfo.drugname,
-//				doseunit: InputJsonInfo.doseunit,
-//				routesource: InputJsonInfo.routesource,
-//				routecode: InputJsonInfo.routecode,
-//				routename: InputJsonInfo.routename
-//			});
-		}
-		if(InputJsonInfo.type=="examinfo"){
-			var aaa = new Array();
-			aaa.push(InputJsonInfo);
-			$('#fujiaexaminfo #json_table').bootstrapTable('append',aaa); 
-//			$('#fujiaexaminfo #json_table').bootstrapTable('append',{
-//				type:"examinfo",
-//				requestno:InputJsonInfo.requestno,
-//				labexamcode: InputJsonInfo.labexamcode,
-//				labexamname: InputJsonInfo.labexamname,
-//				startdatetime: InputJsonInfo.startdatetime,
-//				deptcode: InputJsonInfo.deptcode,
-//				deptname: InputJsonInfo.deptname,
-//				doctorcode: InputJsonInfo.doctorcode,
-//				doctorname: InputJsonInfo.doctorname
-//			});
-		}
-		if(InputJsonInfo.type=="labinfo"){
-			var aaa = new Array();
-			aaa.push(InputJsonInfo);
-			$('#fujialabinfo #json_table').bootstrapTable('append',aaa);
-//			$('#fujialabinfo #json_table').bootstrapTable('append',{
-//				type:"labinfo",
-//				requestno: InputJsonInfo.requestno,
-//				labexamcode: InputJsonInfo.labexamcode,
-//				labexamname: InputJsonInfo.labexamname,
-//				ch_reporttime: InputJsonInfo.ch_reporttime,
-//				deptcode: InputJsonInfo.deptcode,
-//				deptname: InputJsonInfo.deptname,
-//				doctorcode: InputJsonInfo.doctorcode,
-//				doctorname: InputJsonInfo.doctorname,
-//				ch_resultflag:InputJsonInfo.ch_resultflag,
-//				ch_labeltypedesc:InputJsonInfo.ch_labeltypedesc,
-//				ch_labresult:InputJsonInfo.ch_labresult,
-//				ch_range:InputJsonInfo.ch_range,
-//				ch_unit:InputJsonInfo.ch_unit
-//			});
+	if(InputJsonInfoList!=null){
+		//附加信息节点赋值
+		if(InputJsonInfoList != null){
+			var InputJsonInfos = InputJsonInfoList.InputJsonInfos;
+			for(var i=0; i<InputJsonInfos.length;i++){
+				var InputJsonInfo = InputJsonInfos[i];
+				if(InputJsonInfo.type=="jsontype"){
+					$('#fujiamessage #jsontype').val(InputJsonInfo.screentype);
+				}
+				if(InputJsonInfo.type=="prtasktype"){
+					$('#fujiatask #prtasktype').val(InputJsonInfo.urgent);
+				}
+				if(InputJsonInfo.type=="druginfo"){
+					var aaa = new Array();
+					aaa.push(InputJsonInfo);
+//					$('#fujiadrug #json_table').bootstrapTable('load',aaa); 
+					$('#fujiadrug #json_table').bootstrapTable('append',aaa); 
+//					$('#fujiadrug #json_table').bootstrapTable('append',{
+//						type:"druginfo",
+//						index: InputJsonInfo.index,
+//						driprate: InputJsonInfo.driprate,
+//						driptime: InputJsonInfo.driptime,
+//						duration:InputJsonInfo.duration
+//					});
+				}
+				if(InputJsonInfo.type=="diseaseinfo"){
+					var aaa = new Array();
+					aaa.push(InputJsonInfo);
+					$('#fujiadisease #json_table').bootstrapTable('append',aaa); 
+//					$('#fujiadisease #json_table').bootstrapTable('append',{
+//						type:"diseaseinfo",
+//						index: InputJsonInfo.index,
+//						starttime: InputJsonInfo.starttime,
+//						endtime: InputJsonInfo.endtime
+//					});
+				}
+				if(InputJsonInfo.type=="otherrecipinfo"){
+					var aaa = new Array();
+					aaa.push(InputJsonInfo);
+					$('#fujiaotherrecip #json_table').bootstrapTable('append',aaa); 
+//					$('#fujiaotherrecip #json_table').bootstrapTable('append',{
+//						type:"otherrecipinfo",
+//						hiscode: InputJsonInfo.hiscode,
+//						index: InputJsonInfo.index,
+//						recipno: InputJsonInfo.recipno,
+//						drugsource: InputJsonInfo.drugsource,
+//						druguniquecode: InputJsonInfo.druguniquecode,
+//						drugname: InputJsonInfo.drugname,
+//						doseunit: InputJsonInfo.doseunit,
+//						routesource: InputJsonInfo.routesource,
+//						routecode: InputJsonInfo.routecode,
+//						routename: InputJsonInfo.routename
+//					});
+				}
+				if(InputJsonInfo.type=="examinfo"){
+					var aaa = new Array();
+					aaa.push(InputJsonInfo);
+					$('#fujiaexaminfo #json_table').bootstrapTable('append',aaa); 
+//					$('#fujiaexaminfo #json_table').bootstrapTable('append',{
+//						type:"examinfo",
+//						requestno:InputJsonInfo.requestno,
+//						labexamcode: InputJsonInfo.labexamcode,
+//						labexamname: InputJsonInfo.labexamname,
+//						startdatetime: InputJsonInfo.startdatetime,
+//						deptcode: InputJsonInfo.deptcode,
+//						deptname: InputJsonInfo.deptname,
+//						doctorcode: InputJsonInfo.doctorcode,
+//						doctorname: InputJsonInfo.doctorname
+//					});
+				}
+				if(InputJsonInfo.type=="labinfo"){
+					var aaa = new Array();
+					aaa.push(InputJsonInfo);
+					$('#fujialabinfo #json_table').bootstrapTable('append',aaa);
+//					$('#fujialabinfo #json_table').bootstrapTable('append',{
+//						type:"labinfo",
+//						requestno: InputJsonInfo.requestno,
+//						labexamcode: InputJsonInfo.labexamcode,
+//						labexamname: InputJsonInfo.labexamname,
+//						ch_reporttime: InputJsonInfo.ch_reporttime,
+//						deptcode: InputJsonInfo.deptcode,
+//						deptname: InputJsonInfo.deptname,
+//						doctorcode: InputJsonInfo.doctorcode,
+//						doctorname: InputJsonInfo.doctorname,
+//						ch_resultflag:InputJsonInfo.ch_resultflag,
+//						ch_labeltypedesc:InputJsonInfo.ch_labeltypedesc,
+//						ch_labresult:InputJsonInfo.ch_labresult,
+//						ch_range:InputJsonInfo.ch_range,
+//						ch_unit:InputJsonInfo.ch_unit
+//					});
+				}
+			}
 		}
 	}
 }
@@ -4389,8 +4978,30 @@ function json_hebing(){
 	var json = {};
 	
 	//保存客户端信息
-	PassClient.HospID=$('#HospID').val();
-	json['PassClient']=PassClient;
+	if(PassClient!=null){
+		PassClient.HospID=$('#HospID').val();
+		json['PassClient']=PassClient;
+	}else{
+		var PassClient1={};
+		PassClient1['HospID']=$('#HospID').val();
+		PassClient1['HospName']='';
+		PassClient1['UserId']='';
+		PassClient1['UserName']='';
+		PassClient1['DeptID']='';
+		PassClient1['DeptName']='';
+		PassClient1['IP']='';
+		PassClient1['PCName']='';
+		PassClient1['OSInfo']='';
+		PassClient1['Resolution']='';
+		PassClient1['PassVersion']='';
+		PassClient1['ProductCode']='';
+		PassClient1['IsPassTool']='';
+		PassClient1['mac']='';
+		PassClient1['otherinfo']='';
+		PassClient1['CheckMode']='';
+		
+		json['PassClient']=PassClient1;
+	}
 	
 	//保存病人信息
 	var Patient={};
@@ -4461,6 +5072,7 @@ function json_hebing(){
 	var ScreenDrugs=new Array();
 	for(var i=0;i<odrrows.length;i++){
 		var odrrow=odrrows[i];
+		delete odrrow['jingshi']; 
 		//字符串转整型
 		odrrow['OrderNo']=parseInt(odrrow.OrderNo);
 		odrrow['IsTempDrug']=parseInt(odrrow.IsTempDrug);
@@ -4539,41 +5151,37 @@ function json_hebing(){
 	
 //	console.log(JSON.stringify(json))
 	
-	var updateaddress=addurl+'/prescription/update';
-	
 	$.ajax({
 		type:"POST",
-		url:updateaddress,
+		url:addurl+'/prescription/update',
 		async:false,
 		cache:true,
 		data:{
 			pre_id: $('#pre_id').val(),
-//			patientname:$('#patientname').val(),
+//				patientname:$('#patientname').val(),
 			prescription_json:JSON.stringify(json),
 			prescriptiontype:$('#prescriptiontype').val(),
 		},
 		success: function(result){
-//			swal({
-//	            title: "提示",
-//	            text: result
-//	        });
 			swal({ 
 				  title: "提示", 
 				  text: result, 
-//				  confirmButtonColor: "#DD6B55",
+//					  confirmButtonColor: "#DD6B55",
 				  confirmButtonText: "OK", 
 				  closeOnConfirm: false, 
 				},
 				function(isConfirm){ 
 					location.reload();
 				});
-//			location.reload();
+//				location.reload();
 		},
 		error:function(XMLResponse){
 			alert(XMLResponse.responseText)
 		}
 	});
 }
+
+
 
 //==========================================页面列表新增、删除功能=============================
 //药品信息操作
@@ -4585,7 +5193,7 @@ function drug_append(){
 	$('#drugsmessage #json_table').bootstrapTable('append',{
 		  RecipNo: '',
 		  Index: parseInt(sum[0])+1,
-		  OrderNo:0,
+		  OrderNo:parseInt(sum[0])+1,
 		  DrugSource: '',
 		  DrugUniqueCode: '',
 		  DrugCode: '',
@@ -4734,7 +5342,12 @@ function operation_append(){
 		OprStartDate:'',
 		OprEndDate: '',
 		OprMediTime:0,
-		OprTreatTime:0
+		OprTreatTime:0,
+		OprInMediTime : -1,
+		OprInBloodTransfusion : -1,
+		OprCombinedMediNum : -1,
+		OprCombinedMediOrderCodes : "",
+		OprLength : -1
 	})
 }
 function operation_del(){
@@ -4771,7 +5384,8 @@ function fujia_drug_append(){
 		index: parseInt(sum[0])+1,
 		driprate: '',
 		driptime: '',
-		duration:''
+		duration:'',
+		skintest:-1
 	})
 }
 function fujia_drug_del(){
@@ -4966,99 +5580,714 @@ function fujia_labinfo_del(){
 
 //========================================初始化下拉单数据==========================
 function _select2(){
-	var addresshospital = addurl + '/dict/select2';
-	var hospital={};
+//	var addresshospital = addurl + '/dict/select2';
+//	var hospital={};
 	
-	$.ajax({
-		type:"POST",
-		url:addresshospital,
-		async:false,
-		cache:true,
-		data:{},
-		success: function(result){
-			hospital=result[0].hospital;
-		},
-		error:function(XMLResponse){
-			alert(XMLResponse.responseText)
-		}
-	});
+//	$.ajax({
+//		type:"POST",
+//		url:addresshospital,
+//		async:false,
+//		cache:true,
+//		data:{},
+//		success: function(result){
+//			hospital=result[0].hospital;
+//		},
+//		error:function(XMLResponse){
+//			alert(XMLResponse.responseText)
+//		}
+//	});
 	
 	$('#dict_drug_data_modal #hiscode1').select2({
 		placeholder: "--请选择--",
 		allowClear: true,
 		dropdownParent: $("#dict_drug_data_modal"),//modal默认不显示，解决modal显示后下拉单样式问题
-		data :hospital
-//		ajax: {
-//			url: addresshospital,
-//			processResults: function (data) {
-//			// Tranforms the top-level key of the response object from 'items' to 'results'
-//				return {
-//					results: data[0].hospital
-//				};
-//			}
-//		}
+		ajax: {
+			url: addurl + '/dict/select2',
+			contentType:"application/json",
+			data: function (params) {
+	             return {
+	            	 searchstr:params.term,
+	             };
+	        },
+			processResults: function (data) {
+			// Tranforms the top-level key of the response object from 'items' to 'results'
+				return {
+					results: data[0].hospital
+				};
+			}
+		}
 	});
 	
 	$('#dict_route_data_modal #hiscode2').select2({
 		placeholder: "--请选择--",
 		allowClear: true,
 		dropdownParent: $("#dict_route_data_modal"),//modal默认不显示，解决modal显示后下拉单样式问题
-		data :hospital
+		ajax: {
+			url: addurl + '/dict/select2',
+			contentType:"application/json",
+			data: function (params) {
+	             return {
+	            	 searchstr:params.term,
+	             };
+	        },
+			processResults: function (data) {
+			// Tranforms the top-level key of the response object from 'items' to 'results'
+				return {
+					results: data[0].hospital
+				};
+			}
+		}
 	});
 	
 	$('#dict_fre_data_modal #hiscode3').select2({
 		placeholder: "--请选择--",
 		allowClear: true,
 		dropdownParent: $("#dict_fre_data_modal"),//modal默认不显示，解决modal显示后下拉单样式问题
-		data :hospital
+		ajax: {
+			url: addurl + '/dict/select2',
+			contentType:"application/json",
+			data: function (params) {
+	             return {
+	            	 searchstr:params.term,
+	             };
+	        },
+			processResults: function (data) {
+			// Tranforms the top-level key of the response object from 'items' to 'results'
+				return {
+					results: data[0].hospital
+				};
+			}
+		}
 	});
 	
 	$('#dict_dept_data_modal #hiscode4').select2({
 		placeholder: "--请选择--",
 		allowClear: true,
 		dropdownParent: $("#dict_dept_data_modal"),//modal默认不显示，解决modal显示后下拉单样式问题
-		data :hospital
+		ajax: {
+			url: addurl + '/dict/select2',
+			contentType:"application/json",
+			data: function (params) {
+	             return {
+	            	 searchstr:params.term,
+	             };
+	        },
+			processResults: function (data) {
+			// Tranforms the top-level key of the response object from 'items' to 'results'
+				return {
+					results: data[0].hospital
+				};
+			}
+		}
 	});
 	
 	$('#dict_doctor_data_modal #hiscode5').select2({
 		placeholder: "--请选择--",
 		allowClear: true,
 		dropdownParent: $("#dict_doctor_data_modal"),//modal默认不显示，解决modal显示后下拉单样式问题
-		data :hospital
+		ajax: {
+			url: addurl + '/dict/select2',
+			contentType:"application/json",
+			data: function (params) {
+	             return {
+	            	 searchstr:params.term,
+	             };
+	        },
+			processResults: function (data) {
+			// Tranforms the top-level key of the response object from 'items' to 'results'
+				return {
+					results: data[0].hospital
+				};
+			}
+		}
 	});
 	
 	$('#dict_allergen_data_modal #hiscode6').select2({
 		placeholder: "--请选择--",
 		allowClear: true,
 		dropdownParent: $("#dict_allergen_data_modal"),//modal默认不显示，解决modal显示后下拉单样式问题
-		data :hospital
+		ajax: {
+			url: addurl + '/dict/select2',
+			contentType:"application/json",
+			data: function (params) {
+	             return {
+	            	 searchstr:params.term,
+	             };
+	        },
+			processResults: function (data) {
+			// Tranforms the top-level key of the response object from 'items' to 'results'
+				return {
+					results: data[0].hospital
+				};
+			}
+		}
 	});
 	
 	$('#dict_disease_data_modal #hiscode7').select2({
 		placeholder: "--请选择--",
 		allowClear: true,
 		dropdownParent: $("#dict_disease_data_modal"),//modal默认不显示，解决modal显示后下拉单样式问题
-		data :hospital
+		ajax: {
+			url: addurl + '/dict/select2',
+			contentType:"application/json",
+			data: function (params) {
+	             return {
+	            	 searchstr:params.term,
+	             };
+	        },
+			processResults: function (data) {
+			// Tranforms the top-level key of the response object from 'items' to 'results'
+				return {
+					results: data[0].hospital
+				};
+			}
+		}
 	});
 	
 	$('#dict_operation_data_modal #hiscode8').select2({
 		placeholder: "--请选择--",
 		allowClear: true,
 		dropdownParent: $("#dict_operation_data_modal"),//modal默认不显示，解决modal显示后下拉单样式问题
-		data :hospital
+		ajax: {
+			url: addurl + '/dict/select2',
+			contentType:"application/json",
+			data: function (params) {
+	             return {
+	            	 searchstr:params.term,
+	             };
+	        },
+			processResults: function (data) {
+			// Tranforms the top-level key of the response object from 'items' to 'results'
+				return {
+					results: data[0].hospital
+				};
+			}
+		}
 	});
 	
 	$('#dict_exam_data_modal #hiscode9').select2({
 		placeholder: "--请选择--",
 		allowClear: true,
 		dropdownParent: $("#dict_exam_data_modal"),//modal默认不显示，解决modal显示后下拉单样式问题
-		data :hospital
+		ajax: {
+			url: addurl + '/dict/select2',
+			contentType:"application/json",
+			data: function (params) {
+	             return {
+	            	 searchstr:params.term,
+	             };
+	        },
+			processResults: function (data) {
+			// Tranforms the top-level key of the response object from 'items' to 'results'
+				return {
+					results: data[0].hospital
+				};
+			}
+		}
 	});
 	
 	$('#dict_lab_data_modal #hiscode10').select2({
 		placeholder: "--请选择--",
 		allowClear: true,
 		dropdownParent: $("#dict_lab_data_modal"),//modal默认不显示，解决modal显示后下拉单样式问题
-		data :hospital
+		ajax: {
+			url: addurl + '/dict/select2',
+			contentType:"application/json",
+			data: function (params) {
+	             return {
+	            	 searchstr:params.term,
+	             };
+	        },
+			processResults: function (data) {
+			// Tranforms the top-level key of the response object from 'items' to 'results'
+				return {
+					results: data[0].hospital
+				};
+			}
+		}
+	});
+	
+	$('#jichushujuweihu #tongbuHiscode').select2({
+		placeholder: "--请选择--",
+		allowClear: true,
+		dropdownParent: $("#jichushujuweihu"),//modal默认不显示，解决modal显示后下拉单样式问题
+		ajax: {
+			url: addurl + '/dict/select2',
+			contentType:"application/json",
+			data: function (params) {
+	             return {
+	            	 searchstr:params.term,
+	             };
+	        },
+			processResults: function (data) {
+			// Tranforms the top-level key of the response object from 'items' to 'results'
+				return {
+					results: data[0].hospital
+				};
+			}
+		}
+	});
+	
+	$('#jichushujuweihu #tongbuTable').select2({
+		placeholder: "--请选择--",
+		allowClear: true,
+		dropdownParent: $("#jichushujuweihu"),//modal默认不显示，解决modal显示后下拉单样式问题
+		ajax: {
+			url: addurl + '/dict/select2',
+			contentType:"application/json",
+			data: function (params) {
+	             return {
+	            	 searchstr:params.term,
+	             };
+	        },
+			processResults: function (data) {
+			// Tranforms the top-level key of the response object from 'items' to 'results'
+				return {
+					results: data[0].tables_name
+				};
+			}
+		}
+	});
+	
+	$('#jichushujuweihu #tongbuDatabase').select2({
+		placeholder: "--请选择--",
+		allowClear: true,
+		dropdownParent: $("#jichushujuweihu"),//modal默认不显示，解决modal显示后下拉单样式问题
+		ajax: {
+			url: addurl + '/dict/select2',
+			contentType:"application/json",
+			data: function (params) {
+	             return {
+	            	 searchstr:params.term,
+	             };
+	        },
+			processResults: function (data) {
+			// Tranforms the top-level key of the response object from 'items' to 'results'
+				return {
+					results: data[0].database
+				};
+			}
+		}
+	});
+	
+	$('#dict_drug_modal #mhiscode1').select2({
+		placeholder: "--请选择--",
+		allowClear: true,
+		dropdownParent: $("#dict_drug_modal"),//modal默认不显示，解决modal显示后下拉单样式问题
+		ajax: {
+			url: addurl + '/dict/select2',
+			contentType:"application/json",
+			data: function (params) {
+	             return {
+	            	 searchstr:params.term,
+	             };
+	        },
+			processResults: function (data) {
+			// Tranforms the top-level key of the response object from 'items' to 'results'
+				return {
+					results: data[0].hospital
+				};
+			}
+		}
+	});
+	$('#dict_drug_modal #mhiscode1').on("change", function() {
+		$('#dict_drug_modal #dict_table').bootstrapTable('refresh');
+	});
+	
+	$('#dict_route_modal #mhiscode2').select2({
+		placeholder: "--请选择--",
+		allowClear: true,
+		dropdownParent: $("#dict_route_modal"),//modal默认不显示，解决modal显示后下拉单样式问题
+		ajax: {
+			url: addurl + '/dict/select2',
+			contentType:"application/json",
+			data: function (params) {
+	             return {
+	            	 searchstr:params.term,
+	             };
+	        },
+			processResults: function (data) {
+			// Tranforms the top-level key of the response object from 'items' to 'results'
+				return {
+					results: data[0].hospital
+				};
+			}
+		}
+	});
+	$('#dict_route_modal #mhiscode2').on("change", function() {
+		$('#dict_route_modal #dict_table').bootstrapTable('refresh');
+	});
+	
+	$('#dict_fre_modal #mhiscode3').select2({
+		placeholder: "--请选择--",
+		allowClear: true,
+		dropdownParent: $("#dict_fre_modal"),//modal默认不显示，解决modal显示后下拉单样式问题
+		ajax: {
+			url: addurl + '/dict/select2',
+			contentType:"application/json",
+			data: function (params) {
+	             return {
+	            	 searchstr:params.term,
+	             };
+	        },
+			processResults: function (data) {
+			// Tranforms the top-level key of the response object from 'items' to 'results'
+				return {
+					results: data[0].hospital
+				};
+			}
+		}
+	});
+	$('#dict_fre_modal #mhiscode3').on("change", function() {
+		$('#dict_fre_modal #dict_table').bootstrapTable('refresh');
+	});
+	
+	$('#dict_dept_modal #mhiscode4').select2({
+		placeholder: "--请选择--",
+		allowClear: true,
+		dropdownParent: $("#dict_dept_modal"),//modal默认不显示，解决modal显示后下拉单样式问题
+		ajax: {
+			url: addurl + '/dict/select2',
+			contentType:"application/json",
+			data: function (params) {
+	             return {
+	            	 searchstr:params.term,
+	             };
+	        },
+			processResults: function (data) {
+			// Tranforms the top-level key of the response object from 'items' to 'results'
+				return {
+					results: data[0].hospital
+				};
+			}
+		}
+	});
+	$('#dict_dept_modal #mhiscode4').on("change", function() {
+		$('#dict_dept_modal #dict_table').bootstrapTable('refresh');
+	});
+	
+	$('#dict_doctor_modal #mhiscode5').select2({
+		placeholder: "--请选择--",
+		allowClear: true,
+		dropdownParent: $("#dict_doctor_modal"),//modal默认不显示，解决modal显示后下拉单样式问题
+		ajax: {
+			url: addurl + '/dict/select2',
+			contentType:"application/json",
+			data: function (params) {
+	             return {
+	            	 searchstr:params.term,
+	             };
+	        },
+			processResults: function (data) {
+			// Tranforms the top-level key of the response object from 'items' to 'results'
+				return {
+					results: data[0].hospital
+				};
+			}
+		}
+	});
+	$('#dict_doctor_modal #mhiscode5').on("change", function() {
+		$('#dict_doctor_modal #dict_table').bootstrapTable('refresh');
+	});
+	
+	$('#dict_allergen_modal #mhiscode6').select2({
+		placeholder: "--请选择--",
+		allowClear: true,
+		dropdownParent: $("#dict_allergen_modal"),//modal默认不显示，解决modal显示后下拉单样式问题
+		ajax: {
+			url: addurl + '/dict/select2',
+			contentType:"application/json",
+			data: function (params) {
+	             return {
+	            	 searchstr:params.term,
+	             };
+	        },
+			processResults: function (data) {
+			// Tranforms the top-level key of the response object from 'items' to 'results'
+				return {
+					results: data[0].hospital
+				};
+			}
+		}
+	});
+	$('#dict_allergen_modal #mhiscode6').on("change", function() {
+		$('#dict_allergen_modal #dict_table').bootstrapTable('refresh');
+	});
+	
+	$('#dict_disease_modal #mhiscode7').select2({
+		placeholder: "--请选择--",
+		allowClear: true,
+		dropdownParent: $("#dict_disease_modal"),//modal默认不显示，解决modal显示后下拉单样式问题
+		ajax: {
+			url: addurl + '/dict/select2',
+			contentType:"application/json",
+			data: function (params) {
+	             return {
+	            	 searchstr:params.term,
+	             };
+	        },
+			processResults: function (data) {
+			// Tranforms the top-level key of the response object from 'items' to 'results'
+				return {
+					results: data[0].hospital
+				};
+			}
+		}
+	});
+	$('#dict_disease_modal #mhiscode7').on("change", function() {
+		$('#dict_disease_modal #dict_table').bootstrapTable('refresh');
+	});
+	
+	$('#dict_operation_modal #mhiscode8').select2({
+		placeholder: "--请选择--",
+		allowClear: true,
+		dropdownParent: $("#dict_operation_modal"),//modal默认不显示，解决modal显示后下拉单样式问题
+		ajax: {
+			url: addurl + '/dict/select2',
+			contentType:"application/json",
+			data: function (params) {
+	             return {
+	            	 searchstr:params.term,
+	             };
+	        },
+			processResults: function (data) {
+			// Tranforms the top-level key of the response object from 'items' to 'results'
+				return {
+					results: data[0].hospital
+				};
+			}
+		}
+	});
+	$('#dict_operation_modal #mhiscode8').on("change", function() {
+		$('#dict_operation_modal #dict_table').bootstrapTable('refresh');
+	});
+	
+	$('#dict_exam_modal #mhiscode9').select2({
+		placeholder: "--请选择--",
+		allowClear: true,
+		dropdownParent: $("#dict_exam_modal"),//modal默认不显示，解决modal显示后下拉单样式问题
+		ajax: {
+			url: addurl + '/dict/select2',
+			contentType:"application/json",
+			data: function (params) {
+	             return {
+	            	 searchstr:params.term,
+	             };
+	        },
+			processResults: function (data) {
+			// Tranforms the top-level key of the response object from 'items' to 'results'
+				return {
+					results: data[0].hospital
+				};
+			}
+		}
+	});
+	$('#dict_exam_modal #mhiscode9').on("change", function() {
+		$('#dict_exam_modal #dict_table').bootstrapTable('refresh');
+	});
+	
+	$('#dict_lab_modal #mhiscode10').select2({
+		placeholder: "--请选择--",
+		allowClear: true,
+		dropdownParent: $("#dict_lab_modal"),//modal默认不显示，解决modal显示后下拉单样式问题
+		ajax: {
+			url: addurl + '/dict/select2',
+			contentType:"application/json",
+			data: function (params) {
+	             return {
+	            	 searchstr:params.term,
+	             };
+	        },
+			processResults: function (data) {
+			// Tranforms the top-level key of the response object from 'items' to 'results'
+				return {
+					results: data[0].hospital
+				};
+			}
+		}
+	});
+	$('#dict_lab_modal #mhiscode10').on("change", function() {
+		$('#dict_lab_modal #dict_table').bootstrapTable('refresh');
 	});
 }
+
+function tableheight(){
+	var _height=0;
+	//获取父级窗口高度
+	_height=$(window.parent.window).height()-61-105-100;
+	if(_height<300){
+		_height=300;
+	}
+	return _height;
+}
+
+function files_sub(){
+    var files = $('#f_upload').prop('files');//获取到文件列表
+    var unicode=$('#unicode').val(); //GB2312，UTF-8
+    if(files.length == 0){
+        alert('请选择文件');
+    }else{
+        var reader = new FileReader();//新建一个FileReader
+        reader.readAsText(files[0], unicode);//读取文件 
+        reader.onload = function(evt){ //读取完文件之后会回来这里
+            var fileString = evt.target.result; // 读取文件内容
+            json_fenjie(JSON.parse(fileString));
+            $('#f_upload').val('');
+            
+//            alert("导入成功")
+        }
+    }	
+}
+
+function yijiandaoru_a(){
+	if($("#jichushujuweihu #tongbuHiscode").select2('val')==null ){
+		swal("" ,'请选择一家机构',"warning");
+		return
+	}
+	
+	if($("#jichushujuweihu #tongbuDatabase").select2('val')==null ){
+		swal("" ,'请选择目标数据库',"warning");
+		return
+	}
+	
+	var message="";
+	message=message+"是否操作:目标库"+$("#jichushujuweihu #tongbuDatabase option:selected").text();
+	if($("#jichushujuweihu #tongbuTable option:selected").text()!=''){
+		message=message+"、目标表"+$("#jichushujuweihu #tongbuTable option:selected").text()
+	}else{
+		message=message+"、目标表为全部"
+	}
+	message=message+"、目标机构"+$("#jichushujuweihu #tongbuHiscode option:selected").text()
+	
+	var tongbuTable=$("#jichushujuweihu #tongbuTable").select2('val')
+	if(tongbuTable == null){
+		tongbuTable=-1;
+	}
+	var mhiscode=$("#jichushujuweihu #tongbuHiscode").select2('val')
+	
+	swal({
+        title: "导入目标库",
+        text: message,
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#DD6B55",
+        confirmButtonText: "Yes, do it!",
+        closeOnConfirm: true
+    }, function () {
+    	onloading();
+    	//同步目标库
+    	$.ajax({
+    		type:"POST",
+    		url:addurl+"/prescription/yijiandaorumubiao",
+    		async:true,
+    		cache:true,
+    		data:{tongbuDatabaseid:$("#jichushujuweihu #tongbuDatabase").select2('val'),
+    			mhiscode:mhiscode,
+    			tongbuTable:tongbuTable},
+    		success: function(result){
+    			removeload();
+    			if(result=='ok'){
+    				swal("" ,result,"success");
+    			}else{
+    				swal("" ,result,"error");
+    			}
+    		},
+    		error:function(XMLResponse){
+    			alert(XMLResponse.responseText)
+    		}
+    	});
+    });
+	
+}
+
+function yijiandaoru_b(){
+	if($("#jichushujuweihu #tongbuHiscode").select2('val')==null){
+		swal("" ,'请选择一家机构',"warning");
+		return
+	}
+	
+	if($("#jichushujuweihu #tongbuDatabase").select2('val')==null ){
+		swal("" ,'请选择目标数据库',"warning");
+		return
+	}
+	
+	var message="";
+	message=message+"是否操作:目标库"+$("#jichushujuweihu #tongbuDatabase option:selected").text();
+	if($("#jichushujuweihu #tongbuTable option:selected").text()!=''){
+		message=message+"、目标表"+$("#jichushujuweihu #tongbuTable option:selected").text()
+	}else{
+		message=message+"、目标表为全部"
+	}
+	message=message+"、目标机构"+$("#jichushujuweihu #tongbuHiscode option:selected").text()
+	
+	var tongbuTable=$("#jichushujuweihu #tongbuTable").select2('val')
+	if(tongbuTable == null){
+		tongbuTable=-1;
+	}
+	var mhiscode=$("#jichushujuweihu #tongbuHiscode").select2('val')
+	
+	swal({
+        title: "导入案例库",
+        text: message,
+        type: "warning",
+        showCancelButton: true,
+        confirmButtonColor: "#DD6B55",
+        confirmButtonText: "Yes, do it!",
+        closeOnConfirm: true
+    }, function () {
+    	onloading();
+    	//同步案例库
+    	$.ajax({
+    		type:"POST",
+    		url:addurl+"/prescription/yijiandaoruanli",
+    		async:true,
+    		cache:true,
+    		data:{tongbuDatabaseid:$("#jichushujuweihu #tongbuDatabase").val(),
+	    			mhiscode:mhiscode,
+	    			tongbuTable:tongbuTable},
+    		success: function(result){
+    			removeload();
+    			if(result=='ok'){
+    				swal("" ,result,"success");
+    			}else{
+    				swal("" ,result,"error");
+    			}
+    			
+    		},
+    		error:function(XMLResponse){
+    			alert(XMLResponse.responseText)
+    		}
+    	});
+    });
+	
+}
+
+function youjiancaidan(){
+	$("#drugsmessage #json_table tr").unbind("mousedown").bind("contextmenu", function (e) {
+		if(e.button == 2){
+			$('#youjiancaidan').remove();
+			$('body').append(
+				'<div id="youjiancaidan" style="position: absolute;background-color:#eeeeee">'+
+				'<ul class="nav metismenu">'+
+				'<li><a href="#" style="color:#484b50" onclick="js_shuomingshu()">说明书</a></li>'+
+				'<li><a href="#" style="color:#484b50" onclick="js_fudongchuangkou()">浮动窗口</a></li>'+
+				'<li><a href="#" style="color:#484b50" onclick="js_zhongyaocaizhuanluan()">中药材专论查询</a></li>'+
+				'<li><a href="#" style="color:#484b50" onclick="js_yongyaozhidaodan()">用药指导单查询</a></li>'+
+				'</ul>'+
+				'</div>'
+			);
+			
+			var e = event || window.event;
+			$('#youjiancaidan').css('left',e.screenX+'px');
+			$('#youjiancaidan').css('top',(e.screenY-50)+'px');
+		}
+	    return false;
+	});
+	window.onclick=function(e){
+		//用户触发click事件就可以关闭了，因为绑定在window上，按事件冒泡处理，不会影响菜单的功能
+		$('#youjiancaidan').remove();
+	}
+}
+
+
+

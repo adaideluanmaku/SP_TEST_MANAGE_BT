@@ -15,7 +15,7 @@ public class StrLevenshtein {
 		String str = "123申请单";
 		String target = "申请单002";
 //		System.out.println("similarityRatio=" + lt.getSimilarityRatio(str, target));
-		System.out.println(lt.str2tosame(str,target));
+		System.out.println(lt.str2tosame("(性能)门诊5药","1_性别用药"));
 	}
 	
 	private int compare(String str, String target) {

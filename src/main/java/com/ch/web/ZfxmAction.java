@@ -11,12 +11,12 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import com.ch.pahis.Date_to_Oracle;
 import com.ch.service.Zfxmbean;
 import com.ch.sqlserverpasshis.Date_to_Sqlserver1;
 import com.ch.sysuntils.DataGrid;
@@ -30,9 +30,8 @@ import net.sf.json.JSONObject;
 public class ZfxmAction {
 	@Autowired
 	Zfxmbean zfxmbean;
-	
 	@Autowired
-	Date_to_Sqlserver1 date_to_sqlserver;
+	private JdbcTemplate jdbcTemplate;
 	
 	@ResponseBody
 	@RequestMapping("/team_query")
@@ -66,11 +65,40 @@ public class ZfxmAction {
 		return datagrid;
 	}
 	
-	//获取team下拉单
-	@RequestMapping("/teamgroup")
+	//下拉单
+	@RequestMapping("/_select2")
 	@ResponseBody
-	public List teamgroup(HttpServletRequest req){
-		return zfxmbean.teamgroup(req);
+	public List _select2(HttpServletRequest req){
+		List list=new ArrayList();
+		String sql =null; 
+		String searchstr="";
+		int teamid=0;
+		if(StringUtils.isNotBlank(req.getParameter("searchstr"))){
+			searchstr=req.getParameter("searchstr");
+		}
+		
+		sql="select teamid as id,teamname as text from zfxm_team where teamname like ? ";
+		List teamlist=jdbcTemplate.queryForList(sql,new Object[]{"%"+searchstr+"%"});
+		
+		if(StringUtils.isNotBlank(req.getParameter("teamid"))){
+			teamid=Integer.parseInt(req.getParameter("teamid"));
+		}
+		
+		List projectlist=null;
+		if(teamid>0){
+			sql="select a.projectid as id , a.projectname as text from zfxm_project a, zfxm_team b where "
+					+ " a.teamid=b.teamid and b.teamid=? and projectname like ? order by a.projectname asc";
+			projectlist=jdbcTemplate.queryForList(sql,new Object[]{teamid,"%"+searchstr+"%"});
+		}else{
+			sql="select projectid as id ,projectname as text from zfxm_project where projectname like ? order by projectname asc";
+			projectlist=jdbcTemplate.queryForList(sql,new Object[]{"%"+searchstr+"%"});
+		}
+		
+		Map map= new HashMap();
+		map.put("projectlist", projectlist);
+		map.put("teamlist", teamlist);
+		list.add(map);
+		return list;
 	}
 	
 	@ResponseBody
@@ -98,13 +126,6 @@ public class ZfxmAction {
 		return datagrid;
 	}
 	
-	//获取team下拉单
-	@RequestMapping("/projectgroup")
-	@ResponseBody
-	public List projectgroup(HttpServletRequest req){
-		return zfxmbean.projectgroup(req);
-	}
-
 	@ResponseBody
 	@RequestMapping(value="/testmng_add",produces = "text/html;charset=UTF-8")
 	public String testmng_add(HttpServletRequest req) {
@@ -128,51 +149,5 @@ public class ZfxmAction {
 	@ResponseBody
 	public String testmng_copy(HttpServletRequest req){
 		return zfxmbean.testmng_copy(req);
-	}
-	
-	@RequestMapping(value="/date_to_oracle",produces = "text/html;charset=UTF-8")
-	@ResponseBody
-	public String date_to_oracle(HttpServletRequest req) throws ClassNotFoundException, SQLException, IOException{
-//		if(StringUtils.isBlank(req.getParameter("hiscodes1")) || StringUtils.isBlank(req.getParameter("datetime1"))
-//				 || StringUtils.isBlank(req.getParameter("sum_date1")) || StringUtils.isBlank(req.getParameter("count1"))){
-//			return "输入数据不完整";
-//		}
-		System.out.println("开始制作HIS数据");
-		String hiscodes1=req.getParameter("hiscodes1");
-		String datetime1=req.getParameter("datetime1");
-		int sum_date1=0;
-		if(StringUtils.isNotBlank(req.getParameter("sum_date1"))){
-			sum_date1=Integer.parseInt(req.getParameter("sum_date1"));
-		};
-		int count1=0;
-		if(StringUtils.isNotBlank(req.getParameter("count1"))){
-			count1=Integer.parseInt(req.getParameter("count1"));
-		};
-		int mz1=Integer.parseInt(req.getParameter("mz1"));
-		int zy1=Integer.parseInt(req.getParameter("zy1"));
-		int cy1=Integer.parseInt(req.getParameter("cy1"));
-		int dict1=Integer.parseInt(req.getParameter("dict1"));
-		int createview1=Integer.parseInt(req.getParameter("createview1"));
-		int trunca1=Integer.parseInt(req.getParameter("trunca1"));
-//		int anlisum=Integer.parseInt(req.getParameter("anlisum"));
-		int projectid1=0;
-		if(StringUtils.isNotBlank(req.getParameter("projectid1"))){
-			projectid1=Integer.parseInt(req.getParameter("projectid1"));
-		};
-		long startTime = System.currentTimeMillis();
-//		int match_scheme1=0;
-//		if(StringUtils.isNotBlank(req.getParameter("match_scheme1"))){
-//			match_scheme1=Integer.parseInt(req.getParameter("match_scheme1"));
-//		};
-		String match_scheme1=req.getParameter("match_scheme1");
-		int createTB1=Integer.parseInt(req.getParameter("createTB1"));
-		//默认=0制作PA数据，=1制作PASS数据(应该是制作肝肾检验值数据使用)
-		int passorpa_hisdata1=Integer.parseInt(req.getParameter("passorpa_hisdata1"));
-		int cleardict1=Integer.parseInt(req.getParameter("cleardict1"));
-		date_to_sqlserver.Rundate(hiscodes1, datetime1, sum_date1, count1, mz1, zy1, cy1, dict1, createview1, 
-				trunca1,projectid1,match_scheme1,createTB1,passorpa_hisdata1,cleardict1);
-		long endTime = System.currentTimeMillis();
-		System.out.println("总耗时："+(endTime-startTime)+"毫秒");
-		return "=========数据制作结束=======总耗时："+(endTime-startTime)+"毫秒";
 	}
 }

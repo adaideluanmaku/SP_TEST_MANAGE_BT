@@ -36,4 +36,8 @@
     	<welcome-file>login.jsp</welcome-file>
   	</welcome-file-list>
   	
+	<session-config>
+	    <!-- 30分钟-->
+		<session-timeout>240</session-timeout>
+	</session-config>
 </web-app>

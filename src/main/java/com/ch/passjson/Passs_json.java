@@ -36,6 +36,8 @@ public class Passs_json {
 	@Autowired
 	Screenresule_1712 screenresule_1712;
 	@Autowired
+	Screenresule_1809 screenresule_1809;
+	@Autowired
 	Detailresule detailresule;
 	@Autowired
 	Queryresule queryresule;
@@ -98,7 +100,28 @@ public class Passs_json {
 				}
 			}
 		}
-		
+		if("1809".equals(jsonversion)){
+			if(jsontype==1){
+				json_err=screenresule_1809.screenres(gatherresult,gatherresult_java);
+			}else if(jsontype==2){
+				json_err=detailresule.detail(gatherresult, gatherresult_java);
+			}else if(jsontype==3){
+				json_err=queryresule.query(gatherresult, gatherresult_java);
+			}else if(jsontype==4){
+				json_err=moduleresule.module(gatherresult, gatherresult_java);
+			}else {
+				if(gatherresult.contains("<?xml")){
+					gatherresult=xmltojson.getjson(gatherresult);
+				}
+				if(gatherresult_java.contains("<?xml")){
+					gatherresult_java=xmltojson.getjson(gatherresult_java);
+				}
+				if(!gatherresult_java.equals(gatherresult)){
+					json_err.add("Assertion："+gatherresult);
+					json_err.add("response："+gatherresult_java);
+				}
+			}
+		}
 		
 		return json_err;
 	}

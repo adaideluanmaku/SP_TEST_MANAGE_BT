@@ -109,4 +109,17 @@ public class AnliCount {
 		return anlilist;
 		
 	}
+	
+	public int HisCodes(String[] hiscodes){
+		int state=0;
+		int count=0;
+		String sql="select count(1) from mc_hospital_match_relation where hiscode_user=?";
+		for(String hiscode:hiscodes){
+			count=jdbcTemplate.queryForObject(sql, int.class, new Object[]{hiscode});
+			if(count==0){
+				state=1;
+			}
+		}
+		return state; 
+	}
 }

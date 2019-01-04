@@ -155,6 +155,7 @@
 .fixed-table-pagination .pagination-detail {
     margin-top: 10px;
     margin-bottom: 10px;
+    max-width:70%;
 }
 
 .fixed-table-pagination div.pagination .pagination {

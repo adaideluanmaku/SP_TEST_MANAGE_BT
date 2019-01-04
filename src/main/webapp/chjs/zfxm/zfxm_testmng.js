@@ -346,12 +346,26 @@ function zfxmtable(){
 		columns : [ {
 			field:'select',
 			checkbox : true
+		}, {
+			field : '',
+			title : '操作',
+			align : 'center',
+			formatter: function(value,row,index){
+//				if(row.testin==undefined || row.testin==''){
+//					return '--'
+//				}
+				
+                return '<a href="'+addurl+'/prescription/prescription_edit?prescriptiontype=4&testid='+row.testid+'" target="_blank">打开</a>';
+			}
 		},{
 			field:'projectname',title:'项目名称'
 		},{
 			field:'testresult',title:'测试',sortable : true
 		},{
 			field:'testno',title:'案例编号',
+			formatter: function (value, row, index) {
+				return '<div style="width:100px;">'+value+'-'+row.orderbyno+'</div>'
+            }
 		},{
 			field:'testname',title:'案例名称',
 		},{
@@ -428,21 +442,11 @@ function zfxmtable(){
 			field:'username',title:'姓名',
 		},{
 			field:'inserttime',title:'创建日期',
-		}, {
-			field : '',
-			title : '操作',
-			align : 'center',
-			formatter: function(value,row,index){
-//				if(row.testin==undefined || row.testin==''){
-//					return '--'
-//				}
-				
-                return '<a href="'+addurl+'/prescription/prescription_edit?prescriptiontype=4&testid='+row.testid+'" target="_blank">打开</a>';
-			}
 		}],
 		
 		// 1.点击每行进行函数的触发
 		onClickRow : function(row, tr,flied){
+			$('#table_data').bootstrapTable('uncheckAll');//取消选中所有行
 		},
 
 		// 2. 点击前面的复选框进行对应的操作
@@ -489,7 +493,6 @@ function open_dialog(){
 
 //每次点击都要后台取数据
 function _select2(){
-	var addressprojectgroup = addurl + '/zfxm/projectgroup';
 
 	//每次点击都要后台取数据
 	$('#modal_dialog #projectid').select2({
@@ -497,16 +500,18 @@ function _select2(){
 		allowClear: true,
 		dropdownParent: $("#modal_dialog"),//modal默认不显示，解决modal显示后下拉单样式问题
 		ajax: {
-			url: addressprojectgroup,
+			url: addurl + '/zfxm/_select2',
+			contentType:"application/json",
 			data: function (params) {
 	             return {
+	            	 searchstr:params.term,
 	            	 teamid:$('#modal_dialog #teamid').select2('val')
 	             };
 	        },
 			processResults: function (data) {
 			// Tranforms the top-level key of the response object from 'items' to 'results'
 				return {
-					results: data
+					results: data[0].projectlist
 				};
 			}
 		}
@@ -515,16 +520,18 @@ function _select2(){
 		placeholder: "--请选择--",
 		allowClear: true,
 		ajax: {
-			url: addressprojectgroup,
+			url: addurl + '/zfxm/_select2',
+			contentType:"application/json",
 			data: function (params) {
 	             return {
+	            	 searchstr:params.term,
 	            	 teamid:$('#table_div #teamid_search').select2('val')
 	             };
 	        },
 			processResults: function (data) {
 			// Tranforms the top-level key of the response object from 'items' to 'results'
 				return {
-					results: data
+					results: data[0].projectlist
 				};
 			}
 		}
@@ -534,28 +541,39 @@ function _select2(){
 		allowClear: true,
 		dropdownParent: $("#modal_dialog_HIS_data"),//modal默认不显示，解决modal显示后下拉单样式问题
 		ajax: {
-			url: addressprojectgroup,
+			url: addurl + '/zfxm/_select2',
+			contentType:"application/json",
+			data: function (params) {
+	             return {
+	            	 searchstr:params.term,
+	             };
+	        },
 			processResults: function (data) {
 			// Tranforms the top-level key of the response object from 'items' to 'results'
 				return {
-					results: data
+					results: data[0].projectlist
 				};
 			}
 		}
 	});
 	
-	var addressteamgroup = addurl + '/zfxm/teamgroup';
 	$('#table_div #teamid_search').select2({
 		placeholder: "--请选择--",//默认初始值
 //		placeholder: { id: "0", text: "--请选择--" },//默认初始值
 		allowClear: true,
 		dropdownParent: $("#table_div"),//modal默认不显示，解决modal显示后下拉单样式问题
 		ajax: {
-			url: addressteamgroup,
+			url: addurl + '/zfxm/_select2',
+			contentType:"application/json",
+			data: function (params) {
+	             return {
+	            	 searchstr:params.term,
+	             };
+	        },
 			processResults: function (data) {
 			// Tranforms the top-level key of the response object from 'items' to 'results'
 				return {
-					results: data
+					results: data[0].teamlist
 				};
 			}
 		}
@@ -570,11 +588,17 @@ function _select2(){
 		allowClear: true,
 		dropdownParent: $("#modal_dialog"),//modal默认不显示，解决modal显示后下拉单样式问题
 		ajax: {
-			url: addressteamgroup,
+			url: addurl + '/zfxm/_select2',
+			contentType:"application/json",
+			data: function (params) {
+	             return {
+	            	 searchstr:params.term,
+	             };
+	        },
 			processResults: function (data) {
 			// Tranforms the top-level key of the response object from 'items' to 'results'
 				return {
-					results: data
+					results: data[0].teamlist
 				};
 			}
 		}
@@ -598,6 +622,8 @@ function add_data(){
 		swal("", '请选择项目',"error");
 		return
 	}
+	
+	$('#modal_dialog #teamid').attr("disabled",false);
 	
 	var queryaddress=addurl+'/zfxm/testmng_query';
 	var addaddress=addurl+'/zfxm/testmng_add';
@@ -634,7 +660,7 @@ function add_data(){
 
 function del_data(){
 	var IdSelections = $('#table_data').bootstrapTable('getSelections');
-	if(IdSelections.length != 1){
+	if(IdSelections.length < 1){
 		swal({
             title: "警告",
             text: "请至少选择一条数据进行操作."
@@ -700,17 +726,21 @@ function edit_dialog(){
 		return;
 	}
 	
+	$('#modal_dialog #teamidaa').html('<option value="' + IdSelections[0].teamid + '">' + IdSelections[0].teamname + '</option>').trigger("change");
+	$('#modal_dialog #teamidaa').attr("disabled",true);
 	$('#modal_dialog #testid').val(IdSelections[0].testid);
 	$('#modal_dialog #projectid').html('<option value="' + IdSelections[0].projectid + '">' + IdSelections[0].projectname + '</option>').trigger("change");
 	$("#modal_dialog #status").val(IdSelections[0].status).trigger("change");
 	$("#modal_dialog #selenium_share_status").val(IdSelections[0].selenium_share_status).trigger("change");
 	$('#modal_dialog #testname').val(IdSelections[0].testname);
 	$('#modal_dialog #testno').val(IdSelections[0].testno);
+	$('#modal_dialog #orderbyno').val(IdSelections[0].orderbyno);
 	$('#modal_dialog #testtext').val(IdSelections[0].testtext);
 	$('#modal_dialog #testin').val(IdSelections[0].testin);
 	$('#modal_dialog #testout').val(IdSelections[0].testout);
 	$('#modal_dialog #remark').val(IdSelections[0].remark);
 	$('#modal_dialog #testout_response').val(IdSelections[0].testout_response);
+	$('#modal_dialog #status').val(IdSelections[0].status);
 	
 	$('#modal_dialog').modal('show');
 }

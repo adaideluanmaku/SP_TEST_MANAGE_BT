@@ -33,5 +33,7 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
+	<classpathentry kind="lib" path="D:/产品JAR包/passrh_common-5.3.0.jar"/>
+	<classpathentry kind="lib" path="D:/产品JAR包/passrh_pojo-5.3.0.jar"/>
 	<classpathentry kind="output" path="target/classes"/>
 </classpath>

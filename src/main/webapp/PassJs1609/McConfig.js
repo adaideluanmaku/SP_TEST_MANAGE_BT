@@ -7,7 +7,7 @@
 */
 
 //请把IP地址改为美康合理用药服务器IP地址
-this.mcWebServiceUrl = "http://172.18.7.160:8081/pass/rs";
+this.mcWebServiceUrl = "http://172.18.7.160:9099/pass/rs";
 //this.mcWebServiceUrl = "http://172.18.7.92:8580/pass/rs";
 //this.mcWebServiceUrl = "http://172.18.2.179:9099/pass/rs";
 this.mcPrWebServiceUrl = "";

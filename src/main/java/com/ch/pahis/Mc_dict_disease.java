@@ -7,26 +7,40 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import com.ch.dao.DataBaseType;
+import com.ch.dao.SpringJdbc_oracle_his;
+import com.ch.dao.SpringJdbc_sqlserver_his;
 import com.ch.sysuntils.Strisnull;
 
 import net.sf.json.JSONObject;
 @Service
 public class Mc_dict_disease {
-	@Autowired
-	JdbcTemplate jdbcTemplate_oracle;
-	
+	private static Logger log = Logger.getLogger(Mc_dict_disease.class);
 	@Autowired
 	JdbcTemplate jdbcTemplate;
+
+	JdbcTemplate jdbcTemplate_database=null;
+	@Autowired
+	DataBaseType dataBaseType;
 	
 	@Autowired
 	Strisnull strisnull;
-	
-	public void dict_disease(int match_scheme,String startdate) throws Exception{
+	@Value("${data.insertdatacount}")
+    private int insertdatacount;
+	public void dict_disease(int match_scheme,String startdate,int database1,String databasetype) throws Exception{
+		jdbcTemplate_database=dataBaseType.getJdbcTemplate(database1);
+		if(jdbcTemplate_database==null){
+			log.info("数据库连接失败");
+			return;
+		}
+		
 		List listbatch=new ArrayList();
 		List list=null;
 		String sql=null;
@@ -43,10 +57,15 @@ public class Mc_dict_disease {
 //				+ "match_time, unable_match_desc, unable_match) values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		
 		//1712版
-		sql="insert into mc_dict_disease(searchcode, typecode, match_user, is_save,  is_mxb, "
-				+ "match_scheme, disname, pass_icd_code, pass_icd_name, dis_type, discode, typename, "
-				+ "match_time, unable_match_desc, unable_match, updatedate) "
-				+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,to_date(?, 'yyyy-mm-dd hh24:mi:ss'))";
+		if("MYSQL".equals(databasetype)){
+			
+		}else if("MSSQL".equals(databasetype)){
+			sql="insert into mc_dict_disease(UNABLE_MATCH_DESC,MATCH_TIME,MATCH_USER,PASS_ICD_NAME,PASS_ICD_CODE,TYPENAME,TYPECODE,SEARCHCODE,DISNAME,DISCODE,UNABLE_MATCH,IS_SAVE,IS_MXB,DIS_TYPE,MATCH_SCHEME,UPDATEDATE) "
+					+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,CONVERT(char(19),?))";
+		}else if("ORACLE".equals(databasetype)){
+			sql = "insert into mc_dict_disease(UNABLE_MATCH_DESC,MATCH_TIME,MATCH_USER,PASS_ICD_NAME,PASS_ICD_CODE,TYPENAME,TYPECODE,SEARCHCODE,DISNAME,DISCODE,UNABLE_MATCH,IS_SAVE,IS_MXB,DIS_TYPE,MATCH_SCHEME,UPDATEDATE) "
+					+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,to_date(?, 'yyyy-mm-dd hh24:mi:ss'))";
+		}
 		
 		for(int i=0;i<list.size();i++){
 			Map map=(Map)list.get(i);
@@ -54,12 +73,14 @@ public class Mc_dict_disease {
 			
 			listbatch.add(map);
 			
-			if((i+1)%500==0){
+			if((i+1)%insertdatacount==0){
 				batchInsertRows(sql,listbatch);
+				log.info("======>mc_dict_disease :"+(i+1));
 				listbatch.clear();
 			}else{
 				if(i+1==list.size()){
 					batchInsertRows(sql,listbatch);
+					log.info("======>mc_dict_disease :"+(i+1));
 					listbatch.clear();
 				}
 			}
@@ -73,26 +94,26 @@ public class Mc_dict_disease {
 				String startdate=map.get("updatedate").toString();
 				
 				try{
-					pst.setString(1,strisnull.isnull(map.get("searchcode")).toString());//searchcode
-					pst.setString(2,strisnull.isnull(map.get("typecode")).toString());//typecode
-					pst.setString(3,strisnull.isnull(map.get("match_user")).toString());//match_user
-					pst.setString(4,strisnull.isnull(map.get("is_save")).toString());//is_save
-					pst.setString(5,strisnull.isnull(map.get("is_mxb")).toString());//is_mxb
-					pst.setString(6,strisnull.isnull(map.get("match_scheme")).toString());//match_scheme
-					pst.setString(7,strisnull.isnull(map.get("disname")).toString());//disname
-					pst.setString(8,strisnull.isnull(map.get("pass_icd_code")).toString());//pass_icd_code
-					pst.setString(9,strisnull.isnull(map.get("pass_icd_name")).toString());//pass_icd_name
-					pst.setString(10,strisnull.isnull(map.get("dis_type")).toString());//dis_type
-					pst.setString(11,strisnull.isnull(map.get("discode")).toString());//discode
-					pst.setString(12,strisnull.isnull(map.get("typename")).toString());//typename
-					pst.setString(13,strisnull.isnull(map.get("match_time")).toString());//match_time
-					pst.setString(14,strisnull.isnull(map.get("unable_match_desc")).toString());//unable_match_desc
-					pst.setString(15,strisnull.isnull(map.get("unable_match")).toString());//unable_match
-					pst.setString(16,strisnull.isnull(startdate));//updatedate
+					pst.setString(1,strisnull.isnull(map.get("UNABLE_MATCH_DESC")));//UNABLE_MATCH_DESC
+					pst.setString(2,strisnull.isnull(map.get("MATCH_TIME")));//MATCH_TIME
+					pst.setString(3,strisnull.isnull(map.get("MATCH_USER")));//MATCH_USER
+					pst.setString(4,strisnull.isnull(map.get("PASS_ICD_NAME")));//PASS_ICD_NAME
+					pst.setString(5,strisnull.isnull(map.get("PASS_ICD_CODE")));//PASS_ICD_CODE
+					pst.setString(6,strisnull.isnull(map.get("TYPENAME")));//TYPENAME
+					pst.setString(7,strisnull.isnull(map.get("TYPECODE")));//TYPECODE
+					pst.setString(8,strisnull.isnull(map.get("SEARCHCODE")));//SEARCHCODE
+					pst.setString(9,strisnull.isnull(map.get("DISNAME")));//DISNAME
+					pst.setString(10,strisnull.isnull(map.get("DISCODE")));//DISCODE
+					pst.setInt(11,strisnull.isnulltoint_0(map.get("UNABLE_MATCH"),-1));//UNABLE_MATCH
+					pst.setInt(12,strisnull.isnulltoint_0(map.get("IS_SAVE"),-1));//IS_SAVE
+					pst.setInt(13,strisnull.isnulltoint_0(map.get("IS_MXB"),-1));//IS_MXB
+					pst.setInt(14,strisnull.isnulltoint_0(map.get("DIS_TYPE"),-1));//DIS_TYPE
+					pst.setInt(15,strisnull.isnulltoint_0(map.get("MATCH_SCHEME"),-1));//MATCH_SCHEME
+					pst.setString(16,startdate);//UPDATEDATE
 					
 				}catch(Exception e){
-					System.out.println("mc_dict_disease出现异常的数据:"+map);
-					System.out.println(e);
+					log.debug("调试==>mc_dict_disease 插表异常 ："+map);
+					log.debug("调试==>"+e);
 				}
 			}
 			@Override
@@ -101,6 +122,6 @@ public class Mc_dict_disease {
 				return listbatch.size();
 			}
 		};
-		jdbcTemplate_oracle.batchUpdate(sql, setter);
+		jdbcTemplate_database.batchUpdate(sql, setter);
 	}
 }

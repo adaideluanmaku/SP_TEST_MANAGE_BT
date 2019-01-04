@@ -41,7 +41,7 @@ var TableInit =function () {
 //			showColumns: true,                  // 是否显示所有的列按钮
 //			showRefresh: true,                  // 是否显示刷新按钮
 			minimumCountColumns: 2,             // 最少允许的列数
-			clickToSelect: false,               // 是否启用点击选中行
+			clickToSelect: true,               // 是否启用点击选中行
 			height: tableheight(),                        //450, 行高，如果没有设置height属性，表格自动根据记录条数觉得表格高度
 			uniqueId: "ID",                     // 每一行的唯一标识，一般为主键列
 //			showToggle:true,                    // 是否显示详细视图和列表视图的切换按钮
@@ -100,15 +100,7 @@ var TableInit =function () {
 			
 			// 1.点击每行进行函数的触发
 			onClickRow : function(row, tr,flied){
-				if($(tr).find('input').prop("checked")){//check类型的input
-					$(tr).attr('class','');//改变样式
-					$(tr).find('input').prop("checked",false);//改变勾选状态
-					row.ID=false;//改变勾选值
-				}else{
-					$(tr).attr('class','selected');
-					$(tr).find('input').prop("checked",true);
-					row.ID=true;
-				}
+				$('#table_data').bootstrapTable('uncheckAll');//取消选中所有行
 			},
 
 			// 2. 点击前面的复选框进行对应的操作
@@ -140,6 +132,7 @@ function open_dialog(){
 	$('#dialog_form').data('bootstrapValidator').destroy();
     $('#dialog_form').data('bootstrapValidator', null);
     all_form_validator();
+    $("#modal_dialog #state").val(0).trigger('change');
     
 	$('#modal_dialog button').show();
 	$('#modal_dialog #btn_update').hide();
@@ -147,9 +140,6 @@ function open_dialog(){
 }
 
 function add_data(){
-	var queryaddress=addurl+'/sysmanage/usersquery';
-	var addaddress=addurl+'/sysmanage/usersadd';
-	
 	 //获取表单对象
     $("#dialog_form").bootstrapValidator('validate');//提交验证  
     if (!$("#dialog_form").data('bootstrapValidator').isValid()) {//获取验证结果，如果成功，执行下面代码  
@@ -158,7 +148,7 @@ function add_data(){
     
 	$.ajax({
 		type:"POST",
-		url:addaddress,
+		url:addurl+'/sysmanage/usersadd',
 		async:false,
 		cache:true,
 		data:$('#dialog_form').serialize(),
@@ -167,7 +157,7 @@ function add_data(){
 				swal("" ,result,"success");
 //				//清空表单
 //				document.getElementById("prescription_dialog_form").reset();
-				$('#table_data').bootstrapTable('refresh', {url: queryaddress});
+				$('#table_data').bootstrapTable('refresh', {url: addurl+'/sysmanage/usersquery'});
 			}else{
 				swal("", result,"error");
 			}
@@ -180,6 +170,15 @@ function add_data(){
 }
 
 function del_data(){
+	var Selections = $('#table_data').bootstrapTable('getSelections');
+	if(Selections.length < 1){
+		swal({
+            title: "警告",
+            text: "请至少选择一条数据进行操作."
+        });
+		return;
+	}
+	
 	swal({
         title: "Are you sure?",
         text: "You will not be able to recover this imaginary file!",
@@ -189,25 +188,21 @@ function del_data(){
         confirmButtonText: "Yes, delete it!",
         closeOnConfirm: false
     }, function () {
-    	var queryaddress=addurl+'/sysmanage/usersquery';
-    	var deladdress=addurl+'/sysmanage/usersdel';
-    	
-    	var Selections = $('#table_data').bootstrapTable('getSelections');
-    	var serverids=new Array();
+    	var userids=new Array();
     	for(var i=0;i<Selections.length;i++){
-    		serverids.push(Selections[i].serverid);
+    		userids.push(Selections[i].userid);
     	}
     	
     	$.ajax({
     		type:"POST",
-    		url:deladdress,
+    		url:addurl+'/sysmanage/usersdel',
     		async:false,
     		cache:true,
-    		data:{serverids:serverids},
+    		data:{userids:userids},
     		success: function(result){
     			if(result=='ok'){
     				swal("" ,result,"success");
-    				$('#table_data').bootstrapTable('refresh', {url: queryaddress});
+    				$('#table_data').bootstrapTable('refresh', {url: addurl+'/sysmanage/usersquery'});
     			}else{
     				swal("", result,"error");
     			}
@@ -243,18 +238,16 @@ function edit_dialog(){
 }
 
 function update_data(){
-	var queryaddress=addurl+'/sysmanage/usersquery';
-	var addaddress=addurl+'/sysmanage/usersupdate';
 	$.ajax({
 		type:"POST",
-		url:addaddress,
+		url:addurl+'/sysmanage/usersupdate',
 		async:false,
 		cache:true,
 		data:$('#dialog_form').serialize(),
 		success: function(result){
 			if(result=='ok'){
 				swal("" ,result,"success");
-				$('#table_data').bootstrapTable('refresh', {url: queryaddress});
+				$('#table_data').bootstrapTable('refresh', {url: addurl+'/sysmanage/usersquery'});
 			}else{
 				swal("", result,"error");
 			}
@@ -303,20 +296,11 @@ function _select2(){
 }
 
 function tableheight(){
-//	alert(window.screen.availWidth)
-//	alert(document.body.clientHeight)
-//	alert(document.getElementById("header_path").offsetHeight)
-//	alert(document.getElementById("search_div").offsetHeight)
-//	alert(document.getElementById("toolbar").offsetHeight)
-	
-	var _height = document.body.clientHeight-document.getElementById("header_path").offsetHeight
-	-document.getElementById("search_div").offsetHeight-document.getElementById("toolbar").offsetHeight;
-	
-	if(window.screen.availWidth/160%1==0){
-		_height=_height-10;
-	}else{
-		_height=_height-30;
+	var _height=0;
+	//获取父级窗口高度
+	_height=$(window.parent.window).height()-60-40-120-100;
+	if(_height<300){
+		_height=300;
 	}
-	
 	return _height;
 }

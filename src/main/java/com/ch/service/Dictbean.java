@@ -1,5 +1,6 @@
 package com.ch.service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -24,23 +25,51 @@ public class Dictbean {
 		int limit=Integer.parseInt(req.getParameter("limit").toString());
 		//当前页编号,已乘以当前页总数
 		int offset=Integer.parseInt(req.getParameter("offset")); 
-		String search=req.getParameter("search");
+		String search="";
+		String mhiscode="";
 		
 		String sql=null;
 		List lstRes=null;
+		List wherelist=new ArrayList();
 		
-		if(StringUtils.isBlank(search)){
-			search="";
+		sql="select b.hisname,b.hiscode,a.drugcode,a.drug_unique_code,a.drugcode,a.drugname,a.drugform,a.drugspec,a.comp_name,a.doseunit,c.costunit " + 
+				"from mc_dict_drug_pass a " + 
+				"inner join mc_hospital_match_relation b on a.match_scheme=b.drugmatch_scheme " + 
+				"left join mc_dict_drug_sub c on a.match_scheme=c.match_scheme and a.drugcode=c.drugcode and a.drugspec=c.drugspec "
+				+ "where 1=1 ";
+		if(StringUtils.isNotBlank(req.getParameter("search"))){
+			search=req.getParameter("search");
+			sql=sql+" and (a.drug_unique_code like ? or a.drugname like ? or a.drugcode like ? ) ";
+			wherelist.add("%"+search+"%");
+			wherelist.add("%"+search+"%");
+			wherelist.add("%"+search+"%");
 		}
+		if(StringUtils.isNotBlank(req.getParameter("mhiscode"))){
+			mhiscode=req.getParameter("mhiscode");
+			sql=sql+" and b.mhiscode=? ";
+			wherelist.add(mhiscode);
+		}
+		sql=sql+"order by a.drug_unique_code asc limit "+offset+","+limit;
+		lstRes=jdbcTemplate.queryForList(sql, wherelist.toArray());
 		
-		sql="select b.hisname,b.hiscode,a.drugcode,a.drug_unique_code,a.drugcode,a.drugname,a.drugform,a.drugspec,a.comp_name,a.doseunit "
-				+ "from mc_dict_drug_pass a,mc_hospital_match_relation b where "
-				+ "a.match_scheme=b.drugmatch_scheme and a.drug_unique_code like ? order by a.drug_unique_code asc limit "+offset+","+limit;
-		lstRes=jdbcTemplate.queryForList(sql, new Object[]{"%"+search+"%"});
-		
-		sql="select count(a.drug_unique_code) from mc_dict_drug_pass a,mc_hospital_match_relation b where "
-				+ "a.match_scheme=b.drugmatch_scheme and a.drug_unique_code like ? ";
-		int count=jdbcTemplate.queryForObject(sql, Integer.class, new Object[]{"%"+search+"%"});
+		wherelist.clear();
+		sql="select count(a.drugcode) from mc_dict_drug_pass a " + 
+				"inner join mc_hospital_match_relation b on a.match_scheme=b.drugmatch_scheme " + 
+				"left join mc_dict_drug_sub c on a.match_scheme=c.match_scheme and a.drugcode=c.drugcode and a.drugspec=c.drugspec "
+				+ " where 1=1";
+		if(StringUtils.isNotBlank(req.getParameter("search"))){
+			search=req.getParameter("search");
+			sql=sql+" and (a.drug_unique_code like ? or a.drugname like ? or a.drugcode like ? ) ";
+			wherelist.add("%"+search+"%");
+			wherelist.add("%"+search+"%");
+			wherelist.add("%"+search+"%");
+		}
+		if(StringUtils.isNotBlank(req.getParameter("mhiscode"))){
+			mhiscode=req.getParameter("mhiscode");
+			sql=sql+" and b.mhiscode=? ";
+			wherelist.add(mhiscode);
+		}
+		int count=jdbcTemplate.queryForObject(sql, Integer.class, wherelist.toArray());
 		
 		dataGrid.setTotal(count+0L);
 		dataGrid.setRows(lstRes);
@@ -53,22 +82,44 @@ public class Dictbean {
 		int limit=Integer.parseInt(req.getParameter("limit").toString());
 		//当前页编号,已乘以当前页总数
 		int offset=Integer.parseInt(req.getParameter("offset")); 
-		String search=req.getParameter("search");
+		String search="";
+		String mhiscode="";
 		
 		String sql=null;
 		List lstRes=null;
-		
-		if(StringUtils.isBlank(search)){
-			search="";
-		}
+		List wherelist=new ArrayList();
 		
 		sql="select b.hisname,b.hiscode,a.routecode,a.routename from mc_dict_route a,mc_hospital_match_relation b "
-				+ " where a.match_scheme=b.routematch_scheme and a.routecode like ? order by a.routecode asc limit "+offset+","+limit;
-		lstRes=jdbcTemplate.queryForList(sql, new Object[]{"%"+search+"%"});
+				+ " where a.match_scheme=b.routematch_scheme and 1=1 ";
+		if(StringUtils.isNotBlank(req.getParameter("search"))){
+			search=req.getParameter("search");
+			sql=sql+" and ( a.routecode like ? or a.routename like ?) ";
+			wherelist.add("%"+search+"%");
+			wherelist.add("%"+search+"%");
+		}
+		if(StringUtils.isNotBlank(req.getParameter("mhiscode"))){
+			mhiscode=req.getParameter("mhiscode");
+			sql=sql+" and b.mhiscode=? ";
+			wherelist.add(mhiscode);
+		}
+		sql=sql+"order by a.routecode asc limit "+offset+","+limit;
+		lstRes=jdbcTemplate.queryForList(sql, wherelist.toArray());
 		
+		wherelist.clear();
 		sql="select count(a.routecode) from mc_dict_route a,mc_hospital_match_relation b "
-				+ " where a.match_scheme=b.routematch_scheme and a.routecode like ? ";
-		int count=jdbcTemplate.queryForObject(sql, Integer.class, new Object[]{"%"+search+"%"});
+				+ " where a.match_scheme=b.routematch_scheme and 1=1 ";
+		if(StringUtils.isNotBlank(req.getParameter("search"))){
+			search=req.getParameter("search");
+			sql=sql+" and ( a.routecode like ? or a.routename like ?) ";
+			wherelist.add("%"+search+"%");
+			wherelist.add("%"+search+"%");
+		}
+		if(StringUtils.isNotBlank(req.getParameter("mhiscode"))){
+			mhiscode=req.getParameter("mhiscode");
+			sql=sql+" and b.mhiscode=? ";
+			wherelist.add(mhiscode);
+		}
+		int count=jdbcTemplate.queryForObject(sql, Integer.class,  wherelist.toArray());
 		
 		dataGrid.setTotal(count+0L);
 		dataGrid.setRows(lstRes);
@@ -81,22 +132,42 @@ public class Dictbean {
 		int limit=Integer.parseInt(req.getParameter("limit").toString());
 		//当前页编号,已乘以当前页总数
 		int offset=Integer.parseInt(req.getParameter("offset")); 
-		String search=req.getParameter("search");
+		String search="";
+		String mhiscode="";
 		
 		String sql=null;
 		List lstRes=null;
-		
-		if(StringUtils.isBlank(search)){
-			search="";
-		}
+		List wherelist=new ArrayList();
 		
 		sql="select b.hisname,b.hiscode,a.frequency from mc_dict_frequency a,mc_hospital_match_relation b "
-				+ " where a.match_scheme=b.freqmatch_scheme and a.frequency like ? order by a.frequency asc limit "+offset+","+limit;
-		lstRes=jdbcTemplate.queryForList(sql, new Object[]{"%"+search+"%"});
+				+ " where a.match_scheme=b.freqmatch_scheme and 1=1 ";
+		if(StringUtils.isNotBlank(req.getParameter("search"))){
+			search=req.getParameter("search");
+			sql=sql+" and a.frequency like ? ";
+			wherelist.add("%"+search+"%");
+		}
+		if(StringUtils.isNotBlank(req.getParameter("mhiscode"))){
+			mhiscode=req.getParameter("mhiscode");
+			sql=sql+" and b.mhiscode= ? ";
+			wherelist.add(mhiscode);
+		}
+		sql=sql+" order by a.frequency asc limit "+offset+","+limit;
+		lstRes=jdbcTemplate.queryForList(sql, wherelist.toArray());
 		
-		sql="select count(a.frequency) from mc_dict_frequency a,mc_hospital_match_relation b "
-				+ " where a.match_scheme=b.freqmatch_scheme and a.frequency like ? ";
-		int count=jdbcTemplate.queryForObject(sql, Integer.class, new Object[]{"%"+search+"%"});
+		wherelist.clear();
+		sql="select count(1) from mc_dict_frequency a,mc_hospital_match_relation b "
+				+ " where a.match_scheme=b.freqmatch_scheme and 1=1 ";
+		if(StringUtils.isNotBlank(req.getParameter("search"))){
+			search=req.getParameter("search");
+			sql=sql+" and a.frequency like ? ";
+			wherelist.add("%"+search+"%");
+		}
+		if(StringUtils.isNotBlank(req.getParameter("mhiscode"))){
+			mhiscode=req.getParameter("mhiscode");
+			sql=sql+" and b.mhiscode =? ";
+			wherelist.add(mhiscode);
+		}
+		int count=jdbcTemplate.queryForObject(sql, Integer.class, wherelist.toArray());
 		
 		dataGrid.setTotal(count+0L);
 		dataGrid.setRows(lstRes);
@@ -110,21 +181,43 @@ public class Dictbean {
 		//当前页编号,已乘以当前页总数
 		int offset=Integer.parseInt(req.getParameter("offset")); 
 		String search=req.getParameter("search");
+		String mhiscode="";
 		
 		String sql=null;
 		List lstRes=null;
-		
-		if(StringUtils.isBlank(search)){
-			search="";
-		}
+		List wherelist=new ArrayList();
 		
 		sql="select b.hisname,b.hiscode,a.deptcode,a.deptname from mc_dict_dept a,mc_hospital_match_relation b "
-				+ "where a.match_scheme=b.deptmatch_scheme and a.deptcode<>'-1' and a.deptcode like ? order by a.deptcode asc limit "+offset+","+limit;
-		lstRes=jdbcTemplate.queryForList(sql, new Object[]{"%"+search+"%"});
+				+ "where a.match_scheme=b.deptmatch_scheme and a.deptcode<>'-1' and 1=1 ";
+		if(StringUtils.isNotBlank(req.getParameter("search"))){
+			search=req.getParameter("search");
+			sql=sql+" and (a.deptcode like ? or a.deptname like ?) ";
+			wherelist.add("%"+search+"%");
+			wherelist.add("%"+search+"%");
+		}
+		if(StringUtils.isNotBlank(req.getParameter("mhiscode"))){
+			mhiscode=req.getParameter("mhiscode");
+			sql=sql+" and b.mhiscode=? ";
+			wherelist.add(mhiscode);
+		}
+		sql=sql+ "order by a.deptcode asc limit "+offset+","+limit;
+		lstRes=jdbcTemplate.queryForList(sql, wherelist.toArray());
 		
-		sql="select count(a.deptcode) from mc_dict_dept a,mc_hospital_match_relation b "
-				+ " where a.match_scheme=b.deptmatch_scheme and a.deptcode<>'-1' and a.deptcode like ? ";
-		int count=jdbcTemplate.queryForObject(sql, Integer.class, new Object[]{"%"+search+"%"});
+		wherelist.clear();
+		sql="select count(1) from mc_dict_dept a,mc_hospital_match_relation b "
+				+ "where a.match_scheme=b.deptmatch_scheme and a.deptcode<>'-1' and 1=1 ";
+		if(StringUtils.isNotBlank(req.getParameter("search"))){
+			search=req.getParameter("search");
+			sql=sql+" and (a.deptcode like ? or a.deptname like ?) ";
+			wherelist.add("%"+search+"%");
+			wherelist.add("%"+search+"%");
+		}
+		if(StringUtils.isNotBlank(req.getParameter("mhiscode"))){
+			mhiscode=req.getParameter("mhiscode");
+			sql=sql+" and b.mhiscode=? ";
+			wherelist.add(mhiscode);
+		}
+		int count=jdbcTemplate.queryForObject(sql, Integer.class, wherelist.toArray());
 		
 		dataGrid.setTotal(count+0L);
 		dataGrid.setRows(lstRes);
@@ -137,23 +230,44 @@ public class Dictbean {
 		int limit=Integer.parseInt(req.getParameter("limit").toString());
 		//当前页编号,已乘以当前页总数
 		int offset=Integer.parseInt(req.getParameter("offset")); 
-		String search=req.getParameter("search");
+		String search="";
+		String mhiscode="";
 		
 		String sql=null;
 		List lstRes=null;
-		
-		if(StringUtils.isBlank(search)){
-			search="";
-		}
+		List wherelist=new ArrayList();
 		
 		sql="select b.hisname,b.hiscode,a.doctorcode,a.doctorname from mc_dict_doctor a,mc_hospital_match_relation b "
-				+ " where a.match_scheme=b.doctormatch_scheme and a.doctorcode <> '-1' "
-				+ "and a.doctorcode like ? order by a.doctorcode asc limit "+offset+","+limit;
-		lstRes=jdbcTemplate.queryForList(sql, new Object[]{"%"+search+"%"});
+				+ " where a.match_scheme=b.doctormatch_scheme and a.doctorcode <> '-1' and 1=1 ";
+		if(StringUtils.isNotBlank(req.getParameter("search"))){
+			search=req.getParameter("search");
+			sql=sql+" and (a.doctorcode like ? or a.doctorname like ? ) " ;
+			wherelist.add("%"+search+"%");
+			wherelist.add("%"+search+"%");
+		}
+		if(StringUtils.isNotBlank(req.getParameter("mhiscode"))){
+			mhiscode=req.getParameter("mhiscode");
+			sql=sql+" and b.mhiscode=? " ;
+			wherelist.add(mhiscode);
+		}
+		sql=sql+"order by a.doctorcode asc limit "+offset+","+limit;
+		lstRes=jdbcTemplate.queryForList(sql, wherelist.toArray());
 		
-		sql="select count(a.doctorcode) from mc_dict_doctor a,mc_hospital_match_relation b "
-				+ " where a.match_scheme=b.doctormatch_scheme and a.doctorcode <> '-1' and a.doctorcode like ? ";
-		int count=jdbcTemplate.queryForObject(sql, Integer.class, new Object[]{"%"+search+"%"});
+		wherelist.clear();
+		sql="select count(1) from mc_dict_doctor a,mc_hospital_match_relation b "
+				+ " where a.match_scheme=b.doctormatch_scheme and a.doctorcode <> '-1' and 1=1 ";
+		if(StringUtils.isNotBlank(req.getParameter("search"))){
+			search=req.getParameter("search");
+			sql=sql+" and (a.doctorcode like ? or a.doctorname like ? ) " ;
+			wherelist.add("%"+search+"%");
+			wherelist.add("%"+search+"%");
+		}
+		if(StringUtils.isNotBlank(req.getParameter("mhiscode"))){
+			mhiscode=req.getParameter("mhiscode");
+			sql=sql+" and b.mhiscode=? " ;
+			wherelist.add(mhiscode);
+		}
+		int count=jdbcTemplate.queryForObject(sql, Integer.class, wherelist.toArray());
 		
 		dataGrid.setTotal(count+0L);
 		dataGrid.setRows(lstRes);
@@ -166,22 +280,44 @@ public class Dictbean {
 		int limit=Integer.parseInt(req.getParameter("limit").toString());
 		//当前页编号,已乘以当前页总数
 		int offset=Integer.parseInt(req.getParameter("offset")); 
-		String search=req.getParameter("search");
+		String search="";
+		String mhiscode="";
 		
 		String sql=null;
 		List lstRes=null;
-		
-		if(StringUtils.isBlank(search)){
-			search="";
-		}
+		List wherelist=new ArrayList();
 		
 		sql="select b.hisname,b.hiscode,a.allercode,a.allername from mc_dict_allergen a,mc_hospital_match_relation b "
-				+ "where a.match_scheme=b.allermatch_scheme and a.allercode like ? order by a.allercode asc limit "+offset+","+limit;
-		lstRes=jdbcTemplate.queryForList(sql, new Object[]{"%"+search+"%"});
+				+ "where a.match_scheme=b.allermatch_scheme and 1=1 ";
+		if(StringUtils.isNotBlank(req.getParameter("search"))){
+			search=req.getParameter("search");
+			sql=sql+" and (a.allercode like ? or a.allername like ? ) ";
+			wherelist.add("%"+search+"%");
+			wherelist.add("%"+search+"%");
+		}
+		if(StringUtils.isNotBlank(req.getParameter("mhiscode"))){
+			mhiscode=req.getParameter("mhiscode");
+			sql=sql+" and b.mhiscode=? ";
+			wherelist.add(mhiscode);
+		}
+		sql=sql+" order by a.allercode asc limit "+offset+","+limit;
+		lstRes=jdbcTemplate.queryForList(sql, wherelist.toArray());
 		
-		sql="select count(a.allercode) from mc_dict_allergen a,mc_hospital_match_relation b "
-				+ "where a.match_scheme=b.allermatch_scheme  and a.allercode like ? ";
-		int count=jdbcTemplate.queryForObject(sql, Integer.class, new Object[]{"%"+search+"%"});
+		wherelist.clear();
+		sql="select count(1) from mc_dict_allergen a,mc_hospital_match_relation b "
+				+ "where a.match_scheme=b.allermatch_scheme and 1=1 ";
+		if(StringUtils.isNotBlank(req.getParameter("search"))){
+			search=req.getParameter("search");
+			sql=sql+" and (a.allercode like ? or a.allername like ? ) ";
+			wherelist.add("%"+search+"%");
+			wherelist.add("%"+search+"%");
+		}
+		if(StringUtils.isNotBlank(req.getParameter("mhiscode"))){
+			mhiscode=req.getParameter("mhiscode");
+			sql=sql+" and b.mhiscode=? ";
+			wherelist.add(mhiscode);
+		}
+		int count=jdbcTemplate.queryForObject(sql, Integer.class, wherelist.toArray());
 		
 		dataGrid.setTotal(count+0L);
 		dataGrid.setRows(lstRes);
@@ -194,22 +330,43 @@ public class Dictbean {
 		int limit=Integer.parseInt(req.getParameter("limit").toString());
 		//当前页编号,已乘以当前页总数
 		int offset=Integer.parseInt(req.getParameter("offset")); 
-		String search=req.getParameter("search");
+		String search="";
+		String mhiscode="";
 		
 		String sql=null;
 		List lstRes=null;
-		
-		if(StringUtils.isBlank(search)){
-			search="";
-		}
-		
+		List wherelist=new ArrayList();
 		sql="select b.hisname,b.hiscode,a.discode,a.disname from mc_dict_disease a,mc_hospital_match_relation b " + 
-				"where a.match_scheme=b.dismatch_scheme and a.discode like ? order by a.discode asc limit "+offset+","+limit;
-		lstRes=jdbcTemplate.queryForList(sql, new Object[]{"%"+search+"%"});
+				"where a.match_scheme=b.dismatch_scheme and 1=1 ";
+		if(StringUtils.isNotBlank(req.getParameter("search"))){
+			search=req.getParameter("search");
+			sql=sql+" and (a.discode like ? or a.disname like ? ) ";
+			wherelist.add("%"+search+"%");
+			wherelist.add("%"+search+"%");
+		}
+		if(StringUtils.isNotBlank(req.getParameter("mhiscode"))){
+			mhiscode=req.getParameter("mhiscode");
+			sql=sql+" and b.mhiscode=? ";
+			wherelist.add(mhiscode);
+		}
+		sql=sql+ "order by a.discode asc limit "+offset+","+limit;
+		lstRes=jdbcTemplate.queryForList(sql, wherelist.toArray());
 		
-		sql="select count(a.discode) from mc_dict_disease a,mc_hospital_match_relation b "
-				+ "where a.match_scheme=b.dismatch_scheme  and a.discode like ? ";
-		int count=jdbcTemplate.queryForObject(sql, Integer.class, new Object[]{"%"+search+"%"});
+		wherelist.clear();
+		sql="select count(1) from mc_dict_disease a,mc_hospital_match_relation b " + 
+				"where a.match_scheme=b.dismatch_scheme and 1=1 ";
+		if(StringUtils.isNotBlank(req.getParameter("search"))){
+			search=req.getParameter("search");
+			sql=sql+" and (a.discode like ? or a.disname like ? ) ";
+			wherelist.add("%"+search+"%");
+			wherelist.add("%"+search+"%");
+		}
+		if(StringUtils.isNotBlank(req.getParameter("mhiscode"))){
+			mhiscode=req.getParameter("mhiscode");
+			sql=sql+" and b.mhiscode=? ";
+			wherelist.add(mhiscode);
+		}
+		int count=jdbcTemplate.queryForObject(sql, Integer.class, wherelist.toArray());
 		
 		dataGrid.setTotal(count+0L);
 		dataGrid.setRows(lstRes);
@@ -222,22 +379,44 @@ public class Dictbean {
 		int limit=Integer.parseInt(req.getParameter("limit").toString());
 		//当前页编号,已乘以当前页总数
 		int offset=Integer.parseInt(req.getParameter("offset")); 
-		String search=req.getParameter("search");
+		String search="";
+		String mhiscode="";
 		
 		String sql=null;
 		List lstRes=null;
-		
-		if(StringUtils.isBlank(search)){
-			search="";
-		}
+		List wherelist=new ArrayList();
 		
 		sql="select b.hisname,b.hiscode,a.operationcode,a.operationname from mc_dict_operation a,mc_hospital_match_relation b "
-				+ "where a.match_scheme=b.oprmatch_scheme and a.operationcode like ? order by a.operationcode asc limit "+offset+","+limit;
-		lstRes=jdbcTemplate.queryForList(sql, new Object[]{"%"+search+"%"});
+				+ "where a.match_scheme=b.oprmatch_scheme and 1=1 ";
+		if(StringUtils.isNotBlank(req.getParameter("search"))){
+			search=req.getParameter("search");
+			sql=sql+" and (a.operationcode like ? or a.operationname like ? ) ";
+			wherelist.add("%"+search+"%");
+			wherelist.add("%"+search+"%");
+		}
+		if(StringUtils.isNotBlank(req.getParameter("mhiscode"))){
+			mhiscode=req.getParameter("mhiscode");
+			sql=sql+" and b.mhiscode=? ";
+			wherelist.add(mhiscode);
+		}
+		sql=sql+"order by a.operationcode asc limit "+offset+","+limit;
+		lstRes=jdbcTemplate.queryForList(sql, wherelist.toArray());
 		
-		sql="select count(a.operationcode) from mc_dict_operation a,mc_hospital_match_relation b "
-				+ "where a.match_scheme=b.oprmatch_scheme  and a.operationcode like ? ";
-		int count=jdbcTemplate.queryForObject(sql, Integer.class, new Object[]{"%"+search+"%"});
+		wherelist.clear();
+		sql="select count(1) from mc_dict_operation a,mc_hospital_match_relation b "
+				+ "where a.match_scheme=b.oprmatch_scheme and 1=1 ";
+		if(StringUtils.isNotBlank(req.getParameter("search"))){
+			search=req.getParameter("search");
+			sql=sql+" and (a.operationcode like ? or a.operationname like ? ) ";
+			wherelist.add("%"+search+"%");
+			wherelist.add("%"+search+"%");
+		}
+		if(StringUtils.isNotBlank(req.getParameter("mhiscode"))){
+			mhiscode=req.getParameter("mhiscode");
+			sql=sql+" and b.mhiscode=? ";
+			wherelist.add(mhiscode);
+		}
+		int count=jdbcTemplate.queryForObject(sql, Integer.class, wherelist.toArray());
 		
 		dataGrid.setTotal(count+0L);
 		dataGrid.setRows(lstRes);
@@ -250,22 +429,44 @@ public class Dictbean {
 		int limit=Integer.parseInt(req.getParameter("limit").toString());
 		//当前页编号,已乘以当前页总数
 		int offset=Integer.parseInt(req.getParameter("offset")); 
-		String search=req.getParameter("search");
+		String search="";
+		String mhiscode="";
 		
 		String sql=null;
 		List lstRes=null;
-		
-		if(StringUtils.isBlank(search)){
-			search="";
-		}
+		List wherelist=new ArrayList();
 		
 		sql="select b.hisname,b.hiscode,a.examcode,a.examname from mc_dict_exam a,mc_hospital_match_relation b "
-				+ "where a.match_scheme=b.oprmatch_scheme and a.examname like ? order by a.examcode asc limit "+offset+","+limit;
-		lstRes=jdbcTemplate.queryForList(sql, new Object[]{"%"+search+"%"});
+				+ "where a.match_scheme=b.oprmatch_scheme and 1=1 ";
+		if(StringUtils.isNotBlank(req.getParameter("search"))){
+			search=req.getParameter("search");
+			sql=sql+" and (a.examname like ? or a.examcode like ? ) ";
+			wherelist.add("%"+search+"%");
+			wherelist.add("%"+search+"%");
+		}
+		if(StringUtils.isNotBlank(req.getParameter("mhiscode"))){
+			mhiscode=req.getParameter("mhiscode");
+			sql=sql+" and b.mhiscode=? ";
+			wherelist.add(mhiscode);
+		}
+		sql=sql+"order by a.examcode asc limit "+offset+","+limit;
+		lstRes=jdbcTemplate.queryForList(sql, wherelist.toArray());
 		
-		sql="select count(a.examcode) from mc_dict_exam a,mc_hospital_match_relation b "
-				+ "where a.match_scheme=b.oprmatch_scheme  and a.examname like ? ";
-		int count=jdbcTemplate.queryForObject(sql, Integer.class, new Object[]{"%"+search+"%"});
+		wherelist.clear();
+		sql="select count(1) from mc_dict_exam a,mc_hospital_match_relation b "
+				+ "where a.match_scheme=b.oprmatch_scheme and 1=1 ";
+		if(StringUtils.isNotBlank(req.getParameter("search"))){
+			search=req.getParameter("search");
+			sql=sql+" and (a.examname like ? or a.examcode like ? ) ";
+			wherelist.add("%"+search+"%");
+			wherelist.add("%"+search+"%");
+		}
+		if(StringUtils.isNotBlank(req.getParameter("mhiscode"))){
+			mhiscode=req.getParameter("mhiscode");
+			sql=sql+" and b.mhiscode=? ";
+			wherelist.add(mhiscode);
+		}
+		int count=jdbcTemplate.queryForObject(sql, Integer.class, wherelist.toArray());
 		
 		dataGrid.setTotal(count+0L);
 		dataGrid.setRows(lstRes);
@@ -274,6 +475,56 @@ public class Dictbean {
 	}
 	
 	public DataGrid dict_lab(HttpServletRequest req){
+		//单页条数
+		int limit=Integer.parseInt(req.getParameter("limit").toString());
+		//当前页编号,已乘以当前页总数
+		int offset=Integer.parseInt(req.getParameter("offset")); 
+		String search="";
+		String mhiscode="";
+		
+		String sql=null;
+		List lstRes=null;
+		List wherelist=new ArrayList();
+		
+		sql="select b.hisname,b.hiscode,a.labcode,a.labname from mc_dict_lab a,mc_hospital_match_relation b "
+				+ "where a.match_scheme=b.oprmatch_scheme and 1=1 ";
+		if(StringUtils.isNotBlank(req.getParameter("search"))){
+			search=req.getParameter("search");
+			sql=sql+" and (a.labname like ? or a.labcode like ?) ";
+			wherelist.add("%"+search+"%");
+			wherelist.add("%"+search+"%");
+		}
+		if(StringUtils.isNotBlank(req.getParameter("mhiscode"))){
+			mhiscode=req.getParameter("mhiscode");
+			sql=sql+" and mhiscode=? ";
+			wherelist.add(mhiscode);
+		}
+		sql=sql+ "order by a.labcode asc limit "+offset+","+limit;
+		lstRes=jdbcTemplate.queryForList(sql,wherelist.toArray());
+		
+		wherelist.clear();
+		sql="select count(1) from mc_dict_lab a,mc_hospital_match_relation b "
+				+ "where a.match_scheme=b.oprmatch_scheme and 1=1 ";
+		if(StringUtils.isNotBlank(req.getParameter("search"))){
+			search=req.getParameter("search");
+			sql=sql+" and (a.labname like ? or a.labcode like ?) ";
+			wherelist.add("%"+search+"%");
+			wherelist.add("%"+search+"%");
+		}
+		if(StringUtils.isNotBlank(req.getParameter("mhiscode"))){
+			mhiscode=req.getParameter("mhiscode");
+			sql=sql+" and mhiscode=? ";
+			wherelist.add(mhiscode);
+		}
+		int count=jdbcTemplate.queryForObject(sql, Integer.class,wherelist.toArray());
+		
+		dataGrid.setTotal(count+0L);
+		dataGrid.setRows(lstRes);
+		
+		return dataGrid;
+	}
+	
+	public DataGrid mc_hospital(HttpServletRequest req){
 		//单页条数
 		int limit=Integer.parseInt(req.getParameter("limit").toString());
 		//当前页编号,已乘以当前页总数
@@ -287,18 +538,388 @@ public class Dictbean {
 			search="";
 		}
 		
-		sql="select b.hisname,b.hiscode,a.labcode,a.labname from mc_dict_lab a,mc_hospital_match_relation b "
-				+ "where a.match_scheme=b.oprmatch_scheme and a.labname like ? order by a.labcode asc limit "+offset+","+limit;
-		lstRes=jdbcTemplate.queryForList(sql, new Object[]{"%"+search+"%"});
+		sql="select a.* from mc_hospital_match_relation a "
+				+ "where a.mhiscode like ? or a.hiscode like ? or a.hisname like ? "
+				+ "order by a.hiscode asc limit "+offset+","+limit;
+		lstRes=jdbcTemplate.queryForList(sql, new Object[]{"%"+search+"%","%"+search+"%","%"+search+"%"});
 		
-		sql="select count(a.labcode) from mc_dict_lab a,mc_hospital_match_relation b "
-				+ "where a.match_scheme=b.oprmatch_scheme  and a.labname like ? ";
-		int count=jdbcTemplate.queryForObject(sql, Integer.class, new Object[]{"%"+search+"%"});
+		sql="select count(a.mhiscode) from mc_hospital_match_relation a "
+				+ "where a.mhiscode like ? or a.hiscode like ? or a.hisname like ? ";
+		int count=jdbcTemplate.queryForObject(sql, Integer.class, new Object[]{"%"+search+"%","%"+search+"%","%"+search+"%"});
 		
 		dataGrid.setTotal(count+0L);
 		dataGrid.setRows(lstRes);
 		
 		return dataGrid;
+	}
+	
+	public DataGrid database(HttpServletRequest req){
+		//单页条数
+		int limit=Integer.parseInt(req.getParameter("limit").toString());
+		//当前页编号,已乘以当前页总数
+		int offset=Integer.parseInt(req.getParameter("offset")); 
+		String search="";
+		String serachdata="";
+		String sql=null;
+		String sql1=null;
+		List lstRes=null;
+		int count=0;
+		List wherelist=new ArrayList();
+		
+		sql="select a.* from sys_database a "
+				+ "where 1=1 ";
+		sql1="select count(a.databasename) from sys_database a "
+				+ "where 1=1 ";
+		
+		if(StringUtils.isNotBlank(req.getParameter("search"))){
+			search=req.getParameter("search");
+			sql=sql+" and (a.databasename like ? or a.ip like ? or a.kettle_Database_two=? or a.name=?) ";
+			sql1=sql1+" and (a.databasename like ? or a.ip like ? or a.kettle_Database_two=? or a.name=?) ";
+			
+			wherelist.add("%"+search+"%");
+			wherelist.add("%"+search+"%");
+			wherelist.add("%"+search+"%");
+			wherelist.add("%"+search+"%");
+		}
+		if(StringUtils.isNotBlank(req.getParameter("serachdata"))){
+			serachdata=req.getParameter("serachdata");
+			
+			sql=sql+" and (a.databasename like ? or a.ip like ? or a.kettle_Database_two=? or a.name=?) ";
+			sql1=sql1+" and (a.databasename like ? or a.ip like ? or a.kettle_Database_two=? or a.name=?) ";
+			
+			wherelist.add("%"+serachdata+"%");
+			wherelist.add("%"+serachdata+"%");
+			wherelist.add("%"+serachdata+"%");
+			wherelist.add("%"+serachdata+"%");
+		}
+		
+		sql=sql+" order by a.databasename,a.databasetype asc limit "+offset+","+limit;
+		
+		if(wherelist.size()>0){
+			lstRes=jdbcTemplate.queryForList(sql, wherelist.toArray());
+			count=jdbcTemplate.queryForObject(sql1, Integer.class, wherelist.toArray());
+		}else{
+			lstRes=jdbcTemplate.queryForList(sql);
+			count=jdbcTemplate.queryForObject(sql1, Integer.class);
+		}
+		
+		dataGrid.setTotal(count+0L);
+		dataGrid.setRows(lstRes);
+		
+		return dataGrid;
+	}
+	
+	public String insertdatabase(HttpServletRequest req){
+		String sql=null;
+		String databasetype="";
+		String name="";
+		String kettle_Database_two="";
+		String databasename="";
+		String ip="";
+		String username="";
+		String password="";
+		String driver="";
+		
+		if(StringUtils.isNotBlank(req.getParameter("databasetype"))){
+			databasetype=req.getParameter("databasetype");
+		}
+		if(StringUtils.isNotBlank(req.getParameter("name"))){
+			name=req.getParameter("name");
+		}
+		if(StringUtils.isNotBlank(req.getParameter("kettle_Database_two"))){
+			kettle_Database_two=req.getParameter("kettle_Database_two");
+		}
+		if(StringUtils.isNotBlank(req.getParameter("databasename"))){
+			databasename=req.getParameter("databasename");
+		}
+		if(StringUtils.isNotBlank(req.getParameter("ip"))){
+			ip=req.getParameter("ip");
+		}
+		if(StringUtils.isNotBlank(req.getParameter("username"))){
+			username=req.getParameter("username");
+		}
+		if(StringUtils.isNotBlank(req.getParameter("password"))){
+			password=req.getParameter("password");
+		}
+		if("MYSQL".equals(databasetype)){
+			driver="com.mysql.jdbc.Driver";
+		}else if("MSSQL".equals(databasetype)){
+			driver="com.microsoft.sqlserver.jdbc.SQLServerDriver";
+		}else if("ORACLE".equals(databasetype)){
+			driver="oracle.jdbc.driver.OracleDriver";
+		}
+		
+		sql="select count(1) from sys_database where name =? ";
+		int count=jdbcTemplate.queryForObject(sql, int.class,new Object[]{name});
+		if(count>0){
+			return "数据库配置名称重复";
+		}
+		
+		sql="insert into sys_database(databasetype,databasename,ip,username,password,name,kettle_Database_two,driver ) value(?,?,?,?,?,?,?,?)";
+		jdbcTemplate.update(sql,new Object[]{databasetype,databasename,ip,username,password,name,kettle_Database_two,driver});
+		
+		return "ok";
+	}
+	
+	public String updatedatabase(HttpServletRequest req){
+		String sql=null;
+		int databaseid=0;
+		String kettle_Database_two="";
+		String databasetype="";
+		String databasename="";
+		String ip="";
+		String username="";
+		String password="";
+		String driver="";
+		
+		if(StringUtils.isNotBlank(req.getParameter("databaseid"))){
+			databaseid=Integer.parseInt(req.getParameter("databaseid"));
+		}
+		if(StringUtils.isNotBlank(req.getParameter("kettle_Database_two"))){
+			kettle_Database_two=req.getParameter("kettle_Database_two");
+		}
+		if(StringUtils.isNotBlank(req.getParameter("databasetype"))){
+			databasetype=req.getParameter("databasetype");
+		}
+		if(StringUtils.isNotBlank(req.getParameter("databasename"))){
+			databasename=req.getParameter("databasename");
+		}
+		if(StringUtils.isNotBlank(req.getParameter("ip"))){
+			ip=req.getParameter("ip");
+		}
+		if(StringUtils.isNotBlank(req.getParameter("username"))){
+			username=req.getParameter("username");
+		}
+		if(StringUtils.isNotBlank(req.getParameter("password"))){
+			password=req.getParameter("password");
+		}
+		if("MYSQL".equals(databasetype)){
+			driver="com.mysql.jdbc.Driver";
+		}else if("MSSQL".equals(databasetype)){
+			driver="com.microsoft.sqlserver.jdbc.SQLServerDriver";
+		}else if("ORACLE".equals(databasetype)){
+			driver="oracle.jdbc.driver.OracleDriver";
+		}
+		
+		sql="update sys_database set databasetype=?,databasename=?,ip=?,username=?,password=?,kettle_Database_two=?,driver=? "
+				+ "where databaseid=? ";
+		jdbcTemplate.update(sql,new Object[]{databasetype,databasename,ip,username,password,kettle_Database_two,driver,databaseid });
+		
+		return "ok";
+	}
+	
+	public String deletedatabase(HttpServletRequest req){
+		String sql=null;
+		int databaseid=0;
+		if(StringUtils.isNotBlank(req.getParameter("databaseid"))){
+			databaseid=Integer.parseInt(req.getParameter("databaseid"));
+		}
+		
+		sql="delete from sys_database where databaseid=?";
+		jdbcTemplate.update(sql,new Object[]{databaseid});
+		
+		return "ok";
+	}
+	
+	public String inserthospital(HttpServletRequest req){
+		String sql=null;
+		String mhiscode="";
+		String hiscode="";
+		String hisname="";
+		String doctorgroupmatch_scheme="";
+		String wardmatch_scheme="";
+		String drugmatch_scheme="";
+		String allermatch_scheme="";
+		String dismatch_scheme="";
+		String freqmatch_scheme="";
+		String routematch_scheme="";
+		String doctormatch_scheme="";
+		String oprmatch_scheme="";
+		String costitemmatch_scheme="";
+		String deptmatch_scheme="";
+		String exammatch_scheme="";
+		String labmatch_scheme="";
+		String labsubmatch_scheme="";
+		String hiscode_user="";
+		
+		
+		if(StringUtils.isNotBlank(req.getParameter("mhiscode"))){
+			mhiscode=req.getParameter("mhiscode");
+		}
+		if(StringUtils.isNotBlank(req.getParameter("hiscode"))){
+			hiscode=req.getParameter("hiscode");
+		}
+		if(StringUtils.isNotBlank(req.getParameter("hisname"))){
+			hisname=req.getParameter("hisname");
+		}
+		if(StringUtils.isNotBlank(req.getParameter("doctorgroupmatch_scheme"))){
+			doctorgroupmatch_scheme=req.getParameter("doctorgroupmatch_scheme");
+		}
+		if(StringUtils.isNotBlank(req.getParameter("wardmatch_scheme"))){
+			wardmatch_scheme=req.getParameter("wardmatch_scheme");
+		}
+		if(StringUtils.isNotBlank(req.getParameter("drugmatch_scheme"))){
+			drugmatch_scheme=req.getParameter("drugmatch_scheme");
+		}
+		if(StringUtils.isNotBlank(req.getParameter("allermatch_scheme"))){
+			allermatch_scheme=req.getParameter("allermatch_scheme");
+		}
+		if(StringUtils.isNotBlank(req.getParameter("dismatch_scheme"))){
+			dismatch_scheme=req.getParameter("dismatch_scheme");
+		}
+		if(StringUtils.isNotBlank(req.getParameter("freqmatch_scheme"))){
+			freqmatch_scheme=req.getParameter("freqmatch_scheme");
+		}
+		if(StringUtils.isNotBlank(req.getParameter("routematch_scheme"))){
+			routematch_scheme=req.getParameter("routematch_scheme");
+		}
+		if(StringUtils.isNotBlank(req.getParameter("doctormatch_scheme"))){
+			doctormatch_scheme=req.getParameter("doctormatch_scheme");
+		}
+		if(StringUtils.isNotBlank(req.getParameter("oprmatch_scheme"))){
+			oprmatch_scheme=req.getParameter("oprmatch_scheme");
+		}
+		if(StringUtils.isNotBlank(req.getParameter("costitemmatch_scheme"))){
+			costitemmatch_scheme=req.getParameter("costitemmatch_scheme");
+		}
+		if(StringUtils.isNotBlank(req.getParameter("deptmatch_scheme"))){
+			deptmatch_scheme=req.getParameter("deptmatch_scheme");
+		}
+		if(StringUtils.isNotBlank(req.getParameter("exammatch_scheme"))){
+			exammatch_scheme=req.getParameter("exammatch_scheme");
+		}
+		if(StringUtils.isNotBlank(req.getParameter("labmatch_scheme"))){
+			labmatch_scheme=req.getParameter("labmatch_scheme");
+		}
+		if(StringUtils.isNotBlank(req.getParameter("labsubmatch_scheme"))){
+			labsubmatch_scheme=req.getParameter("labsubmatch_scheme");
+		}
+		if(StringUtils.isNotBlank(req.getParameter("hiscode_user"))){
+			hiscode_user=req.getParameter("hiscode_user");
+		}
+		
+		sql="select count(1) from mc_hospital_match_relation where mhiscode=?";
+		int rscount=jdbcTemplate.queryForObject(sql, int.class,new Object[]{mhiscode});
+
+		if(rscount>0){
+			return "美康机构编码重复";
+		}
+		
+		sql="insert into mc_hospital_match_relation(mhiscode,hiscode,hisname,doctorgroupmatch_scheme,wardmatch_scheme,"
+				+ "drugmatch_scheme,allermatch_scheme,dismatch_scheme,freqmatch_scheme,routematch_scheme,"
+				+ "doctormatch_scheme,oprmatch_scheme,costitemmatch_scheme,deptmatch_scheme,"
+				+ "exammatch_scheme,labmatch_scheme,labsubmatch_scheme,hiscode_user) value(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+		jdbcTemplate.update(sql,new Object[]{mhiscode,hiscode,hisname,doctorgroupmatch_scheme,wardmatch_scheme,
+				drugmatch_scheme,allermatch_scheme,dismatch_scheme,freqmatch_scheme,routematch_scheme,
+				doctormatch_scheme,oprmatch_scheme,costitemmatch_scheme,deptmatch_scheme,
+				exammatch_scheme,labmatch_scheme,labsubmatch_scheme,hiscode_user});
+		
+		return "ok";
+	}
+	
+	public String updatehospital(HttpServletRequest req){
+		String sql=null;
+		String mhiscode="";
+		String hiscode="";
+		String hisname="";
+		String doctorgroupmatch_scheme="";
+		String wardmatch_scheme="";
+		String drugmatch_scheme="";
+		String allermatch_scheme="";
+		String dismatch_scheme="";
+		String freqmatch_scheme="";
+		String routematch_scheme="";
+		String doctormatch_scheme="";
+		String oprmatch_scheme="";
+		String costitemmatch_scheme="";
+		String deptmatch_scheme="";
+		String exammatch_scheme="";
+		String labmatch_scheme="";
+		String labsubmatch_scheme="";
+		String hiscode_user="";
+		
+		
+		if(StringUtils.isNotBlank(req.getParameter("mhiscode"))){
+			mhiscode=req.getParameter("mhiscode");
+		}
+		if(StringUtils.isNotBlank(req.getParameter("hiscode"))){
+			hiscode=req.getParameter("hiscode");
+		}
+		if(StringUtils.isNotBlank(req.getParameter("hisname"))){
+			hisname=req.getParameter("hisname");
+		}
+		if(StringUtils.isNotBlank(req.getParameter("doctorgroupmatch_scheme"))){
+			doctorgroupmatch_scheme=req.getParameter("doctorgroupmatch_scheme");
+		}
+		if(StringUtils.isNotBlank(req.getParameter("wardmatch_scheme"))){
+			wardmatch_scheme=req.getParameter("wardmatch_scheme");
+		}
+		if(StringUtils.isNotBlank(req.getParameter("drugmatch_scheme"))){
+			drugmatch_scheme=req.getParameter("drugmatch_scheme");
+		}
+		if(StringUtils.isNotBlank(req.getParameter("allermatch_scheme"))){
+			allermatch_scheme=req.getParameter("allermatch_scheme");
+		}
+		if(StringUtils.isNotBlank(req.getParameter("dismatch_scheme"))){
+			dismatch_scheme=req.getParameter("dismatch_scheme");
+		}
+		if(StringUtils.isNotBlank(req.getParameter("freqmatch_scheme"))){
+			freqmatch_scheme=req.getParameter("freqmatch_scheme");
+		}
+		if(StringUtils.isNotBlank(req.getParameter("routematch_scheme"))){
+			routematch_scheme=req.getParameter("routematch_scheme");
+		}
+		if(StringUtils.isNotBlank(req.getParameter("doctormatch_scheme"))){
+			doctormatch_scheme=req.getParameter("doctormatch_scheme");
+		}
+		if(StringUtils.isNotBlank(req.getParameter("oprmatch_scheme"))){
+			oprmatch_scheme=req.getParameter("oprmatch_scheme");
+		}
+		if(StringUtils.isNotBlank(req.getParameter("costitemmatch_scheme"))){
+			costitemmatch_scheme=req.getParameter("costitemmatch_scheme");
+		}
+		if(StringUtils.isNotBlank(req.getParameter("deptmatch_scheme"))){
+			deptmatch_scheme=req.getParameter("deptmatch_scheme");
+		}
+		if(StringUtils.isNotBlank(req.getParameter("exammatch_scheme"))){
+			exammatch_scheme=req.getParameter("exammatch_scheme");
+		}
+		if(StringUtils.isNotBlank(req.getParameter("labmatch_scheme"))){
+			labmatch_scheme=req.getParameter("labmatch_scheme");
+		}
+		if(StringUtils.isNotBlank(req.getParameter("labsubmatch_scheme"))){
+			labsubmatch_scheme=req.getParameter("labsubmatch_scheme");
+		}
+		if(StringUtils.isNotBlank(req.getParameter("hiscode_user"))){
+			hiscode_user=req.getParameter("hiscode_user");
+		}
+		
+		sql="update mc_hospital_match_relation set hiscode=?,hisname=?,doctorgroupmatch_scheme=?,wardmatch_scheme=?, " + 
+				"drugmatch_scheme=?,allermatch_scheme=?,dismatch_scheme=?,freqmatch_scheme=?,routematch_scheme=?, " + 
+				"doctormatch_scheme=?,oprmatch_scheme=?,costitemmatch_scheme=?,deptmatch_scheme=?, " + 
+				"exammatch_scheme=?,labmatch_scheme=?,labsubmatch_scheme=?,hiscode_user=? where mhiscode=? ";
+		jdbcTemplate.update(sql,new Object[]{hiscode,hisname,doctorgroupmatch_scheme,wardmatch_scheme,
+				drugmatch_scheme,allermatch_scheme,dismatch_scheme,freqmatch_scheme,routematch_scheme,
+				doctormatch_scheme,oprmatch_scheme,costitemmatch_scheme,deptmatch_scheme,
+				exammatch_scheme,labmatch_scheme,labsubmatch_scheme,hiscode_user,mhiscode});
+		
+		return "ok";
+	}
+	
+	public String deletehospital(HttpServletRequest req){
+		String sql=null;
+		String mhiscode="";
+		String hiscode="";
+		if(StringUtils.isNotBlank(req.getParameter("mhiscode"))){
+			mhiscode=req.getParameter("mhiscode");
+		}
+		if(StringUtils.isNotBlank(req.getParameter("hiscode"))){
+			hiscode=req.getParameter("hiscode");
+		}
+		sql="delete from mc_hospital_match_relation where mhiscode=? and hiscode=?";
+		jdbcTemplate.update(sql,new Object[]{mhiscode,hiscode});
+		
+		return "ok";
 	}
 	
 	public String insertdrug(HttpServletRequest req){
@@ -311,6 +932,7 @@ public class Dictbean {
 		String drugspec="";
 		String comp_name="";
 		String doseunit="";
+		String costunit="无";
 		
 		if(StringUtils.isNotBlank(req.getParameter("hiscode"))){
 			hiscode=req.getParameter("hiscode");
@@ -336,6 +958,9 @@ public class Dictbean {
 		if(StringUtils.isNotBlank(req.getParameter("doseunit"))){
 			doseunit=req.getParameter("doseunit");
 		}
+		if(StringUtils.isNotBlank(req.getParameter("costunit"))){
+			costunit=req.getParameter("costunit");
+		}
 		
 		int match_scheme=0;
 		sql="select drugmatch_scheme from mc_hospital_match_relation where hiscode=?";
@@ -345,7 +970,7 @@ public class Dictbean {
 		int rscount=jdbcTemplate.queryForObject(sql, int.class,new Object[]{drugcode,drug_unique_code,doseunit,match_scheme});
 
 		if(rscount>0){
-			return "药品编码(唯一码)重复,或者相同编码下给药途径重复";
+			return "药品编码(唯一码)重复,或者相同编码下给药单位重复";
 		}
 		
 		sql="insert into mc_dict_drug_pass(drug_unique_code,drugcode,drugname,drugform,drugspec,"
@@ -364,18 +989,18 @@ public class Dictbean {
 			jdbcTemplate.update(sql,new Object[]{drugcode,drugname,drugform,match_scheme,1});
 		}
 		
-		sql="select count(1) from mc_dict_drug_sub where match_scheme=? and drugcode=? and drugspec=? ";
+		sql="select count(1) from mc_dict_drug_sub where match_scheme=? and drugcode=? and drugspec=?";
 		rscount=jdbcTemplate.queryForObject(sql, int.class,new Object[]{match_scheme,drugcode,drugspec});
 		if(rscount>0){
-			sql="update mc_dict_drug_sub set drugname=?,drugform=?,state=1 where drugcode=? "
+			sql="update mc_dict_drug_sub set drugname=?,drugform=?,costunit=?,state=? where drugcode=? "
 					+ " and match_scheme=? and drugspec=?";
-			jdbcTemplate.update(sql,new Object[]{drugname,drugform,drugcode,match_scheme,
+			jdbcTemplate.update(sql,new Object[]{drugname,drugform,costunit,1,drugcode,match_scheme,
 					drugspec});
 		}else{
 			sql="insert into mc_dict_drug_sub(drugcode,drugname,drugform,drugspec,"
-					+ "match_scheme,state) value(?,?,?,?,?,?)";
+					+ "match_scheme,state,costunit) value(?,?,?,?,?,?,?)";
 			jdbcTemplate.update(sql,new Object[]{drugcode,drugname,drugform,
-					drugspec,match_scheme,1});
+					drugspec,match_scheme,1,costunit});
 		}
 		
 		
@@ -392,6 +1017,7 @@ public class Dictbean {
 		String drugspec="";
 		String comp_name="";
 		String doseunit="";
+		String costunit="无";
 		
 		if(StringUtils.isNotBlank(req.getParameter("hiscode"))){
 			hiscode=req.getParameter("hiscode");
@@ -417,6 +1043,9 @@ public class Dictbean {
 		if(StringUtils.isNotBlank(req.getParameter("doseunit"))){
 			doseunit=req.getParameter("doseunit");
 		}
+		if(StringUtils.isNotBlank(req.getParameter("costunit"))){
+			costunit=req.getParameter("costunit");
+		}
 		
 		int match_scheme=0;
 		sql="select drugmatch_scheme from mc_hospital_match_relation where hiscode=?";
@@ -430,9 +1059,9 @@ public class Dictbean {
 		sql="update mc_dict_drug set  drugname=?,drugform=? where drugcode=? and match_scheme=?";
 		jdbcTemplate.update(sql,new Object[]{drugname,drugform,drugcode,match_scheme});
 		
-		sql="update mc_dict_drug_sub set drugname=?,drugform=? where drugcode=? "
+		sql="update mc_dict_drug_sub set drugname=?,drugform=?,costunit=? where drugcode=? "
 				+ " and match_scheme=? and drugspec=?";
-		jdbcTemplate.update(sql,new Object[]{drugname,drugform,
+		jdbcTemplate.update(sql,new Object[]{drugname,drugform,costunit,
 				drugcode,match_scheme,drugspec});
 		
 		return "ok";
@@ -448,6 +1077,7 @@ public class Dictbean {
 		String drugspec="";
 		String comp_name="";
 		String doseunit="";
+		String costunit="";
 		
 		if(StringUtils.isNotBlank(req.getParameter("hiscode"))){
 			hiscode=req.getParameter("hiscode");
@@ -473,7 +1103,9 @@ public class Dictbean {
 		if(StringUtils.isNotBlank(req.getParameter("doseunit"))){
 			doseunit=req.getParameter("doseunit");
 		}
-		
+		if(StringUtils.isNotBlank(req.getParameter("costunit"))){
+			costunit=req.getParameter("costunit");
+		}
 		int match_scheme=0;
 		sql="select drugmatch_scheme from mc_hospital_match_relation where hiscode=?";
 		match_scheme=jdbcTemplate.queryForObject(sql, int.class,new Object[]{hiscode});
@@ -485,8 +1117,8 @@ public class Dictbean {
 		jdbcTemplate.update(sql,new Object[]{drugcode,match_scheme});
 		
 		sql="update mc_dict_drug_sub set state=0 where drugcode=? "
-				+ " and match_scheme=? and drugspec=?";
-		jdbcTemplate.update(sql,new Object[]{drugcode,match_scheme,drugspec});
+				+ " and match_scheme=? and drugspec=? and costunit=?";
+		jdbcTemplate.update(sql,new Object[]{drugcode,match_scheme,drugspec,costunit});
 		
 		return "ok";
 	}

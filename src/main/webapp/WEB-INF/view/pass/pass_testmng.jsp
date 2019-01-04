@@ -53,6 +53,15 @@
 <!-- MY JS -->
 <script type="text/javascript" src="${pageContext.request.contextPath}/chjs/pass/pass_testmng.js"></script>
 
+<style type="text/css">
+#search_div{
+	/* background-image:url(http://img4.imgtn.bdimg.com/it/u=1293919120,3114443152&fm=27&gp=0.jpg); */
+	/* background-repeat: no-repeat;  */
+	background-position: center;
+
+}
+</style>
+
 </head>
 <body style="background-color: #ffffff;">
 <input id="addurl" type="hidden" value="${pageContext.request.contextPath}">
@@ -79,20 +88,20 @@
 				    		<div class="col-sm-3">
 			    				<label for="teamid_search" class="control-label  col-sm-4" style="padding-top:7px">团队名称</label>
 			    				<div class="col-sm-8">
-			    					<select id="teamid_search" name="teamid_search" class="js-data-example-ajax" style="width:100px"></select>
+			    					<select id="teamid_search" name="teamid_search" class="js-data-example-ajax" style="width:100%"></select>
 			    				</div>
 				    		</div>
 				    		<div class="col-sm-3">
 				    			<label for="projectid_search" class="control-label col-sm-4" style="padding-top:7px">项目名称</label>
 					           	<div class="col-sm-8">
-					           		<select id="projectid_search" name="projectid_search" class="js-data-example-ajax" style="width:100px"></select>	
+					           		<select id="projectid_search" name="projectid_search" class="js-data-example-ajax" style="width:100%"></select>	
 					           	</div>
 					            
 				    		</div>
 				    		<div class="col-sm-3">
 				    			<label for="anlitype" class="control-label col-sm-4" style="padding-top:7px">案例类型</label>
 				    			<div class="col-sm-8">
-				    				<select id="anlitype" name="anlitype" class="js-data-example-ajax" style="width:100px"></select>
+				    				<select id="anlitype" name="anlitype" class="js-data-example-ajax" style="width:100%"></select>
 				    			</div>
 				    		</div>
 				    	</div>
@@ -100,7 +109,7 @@
 				    		<div class="col-sm-3">
 				    			<label class="control-label col-sm-4" for="moduleid" style="padding-top:7px">模块名称</label>
 				                <div class="col-sm-8">
-				                    <select id="moduleid" name="moduleid" class="js-data-example-ajax" style="width:150px"></select>
+				                    <select id="moduleid1" name="moduleid" class="js-data-example-ajax" style="width:150px"></select>
 				                </div>
 				    		</div>
 				    		<div class="col-sm-3">
@@ -190,7 +199,6 @@
 			<div class="modal-body" style="height:400px;overflow:auto">
 				<form class="form-horizontal" role="form" id="dialog_form">
 					<input id="testid" type="hidden" name="testid" value="">
-					<input id="modulename" type="hidden" name="modulename" value="">
 					<div class="form-group">
 			            <label for="anlitypeaa" class="col-sm-2 control-label">案例类型</label>
 			            <div class="col-sm-4">
@@ -218,6 +226,7 @@
 			        <div class="form-group">
 			            <label for="moduleid" class="col-sm-2 control-label">模块名称</label>
 			            <div class="col-sm-4">
+			            	<input type="hidden" id="modulename"  name="modulename" value="">
 							<select id="moduleid"  name="moduleid" class="js-data-example-ajax" style="width:100%"></select>
 						</div>
 			        </div>
@@ -231,6 +240,11 @@
 						<label for="testno" class="col-sm-2 control-label">案例编号 :1-1(格式范例)</label>
 						<div class="col-sm-4">
 							<input type="text" class="form-control" id="testno"  name="testno">
+						</div>
+						<div class="col-sm-1" style="margin-top:5px">—
+						</div>
+						<div class="col-sm-3">
+							<input type="text" class="form-control" id="orderbyno"  name="orderbyno">
 						</div>
 					</div>
 					<div class="form-group">
@@ -337,10 +351,20 @@
 		            </div>
 		    	</div>
 		    	<div class="row">
-					 <label for="_daoshuju" class="col-sm-2 control-label" style="padding-top:7px">数据范围</label>
+					<label for="_daoshuju" class="col-sm-2 control-label" style="padding-top:7px">数据范围</label>
 		            <div class="col-sm-4">
 		            	<select id='_daoshuju' name="_daoshuju" class="js-data-example-ajax" style="width:100%"></select>
 		            </div>
+		            <label for="database" class="col-sm-2 control-label" style="padding-top:7px">选择源数据库</label>
+		            <div class="col-sm-4">
+		            	<select id="database" name="database" class="js-data-example-ajax" style="width:100%"></select>
+		            </div>
+				</div>
+				<div class="row">
+					<label class="control-label col-sm-2" for="mhiscode_user" style="padding-top:7px">HIS机构编号</label>
+	                <div class="col-sm-4">
+	                    <input id="mhiscode_user" type="text" class="form-control" >
+	                </div>
 				</div>
 				<hr>
 		    	<div class="row">
@@ -348,7 +372,7 @@
 						<button id="insert-data" type="button" class="btn btn-default" onclick="sqlserver_data()">导入数据</button>
 					</div>
 					<div class="col-sm-6" style="padding-top:7px">
-						请选择导入目的地
+						请先选好导入的目的地
 					</div>
 				</div>
 			</div>
@@ -358,6 +382,26 @@
 		</div>
 	</div>
 </div>
+
+
+<!-- 模态框（Modal） -->
+<div class="modal fade" id="_look_modal_dialog" tabindex="-1" data-backdrop="static" data-keyboard="false" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" height="600px">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h4 class="modal-title">查看</h4>
+			</div>
+			<div class="modal-body" style="height:400px;overflow:auto">
+				<div id="test_look"></div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+			</div>
+		</div><!-- /.modal-content -->
+	</div><!-- /.modal -->
+</div>
+
 </body>
 </html>
 

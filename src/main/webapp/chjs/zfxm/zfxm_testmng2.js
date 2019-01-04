@@ -453,7 +453,7 @@ function add_data(){
 
 function del_data(){
 	var IdSelections = $('#table_data').bootstrapTable('getSelections');
-	if(IdSelections.length != 1){
+	if(IdSelections.length < 1){
 		swal({
             title: "警告",
             text: "请至少选择一条数据进行操作."

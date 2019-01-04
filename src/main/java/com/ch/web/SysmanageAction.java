@@ -72,8 +72,8 @@ public class SysmanageAction {
 	
 	@RequestMapping(value="/usersdel", produces = "text/html;charset=UTF-8")
 	@ResponseBody
-	public String usersdel(HttpServletRequest req){
-		return sysmanagebean.usersdel(req);
+	public String usersdel(HttpServletRequest req,@RequestParam(value = "userids[]")  Integer[]  userids){
+		return sysmanagebean.usersdel(req,userids);
 	}
 	
 	@RequestMapping(value="/usersupdate", produces = "text/html;charset=UTF-8")

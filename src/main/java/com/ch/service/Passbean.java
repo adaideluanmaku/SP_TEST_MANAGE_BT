@@ -38,7 +38,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartRequest;
 
-import com.ch.dao.Sqlserverconn;
+import com.ch.dao.DataBaseType;
+import com.ch.dao.SpringJdbc_sqlserver_his;
+import com.ch.dao.SpringJdbc_sqlserver_pass;
 import com.ch.passjson.Detailresule;
 import com.ch.passjson.Moduleresule;
 import com.ch.passjson.Passs_json;
@@ -51,6 +53,7 @@ import com.ch.sys.Passservice;
 import com.ch.sys.Springbatch;
 import com.ch.sys.Updatejson;
 import com.ch.sysuntils.DataGrid;
+import com.ch.sysuntils.User;
 import com.mysql.fabric.xmlrpc.base.Data;
 
 import net.sf.json.JSONArray;
@@ -71,6 +74,11 @@ public class Passbean {
 	JsontoModules jsontoModules;
 	@Autowired
 	Passservice passservice;
+	@Autowired
+	User user;
+	JdbcTemplate jdbcTemplate_database=null;
+	@Autowired
+	DataBaseType dataBaseType;
 	
 	//Team查询
 	public DataGrid team_query(HttpServletRequest req){
@@ -229,8 +237,8 @@ public class Passbean {
 			remark=req.getParameter("remark");
 		} 
 		
-		sql="select count(*) from pass_team where teamname=?";
-		int sum=jdbcTemplate.queryForObject(sql,int.class,new Object[]{teamname});
+		sql="select count(*) from pass_team where teamname=? and teamid<>?";
+		int sum=jdbcTemplate.queryForObject(sql,int.class,new Object[]{teamname,teamid});
 		if(sum>0){
 			return "团队名称不能重复";
 		}
@@ -316,25 +324,13 @@ public class Passbean {
 		return dataGrid;
 	}
 	
-	public List teamgroup(HttpServletRequest req){
-		String sql=null;
-		sql="select teamid as id,teamname as text from pass_team";
-		List list=jdbcTemplate.queryForList(sql);
-//		Map map=new HashMap();
-//		map.put("id", 0);
-//		map.put("text","全选");
-//		list.add(map);
-//		//按字段重新排序
-//		Collections.sort(list, new Comparator<Map<String,Object>>() {
-//			//@Override
-//			public int compare(Map<String, Object> o1, Map<String, Object> o2) {
-//				//进行判断
-//				return String.valueOf(o1.get("id").toString()).compareTo(String.valueOf(o2.get("id").toString()));
-//			}
-//		});
-
-		return list;
-	}
+//	public List teamgroup(HttpServletRequest req){
+//		String sql=null;
+//		sql="select teamid as id,teamname as text from pass_team";
+//		List list=jdbcTemplate.queryForList(sql);
+//
+//		return list;
+//	}
 	
 	public String project_add(HttpServletRequest req){
 		int teamid=0;
@@ -418,7 +414,7 @@ public class Passbean {
 		int projectid=0;
 		String sql=null;
 		if(StringUtils.isBlank(req.getParameter("projectid"))){
-			return "未收到团队ID";
+			return "未收到项目ID";
 		}else{
 			projectid=Integer.parseInt(req.getParameter("projectid"));
 		}
@@ -436,8 +432,8 @@ public class Passbean {
 			remark=req.getParameter("remark");
 		}
 		
-		sql="select count(*) from pass_project where projectname=? and teamid=?";
-		int sum=jdbcTemplate.queryForObject(sql,int.class,new Object[]{projectname,teamid});
+		sql="select count(*) from pass_project where projectname=? and teamid=? and projectid<>? ";
+		int sum=jdbcTemplate.queryForObject(sql,int.class,new Object[]{projectname,teamid,projectid});
 		if(sum>0){
 			return "项目名称不能重复";
 		}
@@ -463,7 +459,7 @@ public class Passbean {
 		String testno="";
 		int projectid=0;
 		int anlitype=0;
-		int moduleid=0;
+		String moduleid=null;
 		String sql1=null;
 		String sql2=null;
 		
@@ -490,11 +486,12 @@ public class Passbean {
 			projectid=Integer.parseInt(req.getParameter("projectid"));
 		}
 		if(StringUtils.isNotBlank(req.getParameter("moduleid"))){
-			moduleid=Integer.parseInt(req.getParameter("moduleid"));
+			moduleid=req.getParameter("moduleid");
 		}
 		
-		sql1="select a.*,b.projectname,c.username from pass_testmng a inner join pass_project b on a.projectid=b.projectid "
+		sql1="select a.*,b.projectname,c.username,d.teamid,d.teamname from pass_testmng a inner join pass_project b on a.projectid=b.projectid "
 				+ "left join sys_users c on a.userid=c.userid "
+				+ "left join pass_team d on b.teamid=d.teamid "
 				+ "where 1=1 ";
 		sql2="select count(*) from pass_testmng a inner join pass_project b on a.projectid=b.projectid where 1=1 ";
 		
@@ -507,8 +504,8 @@ public class Passbean {
 			wherelist.add("%"+testno+"%");
 			wherelist.add(projectid);
 		}else{
-			sql1=sql1+" and a.testname like ? or a.testno like ? ";
-			sql2=sql2+" and a.testname like ? or a.testno like ? ";
+			sql1=sql1+" and (a.testname like ? or a.testno like ?) ";
+			sql2=sql2+" and (a.testname like ? or a.testno like ?) ";
 			wherelist.add("%"+testname+"%");
 			wherelist.add("%"+testno+"%");
 		}
@@ -517,16 +514,17 @@ public class Passbean {
 			sql2=sql2+" and a.anlitype=? ";
 			wherelist.add(anlitype);
 		}
-		if(moduleid>0){
-			sql1=sql1+" and a.moduleid=? ";
-			sql2=sql2+" and a.moduleid=? ";
+		if(StringUtils.isNotBlank(moduleid)){
+			sql1=sql1+" and a.moduleid = ? ";
+			sql2=sql2+" and a.moduleid = ? ";
 			wherelist.add(moduleid);
 		}
 		//拼接order
 		if(StringUtils.isBlank(sort)){
-			sql1=sql1+ "order by b.projectid,CAST(SUBSTRING_INDEX(a.testno, \"-\", 1) as SIGNED),a.testname, CAST(SUBSTRING_INDEX(a.testno, \"-\", -1) as SIGNED) asc ";
+//			sql1=sql1+ "order by b.projectid,CAST(SUBSTRING_INDEX(a.testno, \"-\", 1) as SIGNED), CAST(SUBSTRING_INDEX(a.testno, \"-\", -1) as SIGNED) asc ";
+			sql1=sql1+" order by b.projectid , a.testno , a.orderbyno asc ";
 		}else{
-			sql1=sql1+ "order by "+sort+" "+order;
+			sql1=sql1+ "order by b.projectid , a.moduleid , "+sort+" "+order;
 		}
 		
 		//拼接limit
@@ -562,52 +560,45 @@ public class Passbean {
 		return dataGrid;
 	}
 	
-	public List projectgroup(HttpServletRequest req){
-		String sql=null;
-		int teamid=0;
-		
-		if(StringUtils.isNotBlank(req.getParameter("teamid"))){
-			teamid=Integer.parseInt(req.getParameter("teamid"));
-		}
-		
-		List list=null;
-		if(teamid>0){
-			sql="select a.projectid as id , a.projectname as text from pass_project a, pass_team b where "
-					+ " a.teamid=b.teamid and b.teamid=? order by a.projectname asc";
-			list=jdbcTemplate.queryForList(sql,new Object[]{teamid});
-		}else{
-			sql="select projectid as id ,projectname as text from pass_project order by projectname asc";
-			list=jdbcTemplate.queryForList(sql);
-		}
-		
-//		Map map=new HashMap();
-//		map.put("projectid", 0);
-//		map.put("projectname","全选");
-//		list.add(map);
-//		//按字段重新排序
-//		Collections.sort(list, new Comparator<Map<String,Object>>() {
-//			//@Override
-//			public int compare(Map<String, Object> o1, Map<String, Object> o2) {
-//				//进行判断
-//				return String.valueOf(o1.get("projectid").toString()).compareTo(String.valueOf(o2.get("projectid").toString()));
-//			}
-//		});
-
-		return list;
-	}
-	
-	public List modulenamegroup(HttpServletRequest req){
-		String sql=null;
-		sql="select moduleid as id ,CONCAT(CASE  moduletype when 1 then '审查_' when 2 then '查询_' else '其他_' end, modulename ) as text from mc_modulename order by moduleid asc";
-		List list=jdbcTemplate.queryForList(sql);
-
-		return list;
-	}
+//	public List projectgroup(HttpServletRequest req){
+//		String sql=null;
+//		int teamid=0;
+//		
+//		if(StringUtils.isNotBlank(req.getParameter("teamid"))){
+//			teamid=Integer.parseInt(req.getParameter("teamid"));
+//		}
+//		
+//		List list=null;
+//		if(teamid>0){
+//			sql="select a.projectid as id , a.projectname as text from pass_project a, pass_team b where "
+//					+ " a.teamid=b.teamid and b.teamid=? order by a.projectname asc";
+//			list=jdbcTemplate.queryForList(sql,new Object[]{teamid});
+//		}else{
+//			sql="select projectid as id ,projectname as text from pass_project order by projectname asc";
+//			list=jdbcTemplate.queryForList(sql);
+//		}
+//		
+////		Map map=new HashMap();
+////		map.put("projectid", 0);
+////		map.put("projectname","全选");
+////		list.add(map);
+////		//按字段重新排序
+////		Collections.sort(list, new Comparator<Map<String,Object>>() {
+////			//@Override
+////			public int compare(Map<String, Object> o1, Map<String, Object> o2) {
+////				//进行判断
+////				return String.valueOf(o1.get("projectid").toString()).compareTo(String.valueOf(o2.get("projectid").toString()));
+////			}
+////		});
+//
+//		return list;
+//	}
 	
 	public String testmng_add(HttpServletRequest req){
 		int projectid=0;
 		String testname="";
 		String testno="";
+		int orderbyno=0;
 		String testtext="";
 		String testin="";
 		String testout="";
@@ -629,10 +620,14 @@ public class Passbean {
 		}else{
 			testname=req.getParameter("testname").trim();
 		}
-		if(StringUtils.isBlank(req.getParameter("testno"))){
+		if(StringUtils.isBlank(req.getParameter("testno")) || 
+				StringUtils.isBlank(req.getParameter("orderbyno"))){
 			return "案例编号不能为空";
 		}else{
 			testno=req.getParameter("testno").trim();
+		}
+		if(StringUtils.isNotBlank(req.getParameter("orderbyno"))){
+			orderbyno=Integer.parseInt(req.getParameter("orderbyno"));
 		}
 		if(StringUtils.isNotBlank(req.getParameter("testtext"))){
 			testtext=req.getParameter("testtext");
@@ -656,22 +651,30 @@ public class Passbean {
 		if(StringUtils.isNotBlank(req.getParameter("anlitype")) && !"null".equals(req.getParameter("anlitype"))){
 			anlitype=Integer.parseInt(req.getParameter("anlitype"));
 		} 
-		sql="select count(1) from pass_testmng where projectid=? and testno=?";
-		int sum=jdbcTemplate.queryForObject(sql,int.class,new Object[]{projectid,testno});
-		if(sum>0){
-			return "案例编号重复";
+//		sql="select count(1) from pass_testmng where projectid=? and testno=?";
+//		int sum=jdbcTemplate.queryForObject(sql,int.class,new Object[]{projectid,testno});
+//		if(sum>0){
+//			return "案例编号重复";
+//		}
+		
+		//号码重复往后+1
+		sql="select count(1) from pass_testmng where projectid=? and anlitype=? and moduleid=? and testno=? and orderbyno=? ";
+		int countnum=jdbcTemplate.queryForObject(sql, int.class,new Object[]{projectid,anlitype,moduleid,testno,orderbyno});
+		if(countnum>0){
+			sql="update pass_testmng set orderbyno=orderbyno+1 where projectid=? and anlitype=? and moduleid=? and testno=? and orderbyno>=?";
+			jdbcTemplate.update(sql,new Object[]{projectid,anlitype,moduleid,testno,orderbyno});
 		}
 		
 		Date time=new Date();
 		SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-		
-//		sql="select modulename from mc_modulename where moduleid=? and moduletype=1";
-//		String modulename =jdbcTemplate.queryForObject(sql, String.class,new Object[]{moduleid});
-		
-		sql="insert into pass_testmng(projectid,testname,testno,testtext,testin,testout,remark,inserttime,userid,status,moduleid,modulename,anlitype) "
-				+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?)";
+		User user=new User();
+		user=(User)req.getSession().getAttribute("user");
+		sql="insert into pass_testmng(projectid,testname,testno,testtext,testin,testout,remark,inserttime,userid,status,moduleid,modulename,anlitype,orderbyno) "
+				+ "values(?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
 		jdbcTemplate.update(sql,new Object[]{projectid,testname,testno,testtext,testin,testout,remark,sdf.format(time),
-				req.getSession().getAttribute("userid"),status,moduleid,modulename,anlitype});
+				user.getUserid(),status,moduleid,modulename,anlitype,orderbyno});
+		
+		
 		
 //		//广播通知
 //		socketBean.logreload(Integer.parseInt(req.getSession().getAttribute("userid").toString()));
@@ -718,14 +721,16 @@ public class Passbean {
 		int projectid=0;
 		String testname="";
 		String testno="";
+		int orderbyno=0;
 		String testtext="";
 		String testin="";
 		String testout="";
 		String remark="";
 		String sql=null;
 		int testid=0;
-		int moduleid=0;
+		String moduleid=null;
 		String modulename="";
+		 
 		int status=1;
 		
 		if(StringUtils.isBlank(req.getParameter("testid"))){
@@ -743,10 +748,14 @@ public class Passbean {
 		}else{
 			testname=req.getParameter("testname");
 		}
-		if(StringUtils.isBlank(req.getParameter("testno"))){
+		if(StringUtils.isBlank(req.getParameter("testno")) || 
+				StringUtils.isBlank(req.getParameter("orderbyno"))){
 			return "案例编号不能为空";
 		}else{
 			testno=req.getParameter("testno");
+		}
+		if(StringUtils.isNotBlank(req.getParameter("orderbyno"))){
+			orderbyno=Integer.parseInt(req.getParameter("orderbyno"));
 		}
 		if(StringUtils.isNotBlank(req.getParameter("testtext"))){
 			testtext=req.getParameter("testtext");
@@ -763,9 +772,8 @@ public class Passbean {
 		if(StringUtils.isNotBlank(req.getParameter("anlitype")) && !"null".equals(req.getParameter("anlitype"))){
 			anlitype=Integer.parseInt(req.getParameter("anlitype"));
 		} 
-		if(StringUtils.isNotBlank(req.getParameter("moduleid")) && !"null".equals(req.getParameter("moduleid"))){
-			moduleid=Integer.parseInt(req.getParameter("moduleid"));
-			modulename=req.getParameter("modulename");
+		if(StringUtils.isNotBlank(req.getParameter("moduleid"))){
+			moduleid=req.getParameter("moduleid");
 		} 
 		
 		if(StringUtils.isNotBlank(req.getParameter("status")) && !"null".equals(req.getParameter("status"))){
@@ -775,30 +783,42 @@ public class Passbean {
 		Date time=new Date();
 		SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		
-		sql="select count(*) from pass_testmng where projectid=? and testno=? and testid<>?";
-		int sum=jdbcTemplate.queryForObject(sql,int.class,new Object[]{projectid,testno,testid});
-		if(sum>0){
-			return "案例编号不能重复";
+//		sql="select count(*) from pass_testmng where projectid=? and testno=? and testid<>?";
+//		int sum=jdbcTemplate.queryForObject(sql,int.class,new Object[]{projectid,testno,testid});
+//		if(sum>0){
+//			return "案例编号不能重复";
+//		}
+		
+		//号码重复往后+1
+		sql="select count(1) from pass_testmng where projectid=? and anlitype=? and moduleid=? and testno=? and orderbyno=? ";
+		int countnum=jdbcTemplate.queryForObject(sql, int.class,new Object[]{projectid,anlitype,moduleid,testno,orderbyno});
+		if(countnum>0){
+			sql="update pass_testmng set orderbyno=orderbyno+1 where projectid=? and anlitype=? and moduleid=? and testno=? and orderbyno>=?";
+			jdbcTemplate.update(sql,new Object[]{projectid,anlitype,moduleid,testno,orderbyno});
 		}
 		
-		
+		sql="select text from (select CONCAT(moduletype,'-',moduleid) as id ,CONCAT(CASE  moduletype when 1 then '审查_' when 2 then '查询_' else '其他_' end, modulename ) as text from mc_modulename order by moduleid asc " + 
+				") x where x.id=?";
+		modulename=jdbcTemplate.queryForObject(sql, String.class,new Object[]{moduleid});
+				
 //		sql="select modulename from mc_modulename where moduleid=? ";
 //		modulename =jdbcTemplate.queryForObject(sql, String.class,new Object[]{moduleid});
-		
+		User user=new User();
+		user=(User)req.getSession().getAttribute("user");
 		sql="select testresult from pass_testmng where testid=? ";
 		String testresult =jdbcTemplate.queryForObject(sql, String.class,new Object[]{testid});
 		if("新".equals(testresult)){
 			sql="update pass_testmng set anlitype=?,projectid=?,testname=?,testno=?,testtext=?,testin=?,testout=?,remark=?,inserttime=?, "
-					+ "userid=?,status=?,moduleid=?,modulename=?,testresult='' where testid=?";
+					+ "userid=?,status=?,moduleid=?,modulename=?,testresult='',orderbyno=? where testid=?";
 			jdbcTemplate.update(sql,new Object[]{anlitype,projectid,testname,testno,testtext,testin,testout,remark,sdf.format(time),
-					req.getSession().getAttribute("userid"),status,
-					moduleid,modulename,testid});
+					user.getUserid(),status,
+					moduleid,modulename,orderbyno,testid});
 		}else{
 			sql="update pass_testmng set anlitype=?,projectid=?,testname=?,testno=?,testtext=?,testin=?,testout=?,remark=?,inserttime=?, "
-					+ "userid=?,status=?,moduleid=?,modulename=? where testid=?";
+					+ "userid=?,status=?,moduleid=?,modulename=?,orderbyno=? where testid=?";
 			jdbcTemplate.update(sql,new Object[]{anlitype,projectid,testname,testno,testtext,testin,testout,remark,sdf.format(time),
-					req.getSession().getAttribute("userid"),status,
-					moduleid,modulename,testid});
+					user.getUserid(),status,
+					moduleid,modulename,orderbyno,testid});
 		}
 		
 		//广播通知
@@ -1115,51 +1135,43 @@ public class Passbean {
 	}
 	
 	public String sqlserver_data(HttpServletRequest req) throws IOException, ClassNotFoundException, SQLException{
-		int dao=0;
+//		JdbcTemplate_sqlserver_passanli=springJdbc_sqlserver_passanli.getJdbcTemplate(Integer.parseInt(req.getParameter("databaseid")));
+		jdbcTemplate_database=dataBaseType.getJdbcTemplate(Integer.parseInt(req.getParameter("databaseid")));
+		if(jdbcTemplate_database==null){
+			System.out.println("数据库连接失败");
+			return "数据库连接失败" ;
+		}
+		String dao="100";
 		int projectid=0;
 		
 		if(StringUtils.isNotBlank(req.getParameter("dao"))){
-			dao=Integer.parseInt(req.getParameter("dao"));
+			dao=req.getParameter("dao");
 		}
 		if(StringUtils.isNotBlank(req.getParameter("projectid"))){
 			projectid=Integer.parseInt(req.getParameter("projectid"));
 		}
-		if(dao==100){
+		if(dao.equals("100")){
 			return "ok";
 		}
 		
-		InputStream in=Passbean.class.getClassLoader().getResourceAsStream("config.properties");
-		Properties prop=new Properties();		
-		prop.load(in);
-		
-		//sqlserver
-		Sqlserverconn sqlser=sqlser=new Sqlserverconn();
-		Connection sqlserconn=null;
-		try{
-			sqlserconn=sqlser.getConn();
-		}catch(Exception e){
-			System.out.println(e);
-			return "数据库连接失败";
-		}
-		Statement st;
-		ResultSet rs;
 		String sql;
-		
+		String mhiscode_user=req.getParameter("mhiscode_user");
 		//获取sqlserver数据
-		sql="select gatherbaseinfo,gatherresult from sa_gather_info";
-		st=sqlserconn.createStatement();
-		rs=st.executeQuery(sql);
-		List sqlserverlist=sqlser.getlist(rs);
+		sql="select json as gatherbaseinfo, warning as gatherresult from clinic_passresult_copy "
+				+ "UNION ALL "
+				+ "select json as gatherbaseinfo, warning as gatherresult from inhosp_passresult_copy ";
+//		sql="select gatherbaseinfo,gatherresult from sa_gather_info";
+		List sqlserverlist=jdbcTemplate_database.queryForList(sql);
 		System.out.println("获取SQLSERVER数据成功");
 		if(sqlserverlist.size()==0){
 			return "ok";
 		}
 		
 		//导入相同数据前，先清空表里面的数据
-		if(dao==111){
+		if(dao.equals("111")){
 			sql="delete a from pass_files a "
 					+ "inner join pass_script b on a.linkid=b.scriptid "  
-					+ "inner join pass_testmng c on b.testid=c.testid inner join project d on c.projectid=d.projectid " 
+					+ "inner join pass_testmng c on b.testid=c.testid inner join pass_project d on c.projectid=d.projectid " 
 					+ "where d.projectid=? and a.linktype=2 ";
 			jdbcTemplate.update(sql,new Object[]{projectid});
 			
@@ -1181,27 +1193,35 @@ public class Passbean {
 			sql="delete a from pass_files a "
 					+ "inner join pass_script b on a.linkid=b.scriptid "  
 					+ "inner join pass_testmng c on b.testid=c.testid inner join project d on c.projectid=d.projectid " 
-					+ "where d.projectid=? and a.linktype=2 and c.anlitype=?";
+					+ "where d.projectid=? and a.linktype=2 and c.moduleid=?";
 			jdbcTemplate.update(sql,new Object[]{projectid,dao});
 			
 			sql="delete b from pass_script b " 
 					+ "inner join pass_testmng c on b.testid=c.testid "  
 					+ "inner join pass_project d on c.projectid=d.projectid " 
-					+ "where d.projectid=? and c.anlitype=?";
+					+ "where d.projectid=? and c.moduleid=?";
 			jdbcTemplate.update(sql,new Object[]{projectid,dao});
 			
 			sql="delete b from pass_anli_err b " 
 					+ "inner join pass_testmng c on b.testid=c.testid "  
 					+ "inner join pass_project d on c.projectid=d.projectid " 
-					+ "where d.projectid=? and c.anlitype=?";
+					+ "where d.projectid=? and c.moduleid=?";
 			jdbcTemplate.update(sql,new Object[]{projectid,dao});
 			
-			sql="delete from pass_testmng where projectid=? and anlitype=? ";
+			sql="delete from pass_testmng where projectid=? and moduleid=? ";
 			jdbcTemplate.update(sql,new Object[]{projectid,dao});
 		}
-		
+		System.out.println("目标数据库清理结束");
 		//开始导入新的数据
 		List listchangejson = new ArrayList();
+		int a=0;
+		int b=0;
+		int c=0;
+		int d=0;
+		int e=0;
+		int f=0;
+		int g=0;
+		
 		for(int i=0;i<sqlserverlist.size();i++){
 			Map map = (Map)sqlserverlist.get(i);
 			JSONObject json =  JSONObject.fromObject(map.get("gatherbaseinfo").toString());
@@ -1216,51 +1236,66 @@ public class Passbean {
 			if(!"null".equals(Patient.toString())){
 				Map modulemap=jsontoModules.setPassAnli(Patient.getString("Name"));
 				map.put("testname", Patient.getString("Name"));
+				map.put("testno", modulemap.get("modulename"));
 				map.put("anlitype", modulemap.get("anlitype"));
 				map.put("moduleid", modulemap.get("moduleid"));
 				map.put("modulename",modulemap.get("modulename"));
 			}else if(!"null".equals(ReferenceParam.toString()) ){
 				if(Integer.parseInt(ReferenceParam.getString("ReferenceType"))==0){
-					Map modulemap=jsontoModules.setPassAnli("右键菜单");
-					map.put("testname", "右键菜单");
-					map.put("anlitype", modulemap.get("anlitype"));
+					a=a+1;
+					Map modulemap=jsontoModules.setPassAnli("模块列表");
+					map.put("testname", "模块列表"+a);
+					map.put("testno", "模块列表");
+					map.put("anlitype", 12);
 					map.put("moduleid", modulemap.get("moduleid"));
 					map.put("modulename",modulemap.get("modulename"));
 				}
 				if(Integer.parseInt(ReferenceParam.getString("ReferenceType"))==51){
+					b=b+1;
 					Map modulemap=jsontoModules.setPassAnli("浮动窗口");
-					map.put("testname", "浮动窗口");
-					map.put("anlitype", modulemap.get("anlitype"));
+					map.put("testname", "浮动窗口"+b);
+					map.put("testno", "浮动窗口");
+					map.put("anlitype", 12);
 					map.put("moduleid", modulemap.get("moduleid"));
 					map.put("modulename",modulemap.get("modulename"));
 				}
 				if(Integer.parseInt(ReferenceParam.getString("ReferenceType"))==11){
+					c=c+1;
 					Map modulemap=jsontoModules.setPassAnli("说明书");
-					map.put("testname", "说明书");
-					map.put("anlitype", modulemap.get("anlitype"));
+					map.put("testname", "说明书"+c);
+					map.put("testno", "说明书");
+					map.put("anlitype", 12);
 					map.put("moduleid", modulemap.get("moduleid"));
 					map.put("modulename",modulemap.get("modulename"));
 				}
 			}else if(!"null".equals(DetailParams.toString())){
+				d=d+1;
 				Map modulemap=jsontoModules.setPassAnli("详细信息");
-				map.put("testname", "详细信息");
-				map.put("anlitype", modulemap.get("anlitype"));
+				map.put("testname", "详细信息"+d);
+				map.put("testno", "详细信息");
+				map.put("anlitype", 5);
 				map.put("moduleid", modulemap.get("moduleid"));
 				map.put("modulename",modulemap.get("modulename"));
 			}else if(!"null".equals(ExecuteDrugUseReason.toString())){
+				e=e+1;
 				Map modulemap=jsontoModules.setPassAnli("用药理由");
-				map.put("testname", "用药理由");
-				map.put("anlitype", modulemap.get("anlitype"));
+				map.put("testname", "用药理由"+e);
+				map.put("testno", "用药理由");
+				map.put("anlitype", 6);
 				map.put("moduleid", modulemap.get("moduleid"));
 				map.put("modulename",modulemap.get("modulename"));
 			}else if(!"".equals(ModuleParam.toString())){
-				Map modulemap=jsontoModules.setPassAnli("模块列表");
-				map.put("testname", "模块列表");
-				map.put("anlitype", modulemap.get("anlitype"));
+				f=f+1;
+				Map modulemap=jsontoModules.setPassAnli("右键菜单");
+				map.put("testname", "右键菜单"+f);
+				map.put("testno", "右键菜单");
+				map.put("anlitype", 7);
 				map.put("moduleid", modulemap.get("moduleid"));
 				map.put("modulename",modulemap.get("modulename"));
 			}else{
-				map.put("testname", "未知案例");
+				g=g+1;
+				map.put("testname", "未知案例"+g);
+				map.put("testno", "未知案例");
 				map.put("anlitype", 999);
 				map.put("moduleid", 0);
 				map.put("modulename", "未定位");
@@ -1268,19 +1303,19 @@ public class Passbean {
 			
 			//替换JSON中的HISCODE编号
 			if(!"null".equals(ExecuteDrugUseReason.toString())){
-				String hiscode=prop.getProperty("hiscode");
+//				String hiscode=prop.getProperty("hiscode");
 				JSONArray ExecuteDrugUseReason1 = ExecuteDrugUseReason.getJSONArray("ExecuteDrugUseReason");
 				JSONObject EReason = ExecuteDrugUseReason1.getJSONObject(0);
 				ExecuteDrugUseReason1.remove(0);
-				EReason.put("Hiscode", hiscode);
+				EReason.put("Hiscode", mhiscode_user);
 				ExecuteDrugUseReason1.add(EReason);
 				ExecuteDrugUseReason.put("ExecuteDrugUseReason",ExecuteDrugUseReason1);
 				json.put("ExecuteDrugUseReason",ExecuteDrugUseReason);
 				map.put("gatherbaseinfo",json);
 			}else{
-				String hiscode=prop.getProperty("hiscode");
+//				String hiscode=prop.getProperty("hiscode");
 				JSONObject PassClient = json.getJSONObject("PassClient");
-				PassClient.put("HospID", hiscode);
+				PassClient.put("HospID", mhiscode_user);
 				json.put("PassClient", PassClient);
 				map.put("gatherbaseinfo",json);
 			}
@@ -1291,12 +1326,11 @@ public class Passbean {
 		sqlserverlist.clear();
 		System.out.println("SQLSERVER案例数据整理成功");
 		
-		sql="truncate sa_gather_log";
+		sql="truncate sa_gather_log_ch";
 		jdbcTemplate.update(sql);
 		System.out.println("临时表清理成功");
 		
-		sql="insert into sa_gather_log(gatherbaseinfo,gatherresult,testname,anlitype,moduleid,modulename) values(?,?,?,?,?,?)";
-//		String column="gatherbaseinfo,gatherresult,testname,anlitype,moduleid,modulename";
+		sql="insert into sa_gather_log_ch(gatherbaseinfo,gatherresult,testname,anlitype,moduleid,modulename,testno) values(?,?,?,?,?,?,?)";
 		try {
 			springbatch.sa_gather_log(listchangejson,sql);
 			listchangejson.clear();
@@ -1310,49 +1344,45 @@ public class Passbean {
 		List sqlserlistclear=null;
 		
 		//去重处理
-		sql="select anlitype,moduleid,modulename,testname,gatherbaseinfo,gatherresult from sa_gather_log";
-		sqlserlistclear = jdbcTemplate.queryForList(sql);
-//		if(dao==111){
-//			sql="select anlitype,moduleid,modulename,testname,gatherbaseinfo,gatherresult from sa_gather_log group by testname ";
-//			sqlserlistclear = jdbcTemplate.queryForList(sql);
-//		}else if(dao==112){
-////			sql="select anlitype,moduleid,modulename,anliname,gatherbaseinfo,gatherresult from sa_gather_log where anliname like ? group by anliname ";
-////			sqlserlistclear = jdbcTemplate.queryForList(sql,new Object[]{anliname});
-//		}else{
-//			sql="select id, anlitype,moduleid,modulename,testname,gatherbaseinfo,gatherresult "
-//					+ "from sa_gather_log where anlitype=? and projectid=? group by anlitype,moduleid,"
-//					+ "modulename,testname";
-//			sqlserlistclear = jdbcTemplate.queryForList(sql,new Object[]{dao,projectid});
-//		}
-//		System.out.println("数据去重成功");
+		sql="select anlitype,moduleid,modulename,testname,gatherbaseinfo,gatherresult,testno from sa_gather_log_ch order by moduleid,testno asc ";
+		listchangejson = jdbcTemplate.queryForList(sql);
+		System.out.println("数据整理和排序成功");
 		
-		int userid=Integer.parseInt(req.getSession().getAttribute("userid").toString());
-		for(int i=0;i<sqlserlistclear.size();i++){
-			Map map = (Map)sqlserlistclear.get(i);
+		user=(User)req.getSession().getAttribute("user");
+		int userid=Integer.parseInt(user.getUserid().toString());
+		String testnobak="";
+		int aaa=0;
+		for(int i=0;i<listchangejson.size();i++){
+			Map map = (Map)listchangejson.get(i);
+			if(!testnobak.equals(map.get("testno").toString())){
+				testnobak=map.get("testno").toString();
+				aaa=0;
+			}
+			aaa=aaa+1;
 			map.put("status", "1");
 			map.put("projectid", projectid);
-			map.put("testno",map.get("testname"));
+			map.put("testno",map.get("testno"));
 			map.put("testin",map.get("gatherbaseinfo"));
 			map.put("testout",map.get("gatherresult"));
 			map.put("userid",userid);
+			map.put("orderbyno",aaa);
 			
-			listchangejson.add(map);
+			sqlserverlist.add(map);
 		}
 		System.out.println("MYSQL案例数据整理成功");
 		
-		sql="insert into pass_testmng(status,projectid,testname,testno,testin,testout,moduleid,modulename,anlitype,userid) values(?,?,?,?,?,?,?,?,?,?)";
-//		column="status,projectid,testname,testno,testin,testout,moduleid,modulename,anlitype,userid";
+		sql="insert into pass_testmng(status,projectid,testname,testno,testin,testout,moduleid,modulename,anlitype,userid,orderbyno) values(?,?,?,?,?,?,?,?,?,?,?)";
 		try {
-			springbatch.pass_testmng(listchangejson,sql);
-		} catch (Exception e) {
+			springbatch.pass_testmng(sqlserverlist,sql);
+		} catch (Exception e1) {
 			// TODO Auto-generated catch block
-			System.out.println(e);
+			System.out.println(e1);
 		}
 		System.out.println("数据导入案例表成功");
 		
-		rs.close();
-		st.close();
-		sqlserconn.close();
+//		rs.close();
+//		st.close();
+//		sqlserconn.close();
 		
 		System.out.println("finish to do from sqlserver to mysql");
 		return "ok";

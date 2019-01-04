@@ -34,10 +34,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartRequest;
 
+import com.ch.dao.DataBaseType;
 import com.ch.sysuntils.AesUtils;
 import com.ch.sysuntils.DataGrid;
 import com.ch.sysuntils.DesUtils;
 import com.ch.sysuntils.Select2;
+import com.ch.sysuntils.User;
 import com.mysql.fabric.xmlrpc.base.Data;
 
 import net.sf.json.JSONObject;
@@ -154,6 +156,8 @@ public class Sysmanagebean {
 		
 		sql="update serverip set servername=?,serveraddress=? where serverid=?";
 		jdbcTemplate.update(sql,new Object[]{servername,serveraddress,serverid});
+		
+		DataBaseType.databaseidbak=0;
 		return "ok";
 	}
 	
@@ -168,17 +172,21 @@ public class Sysmanagebean {
 		String search=req.getParameter("search");
 		
 		String sql=null;
-		String loginname=null;
+		String loginname="";
 		HttpSession session=req.getSession();
 		
-		if(StringUtils.isBlank(req.getParameter("loginname"))){
-			loginname="";
-		}else{
+		if(StringUtils.isNotBlank(req.getParameter("loginname"))){
 			loginname=req.getParameter("loginname");
 		}
 		
 		//查询权限控制
-		if("admin".equals(session.getAttribute("loginname"))){
+		User user=new User();
+		user=(User)req.getSession().getAttribute("user");
+		
+		sql="select level from sys_users where userid=?";
+		int level=jdbcTemplate.queryForObject(sql,int.class,new Object[]{user.getUserid()});
+		
+		if(level==1){
 			sql="select count(*) from sys_users where loginname like ? ";
 			count=jdbcTemplate.queryForObject(sql,int.class,new Object[]{"%"+loginname+"%"});
 			
@@ -187,11 +195,11 @@ public class Sysmanagebean {
 			sql="select * from sys_users where loginname like ? limit "+offset+","+limit;
 			lstRes=jdbcTemplate.queryForList(sql,new Object[]{"%"+loginname+"%"});
 		}else{
-			sql="select count(*) from sys_users where loginname like ? ";
-			count=jdbcTemplate.queryForObject(sql,int.class,new Object[]{session.getAttribute("loginname")});
+			sql="select count(*) from sys_users where loginname like ? and userid=?";
+			count=jdbcTemplate.queryForObject(sql,int.class,new Object[]{"%"+loginname+"%",user.getUserid()});
 			
-			sql="select * from sys_users where loginname like ? limit "+offset+","+limit;
-			lstRes=jdbcTemplate.queryForList(sql,new Object[]{session.getAttribute("loginname")});
+			sql="select * from sys_users where loginname like ? and userid=? limit "+offset+","+limit;
+			lstRes=jdbcTemplate.queryForList(sql,new Object[]{"%"+loginname+"%",user.getUserid()});
 		}
 		
 		List lstRes1 = new ArrayList(); 
@@ -253,26 +261,25 @@ public class Sysmanagebean {
 		return "ok";
 	}
 	
-	public String usersdel(HttpServletRequest req){
+	public String usersdel(HttpServletRequest req,Integer[]  userids){
 		int userid=0;
 		String sql=null;
-		HttpSession session=req.getSession();
-		
-//		if(!"admin".equals(session.getAttribute("loginname"))){
-//			return "你没有权限删除数据";
-//		}
-		
-		if(req.getSession().getAttribute("userid").equals(req.getParameter("userid"))){
-			return "不允许删除自己的账户";
+		List<Integer> list= Arrays.asList(userids);
+		if(list.size()==0){
+			return "userids不能为空";
 		}
-		if(StringUtils.isBlank(req.getParameter("userid"))){
-			return "未找到用户ID";
-		}else{
-			userid=Integer.parseInt(req.getParameter("userid"));
-		}
+		User user= new User();
+		user=(User)req.getSession().getAttribute("user");
 		
 		sql="delete from sys_users where userid=? ";
-		jdbcTemplate.update(sql,new Object[]{userid});
+		for(int i=0;i<list.size();i++){
+			userid=list.get(i);
+			if(user.getUserid().equals(userid)){
+				continue;
+			}
+			jdbcTemplate.update(sql,new Object[]{userid});
+		}
+		
 		return "ok";
 	}
 	

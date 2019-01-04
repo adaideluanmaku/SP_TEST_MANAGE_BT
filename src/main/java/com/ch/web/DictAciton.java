@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Controller;
@@ -98,17 +99,82 @@ public class DictAciton {
 	}
 	
 	@ResponseBody
+	@RequestMapping("/hospital")
+	public DataGrid mc_hospital(HttpServletRequest req) {
+		dataGrid=dict.mc_hospital(req);
+		return dataGrid;
+	}
+	
+	@ResponseBody
+	@RequestMapping("/database")
+	public DataGrid database(HttpServletRequest req) {
+		dataGrid=dict.database(req);
+		return dataGrid;
+	}
+	
+	@ResponseBody
 	@RequestMapping("/select2")
 	public List select1(HttpServletRequest req) {
 		List list=new ArrayList();
-		
-		String sql = "select hiscode as id,hisname as text from mc_hospital_match_relation order by hiscode asc";
-		List hospital=jdbcTemplate.queryForList(sql);
-		
 		Map map= new HashMap();
-		map.put("hospital", hospital);
+		String searchstr="";
+		if(StringUtils.isNotBlank(req.getParameter("searchstr"))){
+			searchstr=req.getParameter("searchstr");
+		}
+		
+		String sql = "select mhiscode as id,hisname as text from mc_hospital_match_relation where hisname like ? order by hiscode asc";
+		List resultlist=jdbcTemplate.queryForList(sql,new Object[]{"%"+searchstr+"%"});
+		map.put("hospital", resultlist);
+		
+		sql = "select table_name as id, table_name  as text " + 
+				"from information_schema.tables " + 
+				"where table_schema='sp_test_manage_bt' " + 
+				"and (table_name like '%dict%' or table_name like '%mc_user%' or table_name like '%mc_hospital%') and table_name like ? ";
+		resultlist=jdbcTemplate.queryForList(sql,new Object[]{"%"+searchstr+"%"});
+		map.put("tables_name", resultlist);
+		
+		sql="select databaseid as id,name as text from sys_database a where name like ?";
+		resultlist=jdbcTemplate.queryForList(sql,new Object[]{"%"+searchstr+"%"});
+		map.put("database", resultlist);
+		
 		list.add(map);
 		return list;
+	}
+	
+	@ResponseBody
+	@RequestMapping(value="/insertdatabase",produces = "text/html;charset=UTF-8")
+	public String insertdatabase(HttpServletRequest req) {
+		return dict.insertdatabase(req);
+	}
+	
+	@ResponseBody
+	@RequestMapping(value="/updatedatabase",produces = "text/html;charset=UTF-8")
+	public String updatedatabase(HttpServletRequest req) {
+		return dict.updatedatabase(req);
+	}
+	
+	@ResponseBody
+	@RequestMapping(value="/deletedatabase",produces = "text/html;charset=UTF-8")
+	public String deletedatabase(HttpServletRequest req) {
+		return dict.deletedatabase(req);
+	}
+	
+	@ResponseBody
+	@RequestMapping(value="/inserthospital",produces = "text/html;charset=UTF-8")
+	public String inserthospital(HttpServletRequest req) {
+		return dict.inserthospital(req);
+	}
+	
+	@ResponseBody
+	@RequestMapping(value="/updatehospital",produces = "text/html;charset=UTF-8")
+	public String updatehospital(HttpServletRequest req) {
+		return dict.updatehospital(req);
+	}
+	
+	@ResponseBody
+	@RequestMapping(value="/deletehospital",produces = "text/html;charset=UTF-8")
+	public String deletehospital(HttpServletRequest req) {
+		return dict.deletehospital(req);
 	}
 	
 	@ResponseBody

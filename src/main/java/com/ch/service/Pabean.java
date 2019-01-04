@@ -36,6 +36,7 @@ import com.ch.pajson.Pa_json;
 import com.ch.sys.Paservice;
 import com.ch.sysuntils.DataGrid;
 import com.ch.sysuntils.Select2;
+import com.ch.sysuntils.User;
 import com.mysql.fabric.xmlrpc.base.Data;
 
 import net.sf.json.JSONArray;
@@ -50,13 +51,13 @@ public class Pabean {
 	public static Jedis jedis;
 	public static final String PA_SCREENRESULTS = "PA_SCREENRESULT_LIST";
 	
-	@Value("${redis.ip}")
+	@Value("${redis.host}")
 	private String redisip;
 	@Value("${redis.port}")
 	private int redisport;
-	@Value("${redis.auth}")
+	@Value("${redis.pass}")
 	private String redisauth;
-	@Value("${redis.select}")
+	@Value("${redis.default.db}")
 	private int redisselect;
 	
 	@Autowired
@@ -160,6 +161,8 @@ public class Pabean {
 			return "teamid不能为空";
 		}
 		
+		User user=new User();
+		user=(User)req.getSession().getAttribute("user");
 		for(int i=0;i<list.size();i++){
 			teamid=list.get(i);
 			
@@ -167,9 +170,10 @@ public class Pabean {
 					+ "inner join pa_script b on a.linkid=b.scriptid "  
 					+ "inner join pa_testmng c on b.testid=c.testid "
 					+ "inner join pa_project d on c.projectid=d.projectid "
-					+ "inner join pa_team e on d.teamid=e.teamid " 
-					+ "where e.teamid=? and a.linktype=2 ";
-			jdbcTemplate.update(sql,new Object[]{teamid});
+					+ "inner join pa_team e on d.teamid=e.teamid "
+					+ "inser join sys_users f on c.userid=f.userid " 
+					+ "where e.teamid=? and a.linktype=2 and f.userid=? ";
+			jdbcTemplate.update(sql,new Object[]{teamid,user.getUserid()});
 			
 			sql="delete b from pa_script b " 
 					+ "inner join pa_testmng c on b.testid=c.testid "  
@@ -213,8 +217,8 @@ public class Pabean {
 			remark=req.getParameter("remark");
 		} 
 		
-		sql="select count(*) from pa_team where teamname=?";
-		int sum=jdbcTemplate.queryForObject(sql,int.class,new Object[]{teamname});
+		sql="select count(*) from pa_team where teamname=? and teamid<>?";
+		int sum=jdbcTemplate.queryForObject(sql,int.class,new Object[]{teamname,teamid});
 		if(sum>0){
 			return "团队名称不能重复";
 		}
@@ -298,26 +302,6 @@ public class Pabean {
 		dataGrid.setRows(lstRes);
 		
 		return dataGrid;
-	}
-	
-	public List teamgroup(HttpServletRequest req){
-		String sql=null;
-		sql="select teamid as id,teamname as text from pa_team";
-		List list=jdbcTemplate.queryForList(sql);
-//		Map map=new HashMap();
-//		map.put("id", 0);
-//		map.put("text","全选");
-//		list.add(map);
-//		//按字段重新排序
-//		Collections.sort(list, new Comparator<Map<String,Object>>() {
-//			//@Override
-//			public int compare(Map<String, Object> o1, Map<String, Object> o2) {
-//				//进行判断
-//				return String.valueOf(o1.get("id").toString()).compareTo(String.valueOf(o2.get("id").toString()));
-//			}
-//		});
-
-		return list;
 	}
 	
 	public String project_add(HttpServletRequest req){
@@ -414,8 +398,8 @@ public class Pabean {
 			remark=req.getParameter("remark");
 		}
 		
-		sql="select count(*) from pa_project where projectname=? and teamid=?";
-		int sum=jdbcTemplate.queryForObject(sql,int.class,new Object[]{projectname,teamid});
+		sql="select count(*) from pa_project where projectname=? and teamid=? and projectid<>?";
+		int sum=jdbcTemplate.queryForObject(sql,int.class,new Object[]{projectname,teamid,projectid});
 		if(sum>0){
 			return "团队名称重复";
 		}
@@ -469,8 +453,9 @@ public class Pabean {
 			projectid=Integer.parseInt(req.getParameter("projectid"));
 		}
 		
-		sql1="select a.*,b.projectname,c.username from pa_testmng a inner join pa_project b on a.projectid=b.projectid "
+		sql1="select a.*,b.projectname,c.username,d.teamid,d.teamname  from pa_testmng a inner join pa_project b on a.projectid=b.projectid "
 				+ "left join sys_users c on a.userid=c.userid "
+				+ "left join pa_team d on b.teamid=d.teamid "
 				+ "where 1=1 ";
 		sql2="select count(*) from pa_testmng a inner join pa_project b on a.projectid=b.projectid where 1=1 ";
 		
@@ -486,8 +471,8 @@ public class Pabean {
 			wherelist.add("%"+testout+"%");
 			wherelist.add(projectid);
 		}else{
-			sql1=sql1+" and a.testname like ? or a.testno like ?  or a.testin like ? or a.testtext like ? or a.testout like ?";
-			sql2=sql2+" and a.testname like ? or a.testno like ?  or a.testin like ? or a.testtext like ? or a.testout like ?";
+			sql1=sql1+" and (a.testname like ? or a.testno like ?  or a.testin like ? or a.testtext like ? or a.testout like ?) ";
+			sql2=sql2+" and (a.testname like ? or a.testno like ?  or a.testin like ? or a.testtext like ? or a.testout like ?) ";
 			wherelist.add("%"+testname+"%");
 			wherelist.add("%"+testno+"%");
 			wherelist.add("%"+testin+"%");
@@ -497,7 +482,8 @@ public class Pabean {
 		
 		//拼接order
 		if(StringUtils.isBlank(sort)){
-			sql1=sql1+ "order by b.projectid,CAST(SUBSTRING_INDEX(a.testno, \"-\", 1) as SIGNED),a.testname, CAST(SUBSTRING_INDEX(a.testno, \"-\", -1) as SIGNED) asc ";
+//			sql1=sql1+ "order by b.projectid,CAST(SUBSTRING_INDEX(a.testno, \"-\", 1) as SIGNED), CAST(SUBSTRING_INDEX(a.testno, \"-\", -1) as SIGNED) asc ";
+			sql1=sql1+" order by b.projectid , a.testno , a.orderbyno asc ";
 		}else{
 			sql1=sql1+ "order by "+sort+" "+order;
 		}
@@ -535,31 +521,12 @@ public class Pabean {
 		return dataGrid;
 	}
 	
-	public List projectgroup(HttpServletRequest req){
-		String sql=null;
-		int teamid=0;
-		
-		if(StringUtils.isNotBlank(req.getParameter("teamid"))){
-			teamid=Integer.parseInt(req.getParameter("teamid"));
-		}
-		
-		List list=null;
-		if(teamid>0){
-			sql="select a.projectid as id , a.projectname as text from pa_project a, pa_team b where "
-					+ " a.teamid=b.teamid and b.teamid=? order by a.projectname asc";
-			list=jdbcTemplate.queryForList(sql,new Object[]{teamid});
-		}else{
-			sql="select projectid as id ,projectname as text from pa_project order by projectname asc";
-			list=jdbcTemplate.queryForList(sql);
-		}
-		
-		return list;
-	}
 	
 	public String testmng_add(HttpServletRequest req){
 		int projectid=0;
 		String testname="";
 		String testno="";
+		int orderbyno=0;
 		String testtext="";
 		String testin="";
 		String testout="";
@@ -577,10 +544,13 @@ public class Pabean {
 		}else{
 			testname=req.getParameter("testname").trim();
 		}
-		if(StringUtils.isBlank(req.getParameter("testno"))){
+		if(StringUtils.isBlank(req.getParameter("testno")) || StringUtils.isBlank(req.getParameter("orderbyno"))){
 			return "案例编号不能为空";
 		}else{
 			testno=req.getParameter("testno").trim();
+		}
+		if(StringUtils.isNotBlank(req.getParameter("orderbyno"))){
+			orderbyno=Integer.parseInt(req.getParameter("orderbyno"));
 		}
 		if(StringUtils.isNotBlank(req.getParameter("testtext"))){
 			testtext=req.getParameter("testtext");
@@ -597,21 +567,31 @@ public class Pabean {
 		if(StringUtils.isNotBlank(req.getParameter("selenium_share_status"))){
 			selenium_share_status=Integer.parseInt(req.getParameter("selenium_share_status"));
 		} 
-		sql="select count(1) from pa_testmng where projectid=? and testno=?";
-		int sum=jdbcTemplate.queryForObject(sql,int.class,new Object[]{projectid,testno});
-		if(sum>0){
-			return "案例编号重复";
+//		sql="select count(1) from pa_testmng where projectid=? and testno=?";
+//		int sum=jdbcTemplate.queryForObject(sql,int.class,new Object[]{projectid,testno});
+//		if(sum>0){
+//			return "案例编号重复";
+//		}
+		
+		//号码重复往后+1
+		sql="select count(1) from pa_testmng where projectid=? and testno=? and orderbyno=? ";
+		int countnum=jdbcTemplate.queryForObject(sql, int.class,new Object[]{projectid,testno,orderbyno});
+		if(countnum>0){
+			sql="update pa_testmng set orderbyno=orderbyno+1 where projectid=? and testno=? and orderbyno>=?";
+			jdbcTemplate.update(sql,new Object[]{projectid,testno,orderbyno});
 		}
 		
 		Date time=new Date();
 		SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		
-		System.out.println(sdf.format(time));
+//		System.out.println(sdf.format(time));
+		User user=new User();
+		user=(User)req.getSession().getAttribute("user");
 		
-		sql="insert into pa_testmng(projectid,testname,testno,testtext,testin,testout,remark,inserttime,userid,status,selenium_share_status) "
-				+ "values(?,?,?,?,?,?,?,?,?,?,?)";
+		sql="insert into pa_testmng(projectid,testname,testno,testtext,testin,testout,remark,inserttime,userid,status,selenium_share_status,orderbyno) "
+				+ "values(?,?,?,?,?,?,?,?,?,?,?,?)";
 		jdbcTemplate.update(sql,new Object[]{projectid,testname,testno,testtext,testin,testout,remark,sdf.format(time),
-				req.getSession().getAttribute("userid"),Integer.parseInt(req.getParameter("status")),selenium_share_status});
+				user.getUserid(),Integer.parseInt(req.getParameter("status")),selenium_share_status,orderbyno});
 		
 //		//广播通知
 //		socketBean.logreload(Integer.parseInt(req.getSession().getAttribute("userid").toString()));
@@ -654,6 +634,7 @@ public class Pabean {
 		int projectid=0;
 		String testname="";
 		String testno="";
+		int orderbyno=0;
 		String testtext="";
 		String testin="";
 		String testout="";
@@ -678,10 +659,14 @@ public class Pabean {
 		}else{
 			testname=req.getParameter("testname");
 		}
-		if(StringUtils.isBlank(req.getParameter("testno"))){
+		if(StringUtils.isBlank(req.getParameter("testno")) || 
+				StringUtils.isBlank(req.getParameter("orderbyno"))){
 			return "案例编号不能为空";
 		}else{
 			testno=req.getParameter("testno");
+		}
+		if(StringUtils.isNotBlank(req.getParameter("orderbyno"))){
+			orderbyno=Integer.parseInt(req.getParameter("orderbyno"));
 		}
 		if(StringUtils.isNotBlank(req.getParameter("testtext"))){
 			testtext=req.getParameter("testtext");
@@ -706,29 +691,42 @@ public class Pabean {
 			status=Integer.parseInt(req.getParameter("status"));
 		} 
 		
+		
+		
+//		sql="select count(*) from pa_testmng where projectid=? and testno=? and testid<>?";
+//		int sum=jdbcTemplate.queryForObject(sql,int.class,new Object[]{projectid,testno,testid});
+//		if(sum>0){
+//			return "案例编号不能重复";
+//		}
+		
+		//号码重复往后+1
+		sql="select count(1) from pa_testmng where projectid=? and testno=? and orderbyno=? ";
+		int countnum=jdbcTemplate.queryForObject(sql, int.class,new Object[]{projectid,testno,orderbyno});
+		if(countnum>0){
+			sql="update pa_testmng set orderbyno=orderbyno+1 where projectid=? and testno=? and orderbyno>=?";
+			jdbcTemplate.update(sql,new Object[]{projectid,testno,orderbyno});
+		}
+		
 		Date time=new Date();
 		SimpleDateFormat sdf=new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		
-		sql="select count(*) from pa_testmng where projectid<>? and testno=? and testid<>?";
-		int sum=jdbcTemplate.queryForObject(sql,int.class,new Object[]{projectid,testno,testid});
-		if(sum>0){
-			return "案例编号不能重复";
-		}
+		User user=new User();
+		user=(User)req.getSession().getAttribute("user");
 		
 		sql="select testresult from pa_testmng where testid=? ";
 		String testresult =jdbcTemplate.queryForObject(sql, String.class,new Object[]{testid});
 		if("新".equals(testresult)){
 			sql="update pa_testmng set projectid=?,testname=?,testno=?,testtext=?,testin=?,testout=?,remark=?,inserttime=?, "
-					+ "userid=?,status=?,selenium_share_status=?,testresult='' where testid=?";
+					+ "userid=?,status=?,selenium_share_status=?,testresult='',orderbyno=? where testid=?";
 			jdbcTemplate.update(sql,new Object[]{projectid,testname,testno,testtext,testin,testout,remark,sdf.format(time),
-					req.getSession().getAttribute("userid"),status,
-					selenium_share_status,testid});
+					user.getUserid(),status,
+					selenium_share_status,orderbyno,testid});
 		}else{
 			sql="update pa_testmng set projectid=?,testname=?,testno=?,testtext=?,testin=?,testout=?,remark=?,inserttime=?, "
-					+ "userid=?,status=?,selenium_share_status=? where testid=?";
+					+ "userid=?,status=?,selenium_share_status=?,orderbyno=? where testid=?";
 			jdbcTemplate.update(sql,new Object[]{projectid,testname,testno,testtext,testin,testout,remark,sdf.format(time),
-					req.getSession().getAttribute("userid"),status,
-					selenium_share_status,testid});
+					user.getUserid(),status,
+					selenium_share_status,orderbyno,testid});
 		}
 		
 		//广播通知

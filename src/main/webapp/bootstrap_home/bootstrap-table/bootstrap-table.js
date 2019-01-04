@@ -1497,9 +1497,19 @@
             $number = this.$pagination.find('.page-number');
 
             if (this.options.smartDisplay) {
+            	
+            	//CH CODE chenhui
                 if (this.totalPages <= 1) {
                     this.$pagination.find('div.pagination').hide();
+                    this.$pagination.find('div.pagination-detail').attr('style','max-width:100%')//CH CODE
+                }else{
+                	this.$pagination.find('div.pagination-detail').attr('style','max-width:70%')//CH CODE
                 }
+                	
+//            	if (this.totalPages <= 1) {
+//                    this.$pagination.find('div.pagination').hide();
+//                    this.$pagination.find('div.pagination-detail').attr('style','max-width:100%')//CH CODE
+//                }
                 if (pageList.length < 2 || this.options.totalRows <= pageList[0]) {
                     this.$pagination.find('span.page-list').hide();
                 }
@@ -2378,6 +2388,21 @@
             (useCurrentPage ? this.options.data.slice(this.pageFrom - 1, this.pageTo) : this.options.data);
     };
 
+  //CH CODE CHENHUI data have ch_index
+    BootstrapTable.prototype.getDataIndex_CH = function () {
+    	 var that = this;
+    	var datalist=new Array();
+         var datas=this.options.data;
+         for(var i=0;i<datas.length;i++){
+        	 var data=datas[i];
+        	 data['index_ch']=i;
+        	 datalist.push(data);
+        	 
+         }
+        
+        return datalist;
+    };
+    
     BootstrapTable.prototype.load = function (data) {
         var fixedScroll = false;
 
@@ -2704,15 +2729,33 @@
   //CH CODE CHENHUI selected ids
     BootstrapTable.prototype.getSelectionIds_CH = function () {
         var that = this;
-        var objs=that.$body[0].childNodes;
-        var ids = new Array();
-        for(var i=0;i<objs.length;i++){
-        	if(objs[i].className=='selected'){
-        		ids.push(i);
-        	}
-        }
+        
         
         return ids;
+    };
+  //CH CODE CHENHUI select data have ch_index
+    BootstrapTable.prototype.getSelectionsIndex_CH = function () {
+    	 var that = this;
+    	var datalist=new Array();
+         var datas=$.grep(this.options.data, function (row) {
+             // fix #2424: from html with checkbox
+             return row[that.header.stateField] === true;
+         });
+         var objs=that.$body[0].childNodes;
+         var ids = new Array();
+         for(var i=0;i<objs.length;i++){
+         	if(objs[i].className=='selected'){
+         		ids.push(i);
+         	}
+         }
+         for(var i=0;i<datas.length;i++){
+        	 var data=datas[i];
+        	 data['index_ch']=ids[i];
+        	 datalist.push(data);
+        	 
+         }
+        
+        return datalist;
     };
     
     BootstrapTable.prototype.getAllSelections = function () {
@@ -3058,7 +3101,7 @@
 
     var allowedMethods = [
         'getOptions',
-        'getSelections', 'getAllSelections', 'getData',
+        'getSelections', 'getAllSelections', 'getData','getDataIndex_CH',
         'load', 'append', 'prepend', 'remove', 'removeAll',
         'insertRow', 'updateRow', 'updateCell', 'updateByUniqueId', 'removeByUniqueId',
         'getRowByUniqueId', 'showRow', 'hideRow', 'getHiddenRows',
@@ -3083,7 +3126,7 @@
         'resetSearch',
         'expandRow', 'collapseRow', 'expandAllRows', 'collapseAllRows',
         'updateFormatText',
-        'getSelectionId_CH','getSelectionIds_CH','removeSelectionId_CH',
+        'getSelectionId_CH','getSelectionIds_CH','getSelectionsIndex_CH','removeSelectionId_CH',
     ];
 
     $.fn.bootstrapTable = function (option) {

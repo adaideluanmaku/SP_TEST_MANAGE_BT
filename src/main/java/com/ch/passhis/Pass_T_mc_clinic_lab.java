@@ -15,12 +15,18 @@ import java.util.Map;
 import java.util.Random;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import com.ch.dao.DataBaseType;
+import com.ch.dao.SpringJdbc_oracle_his;
+import com.ch.dao.SpringJdbc_sqlserver_his;
 import com.ch.pahis.Sys_pa;
+import com.ch.pahis.T_mc_clinic_allergen;
 import com.ch.sysuntils.Strisnull;
 
 import net.sf.json.JSONArray;
@@ -28,17 +34,25 @@ import net.sf.json.JSONObject;
 
 @Service
 public class Pass_T_mc_clinic_lab {
+	private static Logger log = Logger.getLogger(Pass_T_mc_clinic_lab.class);
+	JdbcTemplate jdbcTemplate_dataBase=null;
 	@Autowired
-	JdbcTemplate jdbcTemplate_oracle;
+	DataBaseType dataBaseType;
 	
 	@Autowired
 	Sys_pa sys_pa;
 	
 	@Autowired
 	Strisnull strisnull;
-	
+	@Value("${data.insertdatacount}")
+    private String insertdatacount;
 	public void clinic_lab(int trunca, int count, int sum_date,List anlilist,String hiscode,String ienddate,
-			String startdate){
+			String startdate, int database1){
+		jdbcTemplate_dataBase=dataBaseType.getJdbcTemplate(database1);
+		if(jdbcTemplate_dataBase==null){
+			log.info("数据库连接失败");
+			return;
+		}
 		try {
 			String sql=null;
 			List listbatch=new ArrayList();
@@ -52,6 +66,12 @@ public class Pass_T_mc_clinic_lab {
 			String ienddate1=ienddate;
 			String startdate1=startdate;
 			Calendar cal=null;
+			JSONObject json=null;
+			JSONObject PassClient=null;
+			JSONObject Patient=null;
+			JSONObject InputJsonInfoList=null;
+			JSONArray InputJsonInfos=null;
+			JSONObject InputJsonInfo=null;
 			for(int i=0;i<count;i++){
 				//数据分割，增加时间
 				if(i%(count/sum_date)==0 && i>0){
@@ -60,19 +80,15 @@ public class Pass_T_mc_clinic_lab {
 				}
 				for(int j=0;j<anlilist.size();j++){
 					
-					JSONObject json=JSONObject.fromObject(anlilist.get(j));
-					JSONObject PassClient=json.getJSONObject("PassClient");
-					JSONObject Patient=json.getJSONObject("Patient");
-					JSONObject InputJsonInfoList=json.getJSONObject("InputJsonInfoList");
-					JSONArray InputJsonInfos=InputJsonInfoList.getJSONArray("InputJsonInfos");
-					JSONObject InputJsonInfo=null;
+					json=JSONObject.fromObject(anlilist.get(j));
+					PassClient=json.getJSONObject("PassClient");
+					Patient=json.getJSONObject("Patient");
+					InputJsonInfoList=json.getJSONObject("InputJsonInfoList");
+					InputJsonInfos=InputJsonInfoList.getJSONArray("InputJsonInfos");
 					for(int fos=0;fos<InputJsonInfos.size();fos++){
 						//只取labinfo节点
 						if("labinfo".equals(InputJsonInfos.getJSONObject(fos).get("type"))){
 							a=a+1;
-							if(a%2000==0){
-								System.out.println("t_mc_clinic_lab --"+a);
-							}
 							InputJsonInfo=InputJsonInfos.getJSONObject(fos);
 							
 							Patient.put("PatCode", hiscode+ienddate1+i+"_"+j+"_mz");
@@ -91,8 +107,9 @@ public class Pass_T_mc_clinic_lab {
 							
 							listbatch.add(map);
 							
-							if(a%500==0){
+							if(a%Integer.parseInt(insertdatacount)==0){
 								batchInsertRows(sql,listbatch);
+								log.info("======>t_mc_clinic_lab:"+a);
 								listbatch.clear();
 							} 
 							
@@ -106,10 +123,10 @@ public class Pass_T_mc_clinic_lab {
 				batchInsertRows(sql,listbatch);
 				listbatch.clear();
 			}
-			System.out.println("t_mc_clinic_lab总数："+a+"-->有效数据："+a);
+			log.info("======>t_mc_clinic_lab总数："+a+"-->有效数据："+a);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			System.out.println("t_mc_clinic_lab制造数据异常");
+			log.debug("调试==>t_mc_clinic_lab制造数据异常："+e);
 		}
 	}
 	
@@ -147,8 +164,8 @@ public class Pass_T_mc_clinic_lab {
 					pst.setString(20,"");//labname
 					pst.setString(21,caseid);//caseid
 				}catch (Exception e){
-					System.out.println("出现异常的数据:"+map);
-					System.out.println(e);
+					log.debug("调试==>t_mc_clinic_lab插表异常："+map);
+					log.debug("调试==>"+e);
 				}
 			}
 			@Override
@@ -157,6 +174,6 @@ public class Pass_T_mc_clinic_lab {
 				return listbatch.size();
 			}
 		};
-		jdbcTemplate_oracle.batchUpdate(sql, setter);
+		jdbcTemplate_dataBase.batchUpdate(sql, setter);
 	}
 }

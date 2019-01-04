@@ -28,18 +28,17 @@ public class LoginAction {
 	JdbcTemplate jdbcTemplate;
 	@Autowired
 	Loginbean loginbean;
-	
 	private static Logger log = Logger.getLogger(LoginAction.class);
 	private ModelAndView mverr;
 	
 	@RequestMapping("/login")
-	public ModelAndView Denglu(User user,HttpServletRequest req,HttpServletResponse res){
-		System.out.println("旧的sessionid："+req.getSession().getId());
+	public ModelAndView Denglu(User user1,HttpServletRequest req,HttpServletResponse res){
+		log.debug("调试==>旧的sessionid："+req.getSession().getId());
 		//销毁旧session
 		req.getSession().invalidate();
 		
 		HttpSession session=req.getSession();
-		System.out.println("新的sessionid："+req.getSession().getId());
+		log.debug("调试==>新的sessionid："+req.getSession().getId());
 		String sessionid=session.getId();
 		
 		//防止页面退出后，通过浏览器后退到登录状态
@@ -48,23 +47,40 @@ public class LoginAction {
 		res.setHeader("Pragma","no-cache");//HTTP 1.0 向后兼容
 		res.setDateHeader("Expires", 0);//使缓存过期
 		
-		if(StringUtils.isBlank(user.getLoginname())){
+		//获取IP
+		String ip=null;
+		if(StringUtils.isNotBlank(req.getHeader("X-Real-IP"))){
+			System.out.println("获取真实IP："+req.getHeader("X-Real-IP"));
+			ip=req.getHeader("X-Real-IP");
+		}else{
+			System.out.println("获取真实IP："+req.getRemoteAddr());
+			ip=req.getRemoteAddr();
+		}
+		
+		if(StringUtils.isBlank(user1.getLoginname())){
 			mverr= new ModelAndView("forward:/login.jsp");
 			mverr.addObject("loginerr", "请输入用户名登录");
+			log.debug("调试==>请输入用户名登录");
 		}else{
-			List userlist=loginbean.Denglu(user.getLoginname(),user.getPassword());
+			List userlist=loginbean.Denglu(user1.getLoginname(),user1.getPassword());
 			if(userlist.size()==1){
 				Map usermap=(Map)userlist.get(0);
-				session.setAttribute("loginname", usermap.get("loginname"));
-				session.setAttribute("userid", usermap.get("userid"));
-				session.setAttribute("sessionid", sessionid);
-				System.out.println("登录："+usermap.get("loginname"));
-				
+				User user=new User();
+				user.setIp(ip);
+				user.setLoginname(usermap.get("loginname").toString());
+				user.setUserid(Integer.parseInt(usermap.get("userid").toString())+0L);
+				user.setPassword(usermap.get("password").toString());
+				user.setSessionid(sessionid);
+				user.setUsername(usermap.get("username").toString());
+				user.setLevel(Integer.parseInt(usermap.get("level").toString()));
+				session.setAttribute("user", user);
 				mverr= new ModelAndView("homepage");
 				mverr.addObject("loginname", usermap.get("loginname"));
+				log.info("======>用户登录:"+usermap.get("loginname"));
 			}else{
 				mverr= new ModelAndView("forward:/login.jsp");
 				mverr.addObject("loginerr", "不存在的用户名");
+				log.debug("调试==>不存在的用户名");
 			}
 		}
 		
@@ -84,7 +100,7 @@ public class LoginAction {
 		ModelAndView mv=new ModelAndView("forward:/login.jsp");
 		HttpSession session=req.getSession(false);
 		//false代表：不创建session对象，只是从request中获取。  
-//		session.removeAttribute("loginname");
+		session.removeAttribute("user");
 		session.invalidate();//清空session所有属性，类似销毁
 		return mv;
 	}

@@ -36,10 +36,12 @@ public class Springbatch {
 			
 			if((i+1)%300==0){
 				batchInsertRows(sql,listbatch);
+				System.out.println("======> :"+(i+1));
 				listbatch.clear();
 			}else{
 				if(i+1==list.size()){
 					batchInsertRows(sql,listbatch);
+					System.out.println("======> :"+(i+1));
 					listbatch.clear();
 				}
 			}
@@ -56,8 +58,9 @@ public class Springbatch {
 					pst.setString(2, map.get("gatherresult").toString());
 					pst.setString(3, map.get("testname").toString());
 					pst.setInt(4, Integer.parseInt(map.get("anlitype").toString()));
-					pst.setInt(5, Integer.parseInt(map.get("moduleid").toString()));
+					pst.setString(5, map.get("moduleid").toString());
 					pst.setString(6, map.get("modulename").toString());
+					pst.setString(7, map.get("testno").toString());
 				}catch(Exception e){
 					System.out.println("批处理出现异常的数据:"+map);
 					System.out.println(e);
@@ -84,11 +87,14 @@ public class Springbatch {
 			listbatch.add(map);
 			
 			if((i+1)%300==0){
+				System.out.println("======> :"+(i+1));
 				batchInsertRows1(sql,listbatch);
+				
 				listbatch.clear();
 			}else{
 				if(i+1==list.size()){
 					batchInsertRows1(sql,listbatch);
+					System.out.println("======> :"+(i+1));
 					listbatch.clear();
 				}
 			}
@@ -107,10 +113,11 @@ public class Springbatch {
 					pst.setString(4, map.get("testno").toString());
 					pst.setString(5, map.get("testin").toString());
 					pst.setString(6, map.get("testout").toString());
-					pst.setInt(7, Integer.parseInt(map.get("moduleid").toString()));
+					pst.setString(7, map.get("moduleid").toString());
 					pst.setString(8, map.get("modulename").toString());
 					pst.setInt(9, Integer.parseInt(map.get("anlitype").toString()));
 					pst.setInt(10, Integer.parseInt(map.get("userid").toString()));
+					pst.setInt(11, Integer.parseInt(map.get("orderbyno").toString()));
 				}catch(Exception e){
 					System.out.println("批处理出现异常的数据:"+map);
 					System.out.println(e);
@@ -122,23 +129,8 @@ public class Springbatch {
 				return listbatch.size();
 			}
 		};
+		System.out.println("本批次更新开始");
 		jdbcTemplate.batchUpdate(sql, setter);
+		System.out.println("本批次更新结束");
 	}
-	
-	public String isnull(Object obj){
-		if(obj==null || "".equals(obj)){
-			return "";
-		}else{
-			return obj.toString();
-		}
-	}
-	
-	public String isnullorstr(Object obj,String str){
-		if(obj==null || "".equals(obj)){
-			return str;
-		}else{
-			return obj.toString();
-		}
-	}
-		
 }

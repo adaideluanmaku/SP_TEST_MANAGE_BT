@@ -36,8 +36,75 @@
 <script type="text/javascript" src="${pageContext.request.contextPath}/chjs/works/works_graph.js"></script>
 
 </head>
-<body>
-123
+<body style="background-color: #f3f3f4">
+<div id="wrapper" >
+	<div  class="gray-bg">
+		<div class="row wrapper border-bottom white-bg page-heading">
+			<div class="col-lg-10">
+				<ol class="breadcrumb">
+					<li><a>home</a></li>
+					<li><a>PA测试管理</a></li>
+					<li class="active"><strong>PA统计</strong></li>
+				</ol>
+			</div>
+			<div class="col-lg-2"></div>
+		</div>
+		<div class="wrapper wrapper-content animated fadeInRight">
+			<div class="row">
+				<div class="col-sm-6">
+					<div class="ibox float-e-margins">
+						<div class="ibox-title">
+							<h5>
+								柱状图  
+							</h5>
+							<div class="ibox-tools">
+								<a class="collapse-link"> <i class="fa fa-chevron-up"></i>
+								</a> <a class="dropdown-toggle" data-toggle="dropdown"
+									href="graph_flot.html#"> <i class="fa fa-wrench"></i>
+								</a>
+								<ul class="dropdown-menu dropdown-user">
+									<li><a href="graph_flot.html#">Config option 1</a></li>
+									<li><a href="graph_flot.html#">Config option 2</a></li>
+								</ul>
+								<a class="close-link"> <i class="fa fa-times"></i>
+								</a>
+							</div>
+						</div>
+						<div class="ibox-content">
+							<div class="flot-chart">
+								<div class="flot-chart-content" id="flot-bar-chart"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-sm-6">
+					<div class="ibox float-e-margins">
+						<div class="ibox-title">
+							<h5>线型图</h5>
+							<div class="ibox-tools">
+								<a class="collapse-link"> <i class="fa fa-chevron-up"></i>
+								</a> <a class="dropdown-toggle" data-toggle="dropdown"
+									href="graph_flot.html#"> <i class="fa fa-wrench"></i>
+								</a>
+								<ul class="dropdown-menu dropdown-user">
+									<li><a href="graph_flot.html#">Config option 1</a></li>
+									<li><a href="graph_flot.html#">Config option 2</a></li>
+								</ul>
+								<a class="close-link"> <i class="fa fa-times"></i>
+								</a>
+							</div>
+						</div>
+						<div class="ibox-content">
+							<div class="flot-chart">
+								<div class="flot-chart-content" id="flot-line-chart"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
 </body>
 </html>
 

@@ -79,15 +79,7 @@ var TableInit =function () {
 			
 			// 1.点击每行进行函数的触发
 			onClickRow : function(row, tr,flied){
-				if($(tr).find('input').prop("checked")){//check类型的input
-					$(tr).attr('class','');//改变样式
-					$(tr).find('input').prop("checked",false);//改变勾选状态
-					row.ID=false;//改变勾选值
-				}else{
-					$(tr).attr('class','selected');
-					$(tr).find('input').prop("checked",true);
-					row.ID=true;
-				}
+				$('#table_data').bootstrapTable('uncheckAll');//取消选中所有行
 			},
 
 			// 2. 点击前面的复选框进行对应的操作
@@ -160,7 +152,7 @@ function add_data(){
 
 function del_data(){
 	var IdSelections = $('#table_data').bootstrapTable('getSelections');
-	if(IdSelections.length != 1){
+	if(IdSelections.length < 1){
 		swal({
             title: "警告",
             text: "请至少选择一条数据进行操作."

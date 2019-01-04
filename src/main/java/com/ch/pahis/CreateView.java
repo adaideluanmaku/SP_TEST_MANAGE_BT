@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class CreateView {
-	@Autowired
+//	@Autowired
 	JdbcTemplate jdbcTemplate_oracle;
 	
 	public void createV(String hiscode){

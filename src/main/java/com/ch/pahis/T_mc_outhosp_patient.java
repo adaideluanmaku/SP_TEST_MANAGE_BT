@@ -15,23 +15,38 @@ import java.util.Map;
 import java.util.Random;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
+
+import com.ch.dao.DataBaseType;
+import com.ch.dao.SpringJdbc_oracle_his;
+import com.ch.dao.SpringJdbc_sqlserver_his;
 
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 @Service
 public class T_mc_outhosp_patient {
+	private static Logger log = Logger.getLogger(T_mc_outhosp_patient.class);
+	JdbcTemplate jdbcTemplate_dataBase=null;
 	@Autowired
-	JdbcTemplate jdbcTemplate_oracle;
+	DataBaseType dataBaseType;
 	
 	@Autowired
 	Sys_pa sys_pa;
+	@Value("${data.insertdatacount}")
+    private String insertdatacount;
 	public void outhosp_patient(int trunca, int count, int sum_date,List anlilist,String hiscode,String ienddate,
-			String enddate,String startdate){
+			String enddate,String startdate,int database1){
+		jdbcTemplate_dataBase=dataBaseType.getJdbcTemplate(database1);
+		if(jdbcTemplate_dataBase==null){
+			log.info("数据库连接失败");
+			return;
+		}
 		try {
 			String sql=null;
 			List listbatch=new ArrayList();
@@ -47,26 +62,28 @@ public class T_mc_outhosp_patient {
 			String ienddate1=ienddate;
 			String enddate1=enddate;
 			String startdate1=startdate;
+			JSONObject json=null;
+			JSONObject PassClient=null;
+			JSONObject Patient=null;
+			String caseid=null;
 			for(int i=0;i<count;i++){
 				//数据分割，增加时间
 				if(i%(count/sum_date)==0 && i>0){
 					ienddate1=sys_pa.date1(ienddate1, "yyyyMMdd");
-				    enddate1=sys_pa.date1(enddate1, "yyyy-MM-dd");
-				    startdate1=sys_pa.date2(startdate, "yyyy-MM-dd HH:mm:ss",i,sum_date);
+				    enddate1=sys_pa.date1(enddate1, "yyyy-MM-dd HH:mm:ss");
+//				    startdate1=sys_pa.date2(startdate1, "yyyy-MM-dd HH:mm:ss",i,sum_date);
+				    startdate1=sys_pa.date1(startdate1, "yyyy-MM-dd HH:mm:ss");
 				}
 				for(int j=0;j<anlilist.size();j++){
 					a=a+1;
-					if(a%2000==0){
-						System.out.println("t_mc_outhosp_patient --"+a);
-					}
-					JSONObject json=JSONObject.fromObject(anlilist.get(j));
-					JSONObject PassClient=json.getJSONObject("PassClient");
-					JSONObject Patient=json.getJSONObject("Patient");
+					json=JSONObject.fromObject(anlilist.get(j));
+					PassClient=json.getJSONObject("PassClient");
+					Patient=json.getJSONObject("Patient");
 					Patient.put("PatCode", hiscode+ienddate1+i+"_"+j+"_cy");
 //					Patient.put("InHospNo",hiscode+ienddate1+i+"_"+j);
 					Patient.put("InHospNo",hiscode+"_出院_"+Patient.getString("InHospNo"));
 					//门诊caseid：Mz门诊号+“＿”＋病人编号
-					String caseid="Cy"+Patient.getString("PatCode");
+					caseid="Cy"+Patient.getString("PatCode");
 
 					Map map=new HashMap();
 					map.put("Patient", Patient);
@@ -74,11 +91,12 @@ public class T_mc_outhosp_patient {
 					map.put("PassClient", PassClient);
 					map.put("ienddate1", ienddate1);
 					map.put("enddate1", enddate1);
-					map.put("startdate1", sys_pa.date3(startdate1, "yyyy-MM-dd", 15));//将出院病人的住院天数设置成15天
+					map.put("startdate1", startdate1);//将出院病人的住院天数设置成15天
 					listbatch.add(map);
 					
-					if(a%500==0){
+					if(a%Integer.parseInt(insertdatacount)==0){
 						batchInsertRows(sql,listbatch);
+						log.info("======>t_mc_outhosp_patient :"+a);
 						listbatch.clear();
 					} 
 //					if(a-50000>=0){
@@ -101,10 +119,10 @@ public class T_mc_outhosp_patient {
 				batchInsertRows(sql,listbatch);
 				listbatch.clear();
 			}
-			System.out.println("t_mc_outhosp_patient总数："+a+"-->有效数据："+a);
+			log.info("======>t_mc_outhosp_patient 总数  ："+a+"-->有效数据："+a);
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
-			System.out.println("t_mc_outhosp_patient制造数据异常");
+			log.debug("调试==>t_mc_outhosp_patient 制造数据异常 ："+e);
 		}
 	}
 	
@@ -171,8 +189,8 @@ public class T_mc_outhosp_patient {
 					pst.setString(40,"");//accountdate
 					pst.setString(41,Patient.getString("Telephone"));//telephone]
 				}catch (Exception e){
-					System.out.println("出现异常的数据:"+map);
-					System.out.println(e);
+					log.debug("调试==>t_mc_outhosp_patient 插表异常 ："+map);
+					log.debug("调试==>"+e);
 				}
 			}
 			@Override
@@ -181,6 +199,6 @@ public class T_mc_outhosp_patient {
 				return listbatch.size();
 			}
 		};
-		jdbcTemplate_oracle.batchUpdate(sql, setter);
+		jdbcTemplate_dataBase.batchUpdate(sql, setter);
 	}
 }

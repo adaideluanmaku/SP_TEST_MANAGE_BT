@@ -85,6 +85,7 @@ var TableInit =function () {
 			
 			// 1.点击每行进行函数的触发
 			onClickRow : function(row, tr,flied){
+				$('#table_data').bootstrapTable('uncheckAll');//取消选中所有行
 			},
 
 			// 2. 点击前面的复选框进行对应的操作
@@ -128,7 +129,6 @@ function open_dialog(){
 }
 
 function teamgroup(){
-	var address = addurl + '/pass/teamgroup';
 
 	//每次点击都要后台取数据
 	$('#dialog_form #teamid').select2({
@@ -136,11 +136,17 @@ function teamgroup(){
 		allowClear: true,
 		dropdownParent: $("#modal_dialog"),//modal默认不显示，解决modal显示后下拉单样式问题
 		ajax: {
-			url: address,
+			url: addurl + '/pass/_select2',
+			contentType:"application/json",
+			data: function (params) {
+	             return {
+	            	 searchstr:params.term,
+	             };
+	        },
 			processResults: function (data) {
 			// Tranforms the top-level key of the response object from 'items' to 'results'
 				return {
-					results: data
+					results: data[0].teamlist
 				};
 			}
 		}
@@ -210,7 +216,7 @@ function add_data(){
 
 function del_data(){
 	var IdSelections = $('#table_data').bootstrapTable('getSelections');
-	if(IdSelections.length != 1){
+	if(IdSelections.length < 1){
 		swal({
             title: "警告",
             text: "请至少选择一条数据进行操作."
@@ -337,20 +343,11 @@ function all_form_validator(){
 }
 
 function tableheight(){
-//	alert(window.screen.availWidth)
-//	alert(document.body.clientHeight)
-//	alert(document.getElementById("header_path").offsetHeight)
-//	alert(document.getElementById("search_div").offsetHeight)
-//	alert(document.getElementById("toolbar").offsetHeight)
-	
-	var _height = document.body.clientHeight-document.getElementById("header_path").offsetHeight
-	-document.getElementById("search_div").offsetHeight-document.getElementById("toolbar").offsetHeight;
-	
-	if(window.screen.availWidth/160%1==0){
-		_height=_height-10;
-	}else{
-		_height=_height-30;
+	var _height=0;
+	//获取父级窗口高度
+	_height=$(window.parent.window).height()-60-40-120-100;
+	if(_height<300){
+		_height=300;
 	}
-	
 	return _height;
 }
